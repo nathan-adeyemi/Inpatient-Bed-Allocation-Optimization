@@ -208,80 +208,92 @@ CostFunction <- function(sol = NULL,
   return(x)
 }
 
-update_sol <- function(i,newSol = TRUE){
+update_sol <- function(i,sol_vector = NA){
   x <- best
-  x$counter <- 0
-  x$name <-  paste0('Tourney_', it, '_Candidate_',i)
-  x$Replications <- get('starter_reps',envir = .GlobalEnv)
-  x$Solution <-  tweak(x$Solution)
+  if (any(is.na(sol_vector))) {
+    x$Replications <- get('starter_reps',envir = .GlobalEnv)
+    x$counter <- 0
+    x$name <-  paste0('Tourney_', it, '_Candidate_',i)
+    x$Solution <-  tweak(x$Solution)
+  } else{
+    x$name <-
+      paste0("test_nsga_sol_",i)
+    x$Solution <- sol_vector
+    x$Replications <- 12
+  }
   x$Allocation <- decode(x$Solution)
   return(x)
 }
 
 
-gen_candidates <- function(tweak_left) {
+gen_candidates <- function(tweak_left,candidate_list = NULL) {
   temp_counter <- 0
   new_solns <- list()
-  while (tweak_left > 2 & temp_counter < 25) {
-    candidate_list <- lapply(seq(tweak_left), update_sol)
-    
-    # Remove duplicate allocations within temporary obj (inital subgroup)
-    new_alloc = which({
-      function(mat)
-        ! duplicated(mat)
-    }(t(
-      as.matrix(candidate_list %c% 'Allocation')
-    )))
-    candidate_list = candidate_list[new_alloc]
-    
-    
-    # Remove any solution that was previously tested
-    dups <-
-      rbind(all_allocations,
-            candidate_list %c% 'Allocation' %>% 
-              t() %>% 
-              as.matrix()) %>% 
-      as.matrix() %>% 
-      {function(mat)which(duplicated(mat))}()
-    if (length(dups) > 0) {
-      dups <- dups - nrow(all_allocations)
+  if (length(candidate_list) == 0){
+    while (tweak_left > 2 & temp_counter < 25) {
+      candidate_list <- lapply(seq(tweak_left), update_sol)
+      
+      # Remove duplicate allocations within temporary obj (inital subgroup)
+      new_alloc = which({
+        function(mat)
+          ! duplicated(mat)
+      }(t(
+        as.matrix(candidate_list %c% 'Allocation')
+      )))
+      candidate_list = candidate_list[new_alloc]
+      
+      
+      # Remove any solution that was previously tested
+      dups <-
+        rbind(all_allocations,
+              candidate_list %c% 'Allocation' %>%
+                t() %>%
+                as.matrix()) %>%
+        as.matrix() %>%
+        {
+          function(mat)
+            which(duplicated(mat))
+        }()
+      if (length(dups) > 0) {
+        dups <- dups - nrow(all_allocations)
+      }
+      if (length(dups) != length(candidate_list)) {
+        candidate_list <-
+          candidate_list[setdiff(seq_along(candidate_list), dups)]
+      } else {
+        candidate_list = NULL
+      }
+      
+      # Add all new generated solutions to the candidate list
+      new_solns = append(new_solns, candidate_list)
+      if (length(candidate_list) > 0 & it != 0) {
+        all_allocations <<-
+          rbind(all_allocations, as.matrix(t(candidate_list %c% 'Allocation')))
+      }
+      
+      temp_counter %+% 1
+      tweak_left <- nTweak - length(new_solns)
     }
-    if (length(dups) != length(candidate_list)) {
-      candidate_list <-
-        candidate_list[setdiff(seq_along(candidate_list), dups)]
-    } else {
-      candidate_list = NULL
-    }
-    
-    # Add all new generated solutions to the candidate list
-    new_solns = append(new_solns, candidate_list)
-    if (length(candidate_list) > 0 & it != 0) {
-      all_allocations <<-
-        rbind(all_allocations, as.matrix(t(candidate_list %c% 'Allocation')))
-    }
-    
-    temp_counter %+% 1
-    tweak_left <- nTweak - length(new_solns)
   }
-  
   # Make lists of all new solutions/allocations (1 entry per replication), a list of the replication #s, 
   # and a list of the allocation's index in the candidate list
   allocation_list <-
     unlist(x = lapply(
       X = candidate_list,
-      FUN = function(i)
-        rep(x = list(i$Allocation), times = starter_reps)
+      FUN = function(i) {
+        rep(x = list(i$Allocation), times = i$Replications)
+      }
     ),
     recursive = F)
   
   replication_list <-
-    rep(x = seq(starter_reps),
+    rep(x = seq(candidate_list[[1]]$Replications),
         times = length(candidate_list))
   
   index_list = sapply(
     seq_along(candidate_list),
     FUN = function(i)
-      rep(x = i, times = starter_reps)
+      rep(x = i, times = candidate_list[[i]]$Replications)
   )
   
   if (length(new_solns) == 0 & temp_counter == 10) {
@@ -294,6 +306,7 @@ gen_candidates <- function(tweak_left) {
       arg_list = allocation_list,
       job_list = replication_list
     )
+    browser()
     candidate_list <- lapply(
       X = candidate_list,
       FUN = function(Object) {

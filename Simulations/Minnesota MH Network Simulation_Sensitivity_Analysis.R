@@ -23,7 +23,6 @@ MH.Network.sim <-
     obj.name <- function(x) {
       deparse(substitute(x))
     }
-    
     siteInfo <-
       siteInfo[, Acceptance_Prob := ifelse(test = SA_pr_acceptance, 
                                            yes = sensitivity_analysis_mult, 

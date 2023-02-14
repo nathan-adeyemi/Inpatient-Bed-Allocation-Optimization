@@ -15,62 +15,74 @@ source('MOSA Functions.R')
 
 use_test_bench = T
 inverted_V_logical = T
-read_init <- T
 
-if(use_test_bench) {
-  if (read_init) {
-    starter_data <-
-      readRDS(file.path('Data', 'Small Testing Initial Solution.rds'))
-    n_queues <- nrow(starter_data$network)
-  } else{
-    n_queues <- 3
+# Prompt for if a previous optimization problem needs to be comple --------
+continue_previous <-
+  readline(prompt = 'Continue DB-PSA from previously saved environment? (Y/N):')
+continue_previous <-
+  grepl(pattern = 'y|yes|True|T',
+        x = continue_previous,
+        ignore.case = T)
+
+if(!continue_previous) {
+  if (use_test_bench) {
+    read_init <- readline(prompt = 'Read from an initial solution? (Y/N):') 
+    read_init <- grepl(pattern = 'y|yes|True|T',
+                       x = read_init,
+                       ignore.case = T)
+                                                                                     
+    if ( read_init){
+      starter_data <-
+        readRDS(file.path('Data', 'Medium Testing Initial Solution (4 queues).rds'))
+      n_queues <- nrow(starter_data$network)
+    } else{
+      n_queues <- 4
+    }
+    source(file.path('Jackson Network Test Bench.R'))
+    
   }
-  source(file.path('Jackson Network Test Bench.R'))
   
-}
-
-# Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
-nVar <- ifelse(
-  test = use_test_bench == TRUE,
-  yes = n_queues,
-  no = length(siteInfo[, unique(Bed_Group)])
-)
-
-if(use_test_bench){
-  nVar = n_queues
-  optim_type <- c('max','min','min')
-} else {
-  nVar <- siteInfo[unique(Bed_Group),.N]
-  optim_type = rep('min',3)
-}
-temp_init <- 1.4
-t_min <- 1.1 * temp_init
-t_damp <- .001 #Depends on cooling schedule selection
-best_limit <- 5
-pareto_limit <- 25
-starter_reps <- 5
-stat_logical <- T
-maxChange <- 0.25
-itReps_Cum  <- 0
-nTotal_Cum <- 0
-sim_length <- 1500
-warmup <- 100
-nTweak <- 5
-itMax <- 100
-best_counter <- 0
-delta <-  max(ceiling(nTweak/2),5)
-A <- list()
-mosa_trials <- 5
-
-seed_val <- floor(runif(1)*10000) 
-analytical <- F
-
-for(i in seq(mosa_trials)) {
+  # Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
+  nVar <- ifelse(test = use_test_bench == TRUE,
+                 yes = n_queues,
+                 no = length(siteInfo[, unique(Bed_Group)]))
+  
+  if (use_test_bench) {
+    nVar = n_queues
+    optim_type <- c('max', 'min', 'min')
+  } else {
+    nVar <- siteInfo[unique(Bed_Group), .N]
+    optim_type = rep('min', 3)
+  }
+  temp_init <- 1.4
+  t_min <- 1.1 * temp_init
+  t_damp <- .001 #Depends on cooling schedule selection
+  best_limit <- 5
+  pareto_limit <- 25
+  starter_reps <- 5
+  stat_logical <- T
+  maxChange <- 0.25
+  itReps_Cum  <- 0
+  nTotal_Cum <- 0
+  sim_length <- 2500
+  warmup <- 200
+  nTweak <- 5
+  itMax <- 100
+  best_counter <- 0
+  delta <-  max(ceiling(nTweak / 2), 5)
+  A <- list()
+  mosa_trials <- 3
+  i <- 1
+  
+  seed_val <- floor(runif(1) * 10000)
+  analytical <- F
+  
+  
   temp <- temp_init
   it <- 0
   
-  if(use_test_bench) {
-    obj_function_list <-  
+  if (use_test_bench) {
+    obj_function_list <-
       grep(pattern = 'TB_',
            x = lsf.str(),
            value = T)
@@ -84,45 +96,48 @@ for(i in seq(mosa_trials)) {
   best_by_min_dist <- T
   
   # init_sol <- runif(nVar)
-  if (!read_init){ 
-    init_sol <- c(1,rep(0,(n_queues-1)))
-  
-  initial <- list(
-    name = 'Baseline',
-    Solution = init_sol,
-    Replications = 20,
-    # Should == reps argument from CostFunction function (MOSA Functions.R line 150)
-    Allocation = decode(init_sol),
-    counter = 0,
-    Dist = 0,
-    deltaPsi = 0
-  )
-  
-  # Generate Initial Baseline Solution ------------------------------------------------------------------------------
-  if (!use_test_bench) {
-    initial$Allocation = siteInfo[!duplicated(siteInfo$Bed_Group), total_beds]
-  } else {
-    initial$Allocation <- decode(alg_input = initial$Solution)
-  }
-  
-  init_data <-
-    objective_Metrics(
-      data = CostFunction(
-        sol = initial$Allocation,
-        logic = TRUE,
-        test_bench = use_test_bench,
-        use_inv_V = inverted_V_logical
-      ),
-      fun_list = obj_function_list
-    ) 
-  initial <- updateSimStats(i = initial, data = init_data, new_sol = T)
-  best <- initial
+  if (!read_init) {
+    init_sol <- c(1, rep(0, (n_queues - 1)))
+    
+    initial <- list(
+      name = 'Baseline',
+      Solution = init_sol,
+      Replications = 20,
+      # Should == reps argument from CostFunction function (MOSA Functions.R line 150)
+      Allocation = decode(init_sol),
+      counter = 0,
+      Dist = 0,
+      deltaPsi = 0
+    )
+    
+    # Generate Initial Baseline Solution ------------------------------------------------------------------------------
+    if (!use_test_bench) {
+      initial$Allocation = siteInfo[!duplicated(siteInfo$Bed_Group), total_beds]
+    } else {
+      initial$Allocation <- decode(alg_input = initial$Solution)
+    }
+    
+    init_data <-
+      objective_Metrics(
+        data = CostFunction(
+          sol = initial$Allocation,
+          logic = TRUE,
+          test_bench = use_test_bench,
+          use_inv_V = inverted_V_logical
+        ),
+        fun_list = obj_function_list
+      )
+    initial <-
+      updateSimStats(i = initial,
+                     data = init_data,
+                     new_sol = T)
+    best <- initial
   } else {
     starter_data$initial_sol
     best <- starter_data$initial_sol
     queues_df <- starter_data$network_df
   }
- 
+  
   # Initialize Dataframe of Best Solutions---------------------------------------------------------------------------
   best_df <-
     data.table(
@@ -142,7 +157,12 @@ for(i in seq(mosa_trials)) {
   
   all_allocations <<- t(best$Allocation)
   pareto_set <-  list()
-  
+} else {
+  load(file.path('.', 'Data', 'paused_execution_envr.rdata'))
+}
+if(use_test_bench) {
+  print(queues_df)
+}
   # Main Optimization Algorithm Loop ---------------------------------------------------------------------------------
   while (termination_criteria(check_iteration = T)) {
     tempItDF <- data.table(Iteration = it, Time = Sys.time())
@@ -260,7 +280,10 @@ for(i in seq(mosa_trials)) {
         'moves on.'
       )
       cat('\n')
-      cat('The ideal point is', paste(g_ideal_CI, collapse = ', '), '.')
+      cat('The ideal point is', paste(g_ideal_CI, collapse = ', '))
+      cat('\n')
+      cat('There are',length(pareto_set),' solutions in the Pareto Set')
+      cat('\n')
       cat('\n')
       }
   }
@@ -283,41 +306,17 @@ for(i in seq(mosa_trials)) {
     instance_df <- rbind(instance_df,best_df[,instance := i])
     # best_allocations <- rbind(best_allocations,t(best$Allocation))
   }
-}
 
-pareto_sets <- extractParetoSets(res_dir)
-pareto_objectives <- pareto_objectives <- 
-  t(matrix(as.matrix(pareto_sets %c% 'Obj_mean'),ncol = length(pareto_sets)))
+#pareto_sets <- extractParetoSets(res_dir)
+pareto_objectives <- 
+  t(matrix(as.matrix(pareto_set %c% 'Obj_mean'),ncol = length(pareto_set)))
 
 
-instance_df_avgs <-
-  setDT(
-    melt(
-      data = copy(instance_df)[, `:=`(
-        mean_server_utilization = (100 * mean_server_utilization / .SD[Iteration == 0, mean_server_utilization]) -
-          100,
-        max_mean_queue = (100 * max_mean_queue / .SD[Iteration == 0, max_mean_queue]) - 100,
-        avg_wait = (100 * avg_wait / .SD[Iteration == 0, avg_wait]) - 100 ,
-        Dist = signif(Dist, digits = 4)
-      ), by = instance], 
-      measure.vars = colnames(best$Obj_mean)
-    )
-  )[,.(value = mean(value),sd = sd(value)),by = list(Iteration,variable)]
-
-p <- ggplot(data = instance_df_avgs,
-            mapping = aes(x = Iteration, y = value, colour = variable)) +
-  geom_line() +
-  geom_point() +
-  geom_errorbar(aes(ymin = value - sd,
-                    ymax = value + sd),
-                width = .2,
-                position = position_dodge(0.05))
 saveRDS(
   object = list(
-    instance_df_avgs,
-    p,
     instance_df,
-    pareto_sets
+    pareto_set,
+    plotParetoFront(inputData = pareto_set)
   ),
   file = file.path(res_dir, 'Algorithm Trial Information, Pareto Fronts and Plots.rds')
 )

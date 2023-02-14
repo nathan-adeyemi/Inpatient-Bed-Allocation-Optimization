@@ -306,7 +306,6 @@ gen_candidates <- function(tweak_left,candidate_list = NULL) {
       arg_list = allocation_list,
       job_list = replication_list
     )
-    browser()
     candidate_list <- lapply(
       X = candidate_list,
       FUN = function(Object) {
@@ -1273,6 +1272,31 @@ addgrids3d <- function(x, y=NULL, z=NULL, grid = TRUE,
   
 }
 
+plotTestBenchResults <- function(df){
+  df_avgs <-
+    setDT(
+      melt(
+        data = copy(df)[, `:=`(
+          mean_server_utilization = (100 * mean_server_utilization / .SD[Iteration == 0, mean_server_utilization]) -
+            100,
+          max_mean_queue = (100 * max_mean_queue / .SD[Iteration == 0, max_mean_queue]) - 100,
+          avg_wait = (100 * avg_wait / .SD[Iteration == 0, avg_wait]) - 100 ,
+          Dist = signif(Dist, digits = 4)
+        ), by = instance], 
+        measure.vars = colnames(best$Obj_mean)
+      )
+    )[,.(value = mean(value),sd = sd(value)),by = list(Iteration,variable)]
+  
+  p <- ggplot(data = df_avgs,
+              mapping = aes(x = Iteration, y = value, colour = variable)) +
+    geom_line() +
+    geom_point() +
+    geom_errorbar(aes(ymin = value - sd,
+                      ymax = value + sd),
+                  width = .2,
+                  position = position_dodge(0.05))
+  return(p)
+}
 
 # Convenience Functions ---------------------------------------------------
 extractParetoSets <- function(directory) {
@@ -1298,4 +1322,3 @@ candidateSettoMatrix <- function(set,attr){
 }
 
 specify_decimal <- function(x, digits) as.numeric(trimws(format(round(x, digits), nsmall=digits)))
-

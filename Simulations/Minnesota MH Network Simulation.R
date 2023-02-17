@@ -164,9 +164,9 @@ MH.Network.sim <-
       siteInfo.NewOrder[, coordination_times := {Vectorize(gen_coord_times)}(Review_Params)]
       siteInfo.NewOrder[Facility_name == currED.name, 
                         coordination_times := 0]
+
       splits = split(x = siteInfo.NewOrder[!is.na(referral_response), Site],
                      f = ceiling(x = seq_along(siteInfo.NewOrder[!is.na(referral_response), Site]) / n.parallel))
-      
       
       siteInfo.NewOrder <- siteInfo.NewOrder[!is.na(referral_response), 
                                              round_id := as.numeric(unlist(sapply(X = seq_along(splits),
@@ -441,7 +441,7 @@ MH.Network.sim <-
     list2env(readRDS(
       file = file.path(
         ".",
-        "Data",
+        "Simulations",
         "Function Requirements",
         "MH_Network_sim_input_list.rds"
       )
@@ -646,8 +646,10 @@ MH.Network.sim <-
 
     # Create the Simulation Environment and Run the Replication --------------
     sim_func_env <- environment()
+    # browser()
     if (length(rep) == 1) {
       #If running multiple replications, run in parallel
+      
       sim_results <- simmer('MH.Network', log_level = 1) %>%
         move_environ_name(target_envir = sim_func_env) %>%
         ed.patient.gen(ed_sites) %>%
@@ -660,7 +662,8 @@ MH.Network.sim <-
         simmer::run(until = sim.length,
                     progress = progress::progress_bar$new(format = "[:bar] :percent ETA: :eta")$update)
     } else {
-      sim_results <- pbmclapply(
+      sim_results <- #pbmclapply(
+        lapply(
         X = rep,
         FUN = function(i)
           simmer('MH.Network', log_level = 1) %>%
@@ -671,13 +674,13 @@ MH.Network.sim <-
           simmer::run(
             until = sim.length
           ) %>%
-          wrap(),
-        mc.cores = ifelse(
-          test = length(rep) == 1,
-          yes = 1,
-          no = availableCores()
-        ),
-        mc.set.seed = T
+          wrap()#,
+        # mc.cores = ifelse(
+        #   test = length(rep) == 1,
+        #   yes = 1,
+        #   no = availableCores()
+        # ),
+        # mc.set.seed = T
       )
     }
     
@@ -781,7 +784,7 @@ MH.Network.sim <-
 full_sim <-
   function(num_iter = 12,
            parallel = TRUE,
-           concurrent_requests = NULL,
+           concurrent_requests = 1,
            prob_sort = F,
            new_sol = NULL,
            warmup = 50,

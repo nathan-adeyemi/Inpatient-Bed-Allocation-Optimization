@@ -172,7 +172,7 @@ CostFunction <- function(sol = NULL,
                          test_bench = get(x = 'use_test_bench', envir = .GlobalEnv),
                          sim_length = get(x = 'sim_length', envir = .GlobalEnv),
                          sim_warmup = get(x = 'warmup', envir = .GlobalEnv),
-                         use_inv_V = get(x = 'use_test_bench', envir = .GlobalEnv),
+                         use_inv_V = get(x = 'inverted_V_logical', envir = .GlobalEnv),
                          nsga = F) {
   if(nsga){
     sol <- decode(sol)
@@ -193,10 +193,10 @@ CostFunction <- function(sol = NULL,
     x <- data.table(
       full_sim(
         num_iter = reps,
-        parallel = F,
+        parallel = logic,
         new_sol = sol,
-        warmup = sim_warmup,
-        sim_length = sim_length
+        warmup = 3,
+        sim_length = 35
       )
     )
   }
@@ -232,7 +232,6 @@ gen_candidates <- function(tweak_left,candidate_list = NULL) {
   if (length(candidate_list) == 0){
     while (tweak_left > 2 & temp_counter < 25) {
       candidate_list <- lapply(seq(tweak_left), update_sol)
-      
       # Remove duplicate allocations within temporary obj (inital subgroup)
       new_alloc = which({
         function(mat)
@@ -360,10 +359,14 @@ soln_comparison <-
   function(s1,
            s2,
            stat = get('stat_logical', envir = .GlobalEnv),
-           alpha_1 = 0.5,
-           alpha_2 = 0.05) {
+           alpha = 0.1) {
     comp_df <- rbind(copy(s1$Cost)[,soln_num := 1],
                      copy(s2$Cost)[,soln_num := 2])
+    
+    #Less strict alpha value if there are few simulation replications
+    if(min(comp_df[,.N,by = soln_num][,N]) < 12){ 
+      alpha <- 0.1
+    }
     
     # Return T/F if the tested difference in quantities is negative and statistically significant
     # T = s2 dominates s1
@@ -383,12 +386,12 @@ soln_comparison <-
     if (stat) {
       criteria_1 <- sapply(
         X = seq_along(indx),
-        FUN = function(variable) #test: s1 - s2 < 0 i.e. s2 > s1
+        FUN = function(variable) #test: s1 - s2 = 0 i.e. s2 == s1 
           t.test(
             formula = formula(paste0(indx[variable], ' ~ soln_num')),
             data = comp_df
           )$p.value
-      ) > alpha_2
+      ) > alpha
       
       criteria_2 <- sapply( #s1 - s2 > 0  i.e. s2 < s1
         X = seq_along(indx),
@@ -398,7 +401,7 @@ soln_comparison <-
             data = comp_df,
             alternative = 'g'
           )$p.value
-      ) < alpha_2
+      ) < alpha
       
       # Return T if the tested allocation's quantity is less (no statistical tests)
     } else {
@@ -477,7 +480,6 @@ noisyNonDominatedSorting <- function (inputData)
     for (i in 1:noSolInCurrFrnt) {
       
       solIdx <- rnkList[[length(rnkList)]][i]
-      browser(expr = length(solIdx) == 0 )
       hisDominatees <- idxDominatees[[solIdx]]
       for (i in hisDominatees) {
         noDominators[[i]] <- noDominators[[i]] - 1

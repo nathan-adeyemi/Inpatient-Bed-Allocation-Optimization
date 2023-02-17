@@ -646,6 +646,7 @@ MH.Network.sim <-
 
     # Create the Simulation Environment and Run the Replication --------------
     sim_func_env <- environment()
+    # browser()
     if (length(rep) == 1) {
       #If running multiple replications, run in parallel
       
@@ -661,7 +662,8 @@ MH.Network.sim <-
         simmer::run(until = sim.length,
                     progress = progress::progress_bar$new(format = "[:bar] :percent ETA: :eta")$update)
     } else {
-      sim_results <- pbmclapply(
+      sim_results <- #pbmclapply(
+        lapply(
         X = rep,
         FUN = function(i)
           simmer('MH.Network', log_level = 1) %>%
@@ -672,9 +674,19 @@ MH.Network.sim <-
           simmer::run(
             until = sim.length
           ) %>%
+<<<<<<< HEAD
           wrap(),
         mc.cores = min(length(rep),availableCores()),
         mc.set.seed = T
+=======
+          wrap()#,
+        # mc.cores = ifelse(
+        #   test = length(rep) == 1,
+        #   yes = 1,
+        #   no = availableCores()
+        # ),
+        # mc.set.seed = T
+>>>>>>> c5cae59 (Minor updates)
       )
     }
     

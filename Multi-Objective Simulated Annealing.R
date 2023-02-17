@@ -13,6 +13,7 @@ source(file.path('functions.R'))
 setwd('Inpatient Bed Allocation Optimization')
 source('MOSA Functions.R')
 
+<<<<<<< HEAD
 use_test_bench = T
 inverted_V_logical = T
 read_init <- T
@@ -86,18 +87,100 @@ for(i in seq(mosa_trials)) {
   # init_sol <- runif(nVar)
   if (!read_init){ 
     init_sol <- c(1,rep(0,(n_queues-1)))
+=======
+use_test_bench <-  F
+inverted_V_logical <-  F
+
+# Prompt for if a previous optimization problem needs to be comple --------
+# continue_previous <-
+#   readline(prompt = 'Continue DB-PSA from previously saved environment? (Y/N):')
+# continue_previous <-
+#   grepl(pattern = 'y|yes|True|T',
+#         x = continue_previous,
+#         ignore.case = T)
+continue_previous <- F
+if(!continue_previous) {
+  if (use_test_bench) {
+    read_init <-
+      readline(prompt = 'Read from an initial solution? (Y/N):')
+    read_init <- grepl(pattern = 'y|yes|True|T',
+                       x = read_init,
+                       ignore.case = T)
+    n_queues <- nVar <- 5
+    jackson_envir <- new.env()
+    sys.source('Jackson Network Test Bench.R',envir = jackson_envir)
+    optim_type <- c('max', 'min', 'min')
+    
+    if (read_init) {
+      starter_data <-
+        readRDS(file.path('Data', 'Medium Testing Initial Solution (4 queues).rds'))
+      queues_df <- starter_data$network_df
+      n_queues <- nVar <- queues_df[,.N]
+    }
+    print(queues_df)
+    obj_function_list <- 
+      grep(pattern = 'TB_',
+           x = lsf.str(),
+           value = T)
+  } else {
+    source(file.path('Simulations','Minnesota MH Network Simulation.R'))
+    siteInfo <- data.table(readRDS(file.path('Simulations','Function Requirements','Rates5.rds')))
+    obj_function_list <-
+      grep(pattern = 'mh_',
+           x = lsf.str(),
+           value = T)
+    nVar <- length(siteInfo[,unique(Bed_Group)])
+    optim_type = rep('min', 3)
+  }
+  
+  # Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
+  temp_init <- 1.4
+  t_min <- 1.1 * temp_init
+  t_damp <- .001 #Depends on cooling schedule selection
+  best_limit <- 5
+  pareto_limit <- 25
+  starter_reps <- 5
+  stat_logical <- T
+  maxChange <- 1
+  itReps_Cum  <- 0
+  nTotal_Cum <- 0
+  sim_length <- 3500
+  warmup <- 100
+  nTweak <- 5
+  itMax <- 100
+  best_counter <- 0
+  delta <-  max(ceiling(nTweak / 2), 5)
+  A <- list()
+  mosa_trials <- 3
+  i <- it <- 1
+  seed_val <- floor(runif(1) * 10000)
+  analytical <- F
+  temp <- temp_init
+  num_obj <- length(obj_function_list)
+  best_by_min_dist <- T
+  
+  # Generate Initial Baseline Solution ------------------------------------------------------------------------------
+  init_sol <- c(1, rep(0, (nVar - 1)))
+  #init_sol <- runif(n = n_queues,min = 0,max = 1)
+>>>>>>> 34f184a (Minor updates)
   
   initial <- list(
     name = 'Baseline',
     Solution = init_sol,
+<<<<<<< HEAD
     Replications = 20,
     # Should == reps argument from CostFunction function (MOSA Functions.R line 150)
     Allocation = decode(init_sol),
+=======
+    Replications = 20, # Should == reps argument from CostFunction function (MOSA Functions.R line 150)
+    Allocation = if (!use_test_bench) siteInfo[!duplicated(Bed_Group), total_beds] else decode(alg_input = init_sol),
+>>>>>>> 34f184a (Minor updates)
     counter = 0,
     Dist = 0,
     deltaPsi = 0
   )
   
+<<<<<<< HEAD
   # Generate Initial Baseline Solution ------------------------------------------------------------------------------
   if (!use_test_bench) {
     initial$Allocation = siteInfo[!duplicated(siteInfo$Bed_Group), total_beds]
@@ -105,6 +188,8 @@ for(i in seq(mosa_trials)) {
     initial$Allocation <- decode(alg_input = initial$Solution)
   }
   
+=======
+>>>>>>> 34f184a (Minor updates)
   init_data <-
     objective_Metrics(
       data = CostFunction(
@@ -114,6 +199,7 @@ for(i in seq(mosa_trials)) {
         use_inv_V = inverted_V_logical
       ),
       fun_list = obj_function_list
+<<<<<<< HEAD
     ) 
   initial <- updateSimStats(i = initial, data = init_data, new_sol = T)
   best <- initial
@@ -123,6 +209,15 @@ for(i in seq(mosa_trials)) {
     queues_df <- starter_data$network_df
   }
  
+=======
+    )
+  initial <-
+    updateSimStats(i = initial,
+                   data = init_data,
+                   new_sol = T)
+  best <- initial
+
+>>>>>>> 34f184a (Minor updates)
   # Initialize Dataframe of Best Solutions---------------------------------------------------------------------------
   best_df <-
     data.table(
@@ -142,16 +237,21 @@ for(i in seq(mosa_trials)) {
   
   all_allocations <<- t(best$Allocation)
   pareto_set <-  list()
+<<<<<<< HEAD
   
+=======
+} else {
+  if (!use_test_bench) {
+    load(file = file.path('Data', 'full_sim_paused_envr.rdata'))
+  } else{
+    load(file = file.path('Data', 'test_bench_paused_envr.rdata'))
+  }
+}
+
+>>>>>>> 34f184a (Minor updates)
   # Main Optimization Algorithm Loop ---------------------------------------------------------------------------------
   while (termination_criteria(check_iteration = T)) {
-    tempItDF <- data.table(Iteration = it, Time = Sys.time())
-    if (it == 0) {
-      itTimeDF = tempItDF
-    } else {
-      itTimeDF = rbind(itTimeDF, tempItDF)
-    }
-    
+    browser()
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
     
     temp_obj <- gen_candidates(nTweak)
@@ -189,8 +289,6 @@ for(i in seq(mosa_trials)) {
     }
 
     # Update Iteration Best and Iteration Info Dataframes -------------------------------------------------------------
-    it %+% 1
-    
     if (it == 1) {
       itReps_Cum <- itReps
       theoretical_cum <- N_Total
@@ -230,19 +328,16 @@ for(i in seq(mosa_trials)) {
       ))
     
     # Adjust Temperature ----------------------------------------------------------------------------------------------
-    # temp <-
-    #   cool_temp(
-    #     initial_temperature = temp_init,
-    #     alpha = t_damp,
-    #     
-    #     current_iteration = it,
-    #     quad_cool = T
-    #   )
+    # Code removed for now
     
     # Tabu Style removal of earlier tested solutions ----------------------------------------------------------------------------------------------
+    
     if(it > (pareto_limit - 1)){
       all_allocations <-
-        all_allocations[-length(A[[it -( pareto_limit - 1)]]$Rejects),]
+        all_allocations[-seq(length(A[[it -( pareto_limit - 1)]]$Rejects)),]
+      tested_allocs <- rbind(tested_allocs,t(temp_obj %c% 'Allocation'))
+    } else {
+      tested_allocs <- all_allocations
     }
     if (it %% 1 == 0) {
       # print(pareto_set %c% 'Obj_CI')
@@ -260,13 +355,26 @@ for(i in seq(mosa_trials)) {
         'moves on.'
       )
       cat('\n')
+<<<<<<< HEAD
       cat('The ideal point is', paste(g_ideal_CI, collapse = ', '), '.')
+=======
+      cat('The ideal point is', paste(g_ideal_CI, collapse = ', '))
       cat('\n')
-      }
+      cat('There are',length(pareto_set),'solutions in the Pareto Set')
+      cat('\n')
+>>>>>>> 34f184a (Minor updates)
+      cat('\n')
+    }
+    if (!use_test_bench) {
+      save.image(file = file.path('Data', 'full_sim_paused_envr.rdata'))
+    } else{
+      save.image(file = file.path('Data', 'test_bench_paused_envr.rdata'))
+    }
+    it %+% 1
   }
-  best_df_long <- melt(data = copy(best_df)[,`:=`(Dist = NULL, 
-                                                  Num_Replications = NULL)],
-                       measure.vars = colnames(best$Obj_mean))
+  # best_df_long <- melt(data = copy(best_df)[,`:=`(Dist = NULL, 
+  #                                                 Num_Replications = NULL)],
+  #                      measure.vars = colnames(best$Obj_mean))
   
   
   print(paste('Algorithm Trial',i,'Complete'))
@@ -321,7 +429,17 @@ saveRDS(
   ),
   file = file.path(res_dir, 'Algorithm Trial Information, Pareto Fronts and Plots.rds')
 )
+tested_allocs <-
+  unique(x = apply(
+    X = tested_allocs,
+    MARGIN = 1,
+    FUN = paste,
+    collapse = ','
+  ))
 
+tested_allocs <- matrix(as.numeric(unlist(sapply(tested_allocs,strsplit,split = ','))),ncol = 4,byrow = T)
+
+browser()
 # Run Same Problem w/ NSGA-II Algorithm -----------------------------------
 if(use_test_bench) {
   nsgaCostFn <- function(x) {
@@ -335,8 +453,8 @@ if(use_test_bench) {
       varNo = nVar,
       objDim = length(optim_type),
       lowerBounds = rep(0, nVar),
-      upperBounds = rep(1, nVar),
-      popSize = 30,
+      upperBounds = rep(, nVar),
+      popSize = 40,
       generations = 100,
       cprob = 0.7,
       mprob = 0.2

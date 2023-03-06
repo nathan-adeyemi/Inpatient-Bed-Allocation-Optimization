@@ -1,14 +1,18 @@
 {
   "R": {
-    "Version": "4.2.1",
+    "Version": "4.2.0",
     "Repositories": [
       {
         "Name": "CRAN",
+<<<<<<< HEAD
 <<<<<<< HEAD
         "URL": "http://ftp.ussg.iu.edu/CRAN"
 =======
         "URL": "https://packagemanager.rstudio.com/cran/latest"
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+        "URL": "https://cloud.r-project.org"
+>>>>>>> 7fe6941 (Most recent updates)
       }
     ]
   },
@@ -22,6 +26,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "DBI": {
       "Package": "DBI",
       "Version": "1.1.3",
@@ -38,8 +45,11 @@
       "Hash": "b18b34cfbf932e17803c2e3e4b1a2d2a",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "DiagrammeR": {
       "Package": "DiagrammeR",
       "Version": "1.0.9",
@@ -69,6 +79,7 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "EnvStats": {
       "Package": "EnvStats",
       "Version": "2.7.0",
@@ -95,6 +106,26 @@
       "Repository": "CRAN",
       "Hash": "71476c1d88d1ebdf31580e5a257d5d31",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+    "EnvStats": {
+      "Package": "EnvStats",
+      "Version": "2.7.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3c75601e880b3cc9c47b14a7caf8f76f",
+      "Requirements": [
+        "MASS",
+        "ggplot2",
+        "nortest"
+      ]
+    },
+    "MASS": {
+      "Package": "MASS",
+      "Version": "7.3-56",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "af0e1955cb80bb36b7988cc657db261e",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": []
     },
     "Matrix": {
@@ -194,6 +225,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "abind": {
       "Package": "abind",
       "Version": "1.4-5",
@@ -212,6 +246,7 @@
         "sys"
       ]
     },
+<<<<<<< HEAD
     "assertthat": {
       "Package": "assertthat",
       "Version": "0.2.1",
@@ -220,6 +255,8 @@
       "Hash": "50c838a310445e954bc13f26f26a6ecf",
       "Requirements": []
     },
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "backports": {
       "Package": "backports",
       "Version": "1.4.1",
@@ -228,8 +265,11 @@
       "Hash": "c39fbec8a30d23e721980b8afb31984c",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "base64enc": {
       "Package": "base64enc",
       "Version": "0.1-3",
@@ -239,6 +279,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "bayesmeta": {
       "Package": "bayesmeta",
       "Version": "3.2",
@@ -252,8 +295,11 @@
         "numDeriv"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "bit": {
       "Package": "bit",
       "Version": "4.0.5",
@@ -273,6 +319,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "blob": {
       "Package": "blob",
       "Version": "1.2.3",
@@ -284,16 +333,20 @@
         "vctrs"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "boot": {
       "Package": "boot",
-      "Version": "1.3-28.1",
+      "Version": "1.3-28",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "9a052fbcbe97a98ceb18dbfd30ebd96e",
+      "Repository": "CRAN",
+      "Hash": "0baa960e3b49c6176a4f42addcbacc59",
       "Requirements": []
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
     "broom": {
       "Package": "broom",
@@ -301,6 +354,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "1773f8d5102f9853ecd18a0d13d460fd",
+=======
+    "broom": {
+      "Package": "broom",
+      "Version": "1.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ab67f5ce0aa79b8db7ddba5cb0d4012d",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": [
         "backports",
         "dplyr",
@@ -314,8 +375,11 @@
         "tidyr"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "bslib": {
       "Package": "bslib",
       "Version": "0.4.2",
@@ -336,16 +400,19 @@
     },
     "cachem": {
       "Package": "cachem",
-      "Version": "1.0.6",
+      "Version": "1.0.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "648c5b3d71e6a37e3043617489a0a0e9",
+      "Hash": "cda74447c42f529de601fe4d4050daef",
       "Requirements": [
         "fastmap",
         "rlang"
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "callr": {
       "Package": "callr",
       "Version": "3.7.3",
@@ -357,8 +424,11 @@
         "processx"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "cellranger": {
       "Package": "cellranger",
       "Version": "1.1.0",
@@ -371,6 +441,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "checkmate": {
       "Package": "checkmate",
       "Version": "2.1.0",
@@ -383,14 +456,22 @@
     },
     "class": {
       "Package": "class",
+<<<<<<< HEAD
       "Version": "7.3-21",
       "Source": "Repository",
       "Repository": "RSPM",
       "Hash": "8ae0d4328e2eb3a582dfd5391a3663b7",
+=======
+      "Version": "7.3-20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "da09d82223e669d270e47ed24ac8686e",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": [
         "MASS"
       ]
     },
+<<<<<<< HEAD
     "cli": {
       "Package": "cli",
       "Version": "3.6.1",
@@ -398,6 +479,8 @@
       "Repository": "CRAN",
       "Hash": "89e6d8219950eac806ae0c489052048a",
 =======
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "cli": {
       "Package": "cli",
       "Version": "3.6.0",
@@ -446,6 +529,18 @@
       "Hash": "f20c47fd52fae58b4e377c37bb8c335b",
       "Requirements": []
     },
+    "conflicted": {
+      "Package": "conflicted",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bb097fccb22d156624fd07cd2894ddb6",
+      "Requirements": [
+        "cli",
+        "memoise",
+        "rlang"
+      ]
+    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.4.3",
@@ -455,6 +550,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "cramer": {
       "Package": "cramer",
       "Version": "0.9-3",
@@ -465,8 +563,11 @@
         "boot"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "crayon": {
       "Package": "crayon",
       "Version": "1.5.2",
@@ -475,6 +576,7 @@
       "Hash": "e8a1e41acf02548751f45c718d55aa6a",
       "Requirements": []
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
     "curl": {
       "Package": "curl",
@@ -489,11 +591,17 @@
     "data.table": {
       "Package": "data.table",
       "Version": "1.14.6",
+=======
+    "curl": {
+      "Package": "curl",
+      "Version": "5.0.0",
+>>>>>>> 7fe6941 (Most recent updates)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "aecef50008ea7b57c76f1cb5c127fb02",
+      "Hash": "e4f97056611e8e6b8b852d13b7400cf1",
       "Requirements": []
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
     "dbplyr": {
       "Package": "dbplyr",
@@ -505,6 +613,25 @@
         "DBI",
         "R6",
         "assertthat",
+=======
+    "data.table": {
+      "Package": "data.table",
+      "Version": "1.14.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b4c06e554f33344e044ccd7fdca750a9",
+      "Requirements": []
+    },
+    "dbplyr": {
+      "Package": "dbplyr",
+      "Version": "2.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6e432b1a334fc06786e2ee8627e8cbea",
+      "Requirements": [
+        "DBI",
+        "R6",
+>>>>>>> 7fe6941 (Most recent updates)
         "blob",
         "cli",
         "dplyr",
@@ -515,13 +642,20 @@
         "purrr",
         "rlang",
         "tibble",
+<<<<<<< HEAD
+=======
+        "tidyr",
+>>>>>>> 7fe6941 (Most recent updates)
         "tidyselect",
         "vctrs",
         "withr"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "digest": {
       "Package": "digest",
       "Version": "0.6.31",
@@ -531,6 +665,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "diptest": {
       "Package": "diptest",
       "Version": "0.76-0",
@@ -539,8 +676,11 @@
       "Hash": "bbd10b5bf75e6addef50928ffcc591ee",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "doParallel": {
       "Package": "doParallel",
       "Version": "1.0.17",
@@ -565,6 +705,7 @@
     "dplyr": {
       "Package": "dplyr",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
@@ -574,12 +715,19 @@
         "cli",
 =======
       "Version": "1.0.10",
+=======
+      "Version": "1.1.0",
+>>>>>>> 7fe6941 (Most recent updates)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "539412282059f7f0c07295723d23f987",
+      "Hash": "d3c34618017e7ae252d46d79a1b9ec32",
       "Requirements": [
         "R6",
+<<<<<<< HEAD
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+        "cli",
+>>>>>>> 7fe6941 (Most recent updates)
         "generics",
         "glue",
         "lifecycle",
@@ -592,6 +740,7 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "dtplyr": {
       "Package": "dtplyr",
       "Version": "1.2.2",
@@ -603,6 +752,19 @@
         "data.table",
         "dplyr",
         "ellipsis",
+=======
+    "dtplyr": {
+      "Package": "dtplyr",
+      "Version": "1.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4f640f188add4172c025920054a1f8c2",
+      "Requirements": [
+        "cli",
+        "crayon",
+        "data.table",
+        "dplyr",
+>>>>>>> 7fe6941 (Most recent updates)
         "glue",
         "lifecycle",
         "rlang",
@@ -611,8 +773,11 @@
         "vctrs"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.2",
@@ -649,10 +814,10 @@
     },
     "fastmap": {
       "Package": "fastmap",
-      "Version": "1.1.0",
+      "Version": "1.1.1",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "77bd60a6157420d4ffa93b27cf6a58b8",
+      "Repository": "RSPM",
+      "Hash": "f7736a18de97dea803bde0a2daaafb27",
       "Requirements": []
     },
     "fitdistrplus": {
@@ -667,6 +832,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "flexmix": {
       "Package": "flexmix",
       "Version": "2.3-18",
@@ -681,6 +849,7 @@
     },
     "forcats": {
       "Package": "forcats",
+<<<<<<< HEAD
       "Version": "0.5.2",
       "Source": "Repository",
       "Repository": "CRAN",
@@ -688,16 +857,30 @@
       "Requirements": [
         "cli",
         "ellipsis",
+=======
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1a0a9a3d5083d0d573c4214576f1e690",
+      "Requirements": [
+        "cli",
+>>>>>>> 7fe6941 (Most recent updates)
         "glue",
         "lifecycle",
         "magrittr",
         "rlang",
+<<<<<<< HEAD
         "tibble",
         "withr"
       ]
     },
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+        "tibble"
+      ]
+    },
+>>>>>>> 7fe6941 (Most recent updates)
     "foreach": {
       "Package": "foreach",
       "Version": "1.5.2",
@@ -710,6 +893,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "forestplot": {
       "Package": "forestplot",
       "Version": "3.1.1",
@@ -724,6 +910,7 @@
     "fpc": {
       "Package": "fpc",
       "Version": "2.2-10",
+<<<<<<< HEAD
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "2d4e8c6b3ee8cbba359e105f4141c7cb",
@@ -744,11 +931,32 @@
     "fs": {
       "Package": "fs",
       "Version": "1.6.0",
+=======
+>>>>>>> 7fe6941 (Most recent updates)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0120e8c933bace1141e0b0d376b0c010",
+      "Hash": "2d4e8c6b3ee8cbba359e105f4141c7cb",
+      "Requirements": [
+        "MASS",
+        "class",
+        "cluster",
+        "diptest",
+        "flexmix",
+        "kernlab",
+        "mclust",
+        "prabclus",
+        "robustbase"
+      ]
+    },
+    "fs": {
+      "Package": "fs",
+      "Version": "1.6.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f4dcd23b67e33d851d2079f703e8b985",
       "Requirements": []
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
     "gargle": {
       "Package": "gargle",
@@ -756,20 +964,36 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "cca71329ad88e21267f09255d3f008c2",
+=======
+    "gargle": {
+      "Package": "gargle",
+      "Version": "1.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bb3208dcdfeb2e68bf33c87601b3cbe3",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": [
         "cli",
         "fs",
         "glue",
         "httr",
         "jsonlite",
+<<<<<<< HEAD
+=======
+        "lifecycle",
+        "openssl",
+>>>>>>> 7fe6941 (Most recent updates)
         "rappdirs",
         "rlang",
         "rstudioapi",
         "withr"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "generics": {
       "Package": "generics",
       "Version": "0.1.3",
@@ -781,6 +1005,7 @@
     "ggplot2": {
       "Package": "ggplot2",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Version": "3.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
@@ -791,6 +1016,12 @@
       "Repository": "CRAN",
       "Hash": "fd2aab12f54400c6bca43687231e246b",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+      "Version": "3.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d494daf77c4aa7f084dbbe6ca5dcaca7",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": [
         "MASS",
         "cli",
@@ -815,6 +1046,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "googledrive": {
       "Package": "googledrive",
       "Version": "2.0.0",
@@ -861,8 +1095,11 @@
         "vctrs"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "gridExtra": {
       "Package": "gridExtra",
       "Version": "2.3",
@@ -890,12 +1127,21 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "haven": {
       "Package": "haven",
       "Version": "2.5.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Hash": "5b45a553fca2217a07b6f9c843304c44",
+=======
+    "haven": {
+      "Package": "haven",
+      "Version": "2.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8b331e659e67d757db0fcc28e689c501",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": [
         "cli",
         "cpp11",
@@ -909,8 +1155,11 @@
         "vctrs"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "highr": {
       "Package": "highr",
       "Version": "0.10",
@@ -964,6 +1213,7 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "httr": {
       "Package": "httr",
       "Version": "1.4.4",
@@ -994,9 +1244,39 @@
     "igraph": {
       "Package": "igraph",
       "Version": "1.3.5",
+=======
+    "httr": {
+      "Package": "httr",
+      "Version": "1.4.5",
+>>>>>>> 7fe6941 (Most recent updates)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "132b06d7060f11ba8b4c7e7f385e9b7a",
+      "Hash": "f6844033201269bec3ca0097bc6c97b3",
+      "Requirements": [
+        "R6",
+        "curl",
+        "jsonlite",
+        "mime",
+        "openssl"
+      ]
+    },
+    "ids": {
+      "Package": "ids",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "99df65cfef20e525ed38c3d2577f7190",
+      "Requirements": [
+        "openssl",
+        "uuid"
+      ]
+    },
+    "igraph": {
+      "Package": "igraph",
+      "Version": "1.4.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "a7ef0d811cb66d8be9da0d7b5ab80ded",
       "Requirements": [
         "Matrix",
         "magrittr",
@@ -1050,6 +1330,7 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "kernlab": {
       "Package": "kernlab",
       "Version": "0.9-32",
@@ -1063,13 +1344,25 @@
     "knitr": {
       "Package": "knitr",
       "Version": "1.41",
+=======
+    "kernlab": {
+      "Package": "kernlab",
+      "Version": "0.9-32",
+>>>>>>> 7fe6941 (Most recent updates)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6d4971f3610e75220534a1befe81bc92",
+      "Hash": "d7d6a7cb690ac73eeced99e1ed9d6cdb",
+      "Requirements": []
+    },
+    "knitr": {
+      "Package": "knitr",
+      "Version": "1.42",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8329a9bcc82943c8069104d4be3ee22d",
       "Requirements": [
         "evaluate",
         "highr",
-        "stringr",
         "xfun",
         "yaml"
       ]
@@ -1117,10 +1410,10 @@
     },
     "lubridate": {
       "Package": "lubridate",
-      "Version": "1.9.1",
+      "Version": "1.9.2",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "88ad585eb49669b7f2db3f5ef3c8307d",
+      "Repository": "CRAN",
+      "Hash": "e25f18436e3efd42c7c590a1c4c15390",
       "Requirements": [
         "generics",
         "timechange"
@@ -1135,6 +1428,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "mathjaxr": {
       "Package": "mathjaxr",
       "Version": "1.6-0",
@@ -1151,8 +1447,11 @@
       "Hash": "a42d1a95e400fcd75294b1464d1a84ac",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "mco": {
       "Package": "mco",
       "Version": "1.15.6",
@@ -1173,6 +1472,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "metadat": {
       "Package": "metadat",
       "Version": "1.2-0",
@@ -1197,8 +1499,11 @@
         "pbapply"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "mgcv": {
       "Package": "mgcv",
       "Version": "1.8-40",
@@ -1219,6 +1524,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "modelr": {
       "Package": "modelr",
       "Version": "0.1.10",
@@ -1244,8 +1552,11 @@
       "Hash": "f5a957c02222589bdf625a67be68b2a9",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "munsell": {
       "Package": "munsell",
       "Version": "0.5.0",
@@ -1257,6 +1568,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "mvtnorm": {
       "Package": "mvtnorm",
       "Version": "1.1-3",
@@ -1265,6 +1579,7 @@
       "Hash": "7a7541cc284cb2ba3ba7eae645892af5",
       "Requirements": []
     },
+<<<<<<< HEAD
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-162",
@@ -1272,6 +1587,8 @@
       "Repository": "CRAN",
       "Hash": "0984ce8da8da9ead8643c5cbbb60f83e",
 =======
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-157",
@@ -1284,12 +1601,21 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "nnet": {
       "Package": "nnet",
       "Version": "7.3-18",
       "Source": "Repository",
       "Repository": "RSPM",
       "Hash": "170da2130d5332bea7d6ede01875ba1d",
+=======
+    "nnet": {
+      "Package": "nnet",
+      "Version": "7.3-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cb1d8d9f300a7e536b89c8a88c53f610",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": []
     },
     "nortest": {
@@ -1300,8 +1626,11 @@
       "Hash": "e587e7a30c737ad415590976481332e4",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "nsga2R": {
       "Package": "nsga2R",
       "Version": "1.1",
@@ -1313,6 +1642,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "numDeriv": {
       "Package": "numDeriv",
       "Version": "2016.8-1.1",
@@ -1324,6 +1656,7 @@
     "openssl": {
       "Package": "openssl",
       "Version": "2.0.5",
+<<<<<<< HEAD
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b04c27110bf367b4daa93f34f3d58e75",
@@ -1336,9 +1669,21 @@
     "openxlsx": {
       "Package": "openxlsx",
       "Version": "4.2.5.1",
+=======
+>>>>>>> 7fe6941 (Most recent updates)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e398ce13682a7409d16e13df09f65875",
+      "Hash": "b04c27110bf367b4daa93f34f3d58e75",
+      "Requirements": [
+        "askpass"
+      ]
+    },
+    "openxlsx": {
+      "Package": "openxlsx",
+      "Version": "4.2.5.2",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "c03b4c18d42da881fb8e15a085c2b9d6",
       "Requirements": [
         "Rcpp",
         "stringi",
@@ -1354,6 +1699,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "pbapply": {
       "Package": "pbapply",
       "Version": "1.7-0",
@@ -1362,8 +1710,11 @@
       "Hash": "9e4fab5a4af145938025ac50803984e6",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "pbmcapply": {
       "Package": "pbmcapply",
       "Version": "1.5.1",
@@ -1397,6 +1748,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "prabclus": {
       "Package": "prabclus",
       "Version": "2.3-2",
@@ -1416,8 +1770,11 @@
       "Hash": "69f905ec128691ff7108de88fc5a4964",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "prettyunits": {
       "Package": "prettyunits",
       "Version": "1.1.1",
@@ -1427,6 +1784,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "processx": {
       "Package": "processx",
       "Version": "3.8.0",
@@ -1438,8 +1798,11 @@
         "ps"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "progress": {
       "Package": "progress",
       "Version": "1.2.2",
@@ -1483,6 +1846,17 @@
       "Hash": "1bcb703b5374f616b5926ecd3aa213e3",
       "Requirements": []
     },
+    "ragg": {
+      "Package": "ragg",
+      "Version": "1.2.5",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "690bc058ea2b1b8a407d3cfe3dce3ef9",
+      "Requirements": [
+        "systemfonts",
+        "textshaping"
+      ]
+    },
     "rappdirs": {
       "Package": "rappdirs",
       "Version": "0.3.3",
@@ -1493,10 +1867,10 @@
     },
     "readr": {
       "Package": "readr",
-      "Version": "2.1.3",
+      "Version": "2.1.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "2dfbfc673ccb3de3d8836b4b3bd23d14",
+      "Hash": "b5047343b3825f37ad9d3b5d89aa1078",
       "Requirements": [
         "R6",
         "cli",
@@ -1513,10 +1887,10 @@
     },
     "readxl": {
       "Package": "readxl",
-      "Version": "1.4.1",
+      "Version": "1.4.2",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "5c1fbc365ac0a3fe7728ac79108b8e64",
+      "Repository": "RSPM",
+      "Hash": "2e6020b1399d95f947ed867045e9ca17",
       "Requirements": [
         "cellranger",
         "cpp11",
@@ -1533,6 +1907,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "rematch2": {
       "Package": "rematch2",
       "Version": "2.1.2",
@@ -1543,8 +1920,11 @@
         "tibble"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "renv": {
       "Package": "renv",
       "Version": "0.16.0",
@@ -1554,6 +1934,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "reprex": {
       "Package": "reprex",
       "Version": "2.0.2",
@@ -1574,8 +1957,11 @@
         "withr"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "rlang": {
       "Package": "rlang",
       "Version": "1.0.6",
@@ -1604,6 +1990,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "robustbase": {
       "Package": "robustbase",
       "Version": "0.95-0",
@@ -1614,6 +2003,7 @@
         "DEoptimR"
       ]
     },
+<<<<<<< HEAD
     "rprojroot": {
       "Package": "rprojroot",
       "Version": "2.0.3",
@@ -1634,6 +2024,8 @@
     },
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "rstudioapi": {
       "Package": "rstudioapi",
       "Version": "0.14",
@@ -1643,6 +2035,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "rvest": {
       "Package": "rvest",
       "Version": "1.0.3",
@@ -1662,8 +2057,11 @@
         "xml2"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "sass": {
       "Package": "sass",
       "Version": "0.4.5",
@@ -1704,6 +2102,9 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "selectr": {
       "Package": "selectr",
       "Version": "0.4-2",
@@ -1715,8 +2116,11 @@
         "stringr"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "simmer": {
       "Package": "simmer",
       "Version": "4.4.5",
@@ -1818,6 +2222,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "sys": {
       "Package": "sys",
       "Version": "3.4.1",
@@ -1826,8 +2233,32 @@
       "Hash": "34c16f1ef796057bfa06d3f4ff818a5d",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+    "systemfonts": {
+      "Package": "systemfonts",
+      "Version": "1.0.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "90b28393209827327de889f49935140a",
+      "Requirements": [
+        "cpp11"
+      ]
+    },
+    "textshaping": {
+      "Package": "textshaping",
+      "Version": "0.3.6",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "1ab6223d3670fac7143202cb6a2d43d5",
+      "Requirements": [
+        "cpp11",
+        "systemfonts"
+      ]
+    },
+>>>>>>> 7fe6941 (Most recent updates)
     "tibble": {
       "Package": "tibble",
       "Version": "3.1.8",
@@ -1889,6 +2320,7 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     "tidyverse": {
       "Package": "tidyverse",
       "Version": "1.3.2",
@@ -1899,6 +2331,18 @@
         "broom",
         "cli",
         "crayon",
+=======
+    "tidyverse": {
+      "Package": "tidyverse",
+      "Version": "2.0.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "c328568cd14ea89a83bd4ca7f54ae07e",
+      "Requirements": [
+        "broom",
+        "cli",
+        "conflicted",
+>>>>>>> 7fe6941 (Most recent updates)
         "dbplyr",
         "dplyr",
         "dtplyr",
@@ -1915,6 +2359,10 @@
         "modelr",
         "pillar",
         "purrr",
+<<<<<<< HEAD
+=======
+        "ragg",
+>>>>>>> 7fe6941 (Most recent updates)
         "readr",
         "readxl",
         "reprex",
@@ -1927,17 +2375,24 @@
         "xml2"
       ]
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+>>>>>>> 7fe6941 (Most recent updates)
     "timechange": {
       "Package": "timechange",
       "Version": "0.2.0",
       "Source": "Repository",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Repository": "CRAN",
 =======
       "Repository": "RSPM",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+      "Repository": "CRAN",
+>>>>>>> 7fe6941 (Most recent updates)
       "Hash": "8548b44f79a35ba1791308b61e6012d7",
       "Requirements": [
         "cpp11"
@@ -1945,10 +2400,10 @@
     },
     "tinytex": {
       "Package": "tinytex",
-      "Version": "0.43",
+      "Version": "0.44",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "facc02f3d63ed7dd765513c004c394ce",
+      "Repository": "RSPM",
+      "Hash": "c0f007e2eeed7722ce13d42b84a22e07",
       "Requirements": [
         "xfun"
       ]
@@ -1965,6 +2420,7 @@
     },
     "utf8": {
       "Package": "utf8",
+<<<<<<< HEAD
 <<<<<<< HEAD
       "Version": "1.2.3",
       "Source": "Repository",
@@ -1984,6 +2440,20 @@
       "Repository": "CRAN",
       "Hash": "c9c462b759a5cc844ae25b5942654d13",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+      "Version": "1.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1fe17157424bb09c48a8b3b550c753bc",
+      "Requirements": []
+    },
+    "uuid": {
+      "Package": "uuid",
+      "Version": "1.1-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f1cb46c157d080b729159d407be83496",
+>>>>>>> 7fe6941 (Most recent updates)
       "Requirements": []
     },
     "vctrs": {
@@ -2084,10 +2554,18 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.36",
+      "Version": "0.37",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "a6860e1400a8fd1ddb6d9b4230cc34ab",
+      "Requirements": []
+    },
+    "xml2": {
+      "Package": "xml2",
+      "Version": "1.3.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f5baec54606751aa53ac9c0e05848ed6",
+      "Hash": "40682ed6a969ea5abfd351eb67833adc",
       "Requirements": []
     },
 <<<<<<< HEAD

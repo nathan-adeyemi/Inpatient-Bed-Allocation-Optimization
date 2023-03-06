@@ -84,9 +84,7 @@ run_test_bench <-
     }
     
     probabilistic_routing <- function(.environ, inv_V = inverted_V) {
-      
-      queue_params <-  if(inv_V) list(seq(n_queues),p_ijs[1,]) else list(seq(n_queues + 1), p_ijs[get_attribute(.env =  get('environ_name', pos = -1) , keys = 'current_queue'),])
-
+      queue_params <-  if(inv_V) list(seq(n_queues),network_df[,p_ijs]) else list(seq(n_queues + 1), p_ijs[get_attribute(.env =  get('environ_name', pos = -1) , keys = 'current_queue'),])
       return(sample(
         x = queue_params[[1]],
         size = 1,
@@ -247,11 +245,12 @@ TB_obj_1 <- function(x) {
 
 TB_obj_2 <- function(x) {
   if (is.list(x)) {
-    z <- x[[2]][, .(queue_length = mean(system)), by = list(resource, replication)
-                ][, .(max_mean_queue = max(queue_length)), by = replication]
+    z <-
+      x[[2]][, .(queue_length = mean(system)), by = list(resource, replication)][, .(max_mean_queue = max(queue_length)), by = replication]
     # return(x[[2]][,mean_server_utilization <- mean(utilization,na.rm = T), by  = replication]
   } else{
-    z <- x[, .(time_std_dev = sd(activity_time, na.rm = T)), by = list(replication)]
+    z <-
+      x[, .(time_std_dev = sd(activity_time, na.rm = T)), by = list(replication)]
   }
   return(z)
 }
@@ -342,6 +341,7 @@ max_arr_rate  <- 1
 service_excess_factor <- 1.01 #How much should the network service rate exceed the network arrival rate
 total_servers <- 4 * n_queues
 
+if(!get('read_init',envir = .GlobalEnv)){
 if(!inverted_V_logical){
 # Define probabilities of routing from one queue to another in a completely interconnected Jackson network ----------------------------------------------------------
 p_ijs <- matrix(data = runif((n_queues + 1)^2), nrow = n_queues + 1, ncol = n_queues + 1)
@@ -414,4 +414,12 @@ queues_df <- queues_df[,`:=`(lambda_sub = lambda_sub)
     ),
     .GlobalEnv
   )
-  
+} else{
+  list2env( list(
+    'total_servers' = total_servers,
+    'run_test_bench' = run_test_bench,
+    'TB_obj_1' = TB_obj_1,
+    'TB_obj_2' = TB_obj_2
+    #'TB_obj_3' = TB_obj_3
+  ),.GlobalEnv)
+}

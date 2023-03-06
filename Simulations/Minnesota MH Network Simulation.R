@@ -662,8 +662,7 @@ MH.Network.sim <-
         simmer::run(until = sim.length,
                     progress = progress::progress_bar$new(format = "[:bar] :percent ETA: :eta")$update)
     } else {
-      sim_results <- #pbmclapply(
-        lapply(
+      sim_results <- mclapply(
         X = rep,
         FUN = function(i)
           simmer('MH.Network', log_level = 1) %>%
@@ -674,6 +673,7 @@ MH.Network.sim <-
           simmer::run(
             until = sim.length
           ) %>%
+<<<<<<< HEAD
 <<<<<<< HEAD
           wrap(),
         mc.cores = min(length(rep),availableCores()),
@@ -687,6 +687,15 @@ MH.Network.sim <-
         # ),
         # mc.set.seed = T
 >>>>>>> c5cae59 (Minor updates)
+=======
+          wrap(),
+        mc.cores = ifelse(
+          test = length(rep) == 1,
+          yes = 1,
+          no = availableCores()
+        ),
+        mc.set.seed = T
+>>>>>>> 7fe6941 (Most recent updates)
       )
     }
     
@@ -853,3 +862,21 @@ full_sim <-
     } 
     return(results)
   }
+<<<<<<< HEAD
+=======
+
+# Function for Mental Health Sim MOSA -------------------------------------
+mh_wait_quantile <- function(x){
+  return(x[,.(wait_90_quantile = quantile(total_wait_time,probs = 0.9,na.rm = T)),by = replication])
+}
+
+mh_wait_sigma <- function(x){
+  return(x[,.(variable = sd(total_wait_time,na.rm = T)^2),by = list(Age,replication)
+           ][,.(wait_variance = max(variable)),by = replication])
+}
+
+mh_distance_range <- function(x){
+  return(x[,.(variable = diff(range(Travel.Distance,na.rm = T))),by = list(Age,replication)
+           ][,.(max_travel_range = max(variable)),by = replication])
+}
+>>>>>>> 7fe6941 (Most recent updates)

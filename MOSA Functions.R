@@ -9,6 +9,15 @@ norm_vec <- function(x) {
   x / sum(x)
 }
 
+mod_softmax <- function(vec){
+  vec <- vec - max(vec)
+  return(exp(vec)/sum(exp(vec)))
+}
+
+sl_ifelse <- function(test,yes,no){
+  return(`if`(test,yes,no))
+}
+
 decode <- function(alg_input,test_bench = get('use_test_bench',envir = .GlobalEnv)){
   if (!test_bench) {
     alg_input <-
@@ -18,7 +27,7 @@ decode <- function(alg_input,test_bench = get('use_test_bench',envir = .GlobalEn
       ][, `:=`(Sums = sum(inputs),
                fac_beds = sum(total_beds)), 
         by = Facility_name
-      ][, bed_counts := {Vectorize(smart.round)}(inputs / Sums * fac_beds)]
+      ][, bed_counts := {Vectorize(smart.round)}(na.replace(inputs / Sums,1) * fac_beds)]
     return(alg_input$bed_counts)
   } else {
     new_alloc <- alg_input %>% 
@@ -69,7 +78,7 @@ termination_criteria <-
     } else if (check_iteration){
       logical <- iteration < itMax
     } else {
-      logical <- all(temp > t_min, best_counter < best_limit)
+      logical <- temp > t_min
     }
     return(logical)
   }
@@ -83,13 +92,19 @@ fix_cell <- function(i){
   i
 }
 
-tweak <- function(x) {
-  p_change <- 1 - (exp(temp - temp_init) / exp(temp))
-  changes <- as.numeric(runif(nVar) < p_change)
+tweak <- function(x,limit_change = F) {
+  change_lim <- sl_ifelse(test = limit_change,
+                          yes = (temp/temp_init * maxChange),
+                          no = maxChange)
+
+  changes <- rep(0,nVar)
+  while (sum(changes) == 0) {
+    changes <- as.numeric(runif(nVar) < p_accept(it))
+  }
   changes <-
     runif(n = length(changes),
-          min = -maxChange,
-          max = maxChange) * changes
+          min = -change_lim,
+          max = change_lim) * changes
   x <- sapply(x + changes, fix_cell)
   return(x)
 }
@@ -190,15 +205,16 @@ CostFunction <- function(sol = NULL,
       inverted_V = use_inv_V
     )
   } else{
-    x <- data.table(
+    x <-
       full_sim(
         num_iter = reps,
         parallel = logic,
         new_sol = sol,
-        warmup = 3,
-        sim_length = 35
+        warmup = 30,
+        sim_length = 200,
+        save_files = F,
+        return_resources = F
       )
-    )
   }
   if (nsga) {
     x <- apply(objective_Metrics_nsga2(x, fun_list = grep(
@@ -208,8 +224,8 @@ CostFunction <- function(sol = NULL,
   return(x)
 }
 
-update_sol <- function(i,sol_vector = NA){
-  x <- best
+update_sol <- function(i,sol_vector = NA,best_sol){
+  x <- best_sol
   if (any(is.na(sol_vector))) {
     x$Replications <- get('starter_reps',envir = .GlobalEnv)
     x$counter <- 0
@@ -226,12 +242,17 @@ update_sol <- function(i,sol_vector = NA){
 }
 
 
-gen_candidates <- function(tweak_left,candidate_list = NULL) {
+gen_candidates <- function(tweak_left,candidate_list = NULL,s_star) {
   temp_counter <- 0
   new_solns <- list()
   if (length(candidate_list) == 0){
-    while (tweak_left > 2 & temp_counter < 25) {
-      candidate_list <- lapply(seq(tweak_left), update_sol)
+    while (tweak_left > 0 & temp_counter < 60) {
+      candidate_list <-
+        mclapply(seq(tweak_left),
+                 update_sol,
+                 best_sol = s_star,
+                 mc.cores = availableCores())
+      
       # Remove duplicate allocations within temporary obj (inital subgroup)
       new_alloc = which({
         function(mat)
@@ -240,8 +261,7 @@ gen_candidates <- function(tweak_left,candidate_list = NULL) {
         as.matrix(candidate_list %c% 'Allocation')
       )))
       candidate_list = candidate_list[new_alloc]
-      
-      
+     
       # Remove any solution that was previously tested
       dups <-
         rbind(all_allocations,
@@ -273,7 +293,9 @@ gen_candidates <- function(tweak_left,candidate_list = NULL) {
       temp_counter %+% 1
       tweak_left <- nTweak - length(new_solns)
     }
+    browser(expr = length(new_solns) < nTweak)
   }
+  candidate_list <- new_solns
   # Make lists of all new solutions/allocations (1 entry per replication), a list of the replication #s, 
   # and a list of the allocation's index in the candidate list
   allocation_list <-
@@ -321,6 +343,7 @@ gen_candidates <- function(tweak_left,candidate_list = NULL) {
       }
     )
   }
+  candidate_reps <<- sum(candidate_list %c% 'Replications') 
   return(candidate_list)
 }
 
@@ -329,9 +352,9 @@ updateSimStats <- function(i,data,new_sol){
   i$Cost[,replication := seq(nrow(i$Cost))]
   setDT(i$Cost)
   i$Obj_mean <-
-    i$Cost[, lapply(.SD, mean), .SDcols = colnames(i$Cost)][, replication := NULL]
+    i$Cost[, lapply(.SD, mean, na.rm = T), .SDcols = colnames(i$Cost)][, replication := NULL]
   i$Obj_var <-
-    i$Cost[, lapply(.SD, sd), .SDcols = colnames(i$Cost)][, replication := NULL]
+    i$Cost[, lapply(.SD, sd, na.rm = T), .SDcols = colnames(i$Cost)][, replication := NULL]
   i$Obj_CI <-
     i$Cost[, lapply(.SD, function(i)
       ci_as_text(interval = t.test(i, conf.level = 0.95)$conf.int)), .SDcols = colnames(i$Cost)][, replication := NULL]
@@ -422,18 +445,7 @@ soln_comparison <-
     return(all(mapply(sum,criteria_1,criteria_2)))
   }
 
-p_accept <- function(factor,diff,temp,gradient = F){
-  if(factor == 0){
-    # Assign acceptance Probability = 1 if solution dominates best
-    return(1)
-  }else if(factor == get('num_obj',pos = -1)){
-    return(0)
-  }else{
-    # Acceptance Probability ~ Number of improved objective functions, differene in Psi, Temperature
-    return(exp(-(diff^(.25)*factor^1.5))/exp(temp_init-temp))
-    # return(-exp(factor * diff^.75)/exp(temp - temp_init))
-  }
-}
+p_accept <- function(curr_temp) 1 - (exp(temp_init - curr_temp) / exp(temp_init))
 
 noisyNonDominatedSorting <- function (inputData) 
 {
@@ -470,8 +482,6 @@ noisyNonDominatedSorting <- function (inputData)
   solAssigned <- c()
   solAssigned <- c(solAssigned, length(which(noDominators == 
                                                0)))
-  #browser()
-  
   while (sum(solAssigned) < popSize) {
     Q <- c()
     noSolInCurrFrnt <- solAssigned[length(solAssigned)]
@@ -502,11 +512,14 @@ updateParetoSet <- function(pSet,candidate_list){
   n_obj <- length(optim_type)
   pSet <-  append(pSet,candidate_list)
   pSet <- removeDuplicateSolutions(pSet)
-  ranks <-
-    noisyNonDominatedSorting(inputData = pSet)
-  
+  if(length(pSet) > 1){
+    ranks <-
+      noisyNonDominatedSorting(inputData = pSet)
+    # pSet <- lapply(pSet, procedureI_func, all_candidates = pSet)
+  } else {
+    ranks <- list(ranks = 1, rnkList = list(1))
+  }
   pSet <- pSet[ranks$rnkList[[1]]]
-  pSet <- lapply(pSet,procedureI_func,all_candidates = pSet)
   return(list('pSet' = pSet, 'ranks' = ranks))
 }
 
@@ -539,37 +552,57 @@ findBestbyDistance <- function(pSet, rankInfo) {
         sapply(g_ideal_dist, function(i)
           unlist(rep(i, multiple / length(i))))
     }
-    
-    g_ideal_CI <<- apply(g_ideal_dist, 2, ci_as_text)
-    
-    if (length(pSet) == 1) {
-      best <- pSet[[1]]
-    } else{
-      distances_dist <- sapply(
-        X = pSet,
+    g_ideal_CI <<-
+      apply(
+        X = g_ideal_dist,
+        MARGIN = 2,
         FUN = function(i)
-          cramer::cramer.test(x = as.matrix(i$Cost)[, -1], y = g_ideal_dist)$statistic
+          ci_as_text(t.test(i, conf.level = 0.95)$conf.int)
       )
-      
-      
-      if (all(it > best_limit, 
-              best_counter >= best_limit)){
-              #length(best_df[(it - min(best_limit, it - 1)):it, unique(Dist)]) == 1)){
-        best_by_min_dist <<- !best_by_min_dist
-        best_counter <- 0
+    
+    # divergences <- sapply(
+    #   X = pSet,
+    #   FUN = function(i) {
+    #     sd_cols <- setdiff(colnames(i$Cost), 'replication')
+    #     return(kldiv(
+    #       mu1 = apply(g_ideal_dist, 2, mean),
+    #       mu2 = i$Cost[, sapply(.SD, mean), .SDcols = sd_cols],
+    #       sigma1 = cov(g_ideal_dist),
+    #       sigma2 = cov(i$Cost[, -1]),
+    #       symmetrized = T
+    #     ))
+    #   }
+    # )
+    
+    divergences <- sapply(
+      X = pSet,
+      FUN = function(i) {
+        sd_cols <- setdiff(colnames(i$Cost), 'replication')
+        return(bhattacharyya.dist(
+          mu1 = apply(g_ideal_dist, 2, mean),
+          mu2 = i$Cost[, sapply(.SD, mean), .SDcols = sd_cols],
+          Sigma1 = cov(g_ideal_dist),
+          Sigma2 = cov(i$Cost[, -1])
+        ))
       }
+    )
 
-      if (best_by_min_dist) {
-        best <- pSet[[which.min(distances_dist)]]
-      } else{
-        best <- pSet[[which.max(distances_dist)]]
-      }
-    }
-  } else{
+      selection_probs <- mod_softmax(-1 * divergences)
+      pareto_set <<- pSet <- lapply(X = seq_along(pSet),FUN = function(i){
+        pSet[[i]]$Divergence <- divergences[i]
+        pSet[[i]]$P_Selection <- round(selection_probs[i],digits = 4)
+        return(pSet[[i]])
+      })
+      
+      best <-
+        sample(pSet,
+               size = 1,
+               prob = selection_probs)
+
+    }else {
     g_ideal_CI <<- unlist(best$Obj_CI)
     best <- pSet[[1]]
-  }
-  #best <- pareto_set[[sample(seq_along(pareto_set),size = 1)]]
+    }
   return(best)
 }
 
@@ -691,18 +724,22 @@ cool_temp  <-
   function(initial_temperature,
            alpha,
            current_iteration,
-           exponential = T,
+           exponential = F,
            linear = F,
            log_mult = F,
-           quad_cool = F) {
+           quad_cool = F,
+           constant = F) {
     if (linear) {
       temp <-  initial_temperature / (1 + (alpha * current_iteration))
     } else if (log_mult) {
       temp <-  initial_temperature / (1 + alpha * (log(1 + current_iteration)))
     } else if (quad_cool) {
-      temp <- initial_temperature / (1 + (alpha * current_iteration ^ 2))
-    } else {
-      temp <-  initial_temperature * alpha ^ (current_iteration)
+      #temp <- initial_temperature / (1 + (alpha * current_iteration ^ 2))
+    } else if(exponential){
+      alpha <- sl_ifelse(test = alpha > 0,
+                         yes = alpha * -1,
+                         no = alpha)
+      temp <-  initial_temperature * current_iteration ^ alpha
     }
     return(temp)
   }
@@ -841,20 +878,25 @@ ocba <-
                             envir = .GlobalEnv)) {
     
     # Multi-Objective Optimal Computing Budget Allocation 
-    N_Total <<- 20 * length(candidate_list)
+    N_Total <- 20 * length(candidate_list)
+    N_Total <<- N_Total
     psiTarget <- 5.6e-6 #Value from MOCBA Paper (Lee et. al. 2004)
     # psiTarget <- -1
     delta <- get('delta',envir = .GlobalEnv)
     first_time = TRUE
-    N_replicated <- sum(candidate_list %c% 'Replications') - (candidate_list[length(candidate_list)] %c% 'Replications')
-    K <- max(floor(length(candidate_list) / 3), 4)
-    K <- if(length(candidate_list) < K) length(candidate_list) else K 
+    N_replicated <- sum(candidate_list %c% 'Replications') # - (candidate_list[length(candidate_list)] %c% 'Replications')
+    K <- ceil(length(candidate_list) / 3)
+    K <-
+      sl_ifelse(
+        test = length(candidate_list) < K,
+        yes = length(candidate_list),
+        no = K
+      ) 
     
     candidate_list <-
       lapply(X = candidate_list,
              FUN = procedureI_func,
              all_candidates = candidate_list)
-    
     # Procedure I Step 2
     while ((N_Total  - N_replicated) > 0 & all(candidate_list %c% 'Psi' > psiTarget)){ 
       # Loop breaks once there are 0 replications left to allocate or one of the solutions is below target psi value  
@@ -876,23 +918,23 @@ ocba <-
       }
       # Procedure II Step 2
       sP = lapply(sP,function(d){
-        d$deltaPsiD <- ifelse(test = length(d$psiID) > 1,
-                              yes = sum(d$psiID[sP_indices]),
-                              no = abs(min(0, d$psiID))) # Do we include all delta psiD or just the delta psi_i
+        # d$deltaPsiD <- ifelse(test = length(d$psiID) > 1,
+        #                       yes = sum(d$psiID[sP_indices]),
+        #                       no = abs(min(0, d$psiID))) # Do we include all delta psiD or just the delta psi_i
+        d$deltaPsiD <- sum(abs(d$psiID[sP_indices]))
         d
       })
       
-      sP <- lapply(order(sP %c% 'deltaPsiD',decreasing = T), FUN = function(i) sP[[i]])
+      sP <- sP[order(sP %c% 'deltaPsiD',decreasing = T)]
       
       # Procedure II step 3
-      
+      browser()
       k_test <- min(K,ifelse(test = any((sP %c% 'deltaPsiD') == 0),
                              yes = which(sP %c% 'deltaPsiD' == 0) - 1,
                              no = K)) # Minimum of K and the Index of last nonzero deltaPsi
       
       psiRef <- sP[[k_test]]$deltaPsiD
       deltaWP <- (psiRef * delta)/sum(abs((sP %c% 'deltaPsiD')[seq(k_test)]))
-      
       # Assigning additional replications to each of the solutions
       addReps <-
         smart.round({function(i) delta * (i/sum(i))}(sapply(
@@ -924,7 +966,6 @@ ocba <-
           allocations <- append(allocations,rep(list(sP[[i]]$Allocation),each = sP[[i]]$addReps))
           jobs <- append(jobs,seq(sP[[i]]$addReps) + max(sP[[i]]$Cost$replication))
           sP[[i]]$Replications %+% sP[[i]]$addReps
-          
         }
       }
       
@@ -971,9 +1012,14 @@ ocba <-
         lapply(X = candidate_list,
                FUN = procedureI_func,
                all_candidates = candidate_list)
+      extraReps <<- T
     }
     itReps <<- N_replicated
-    return(candidate_list)
+    
+    return(list(sP = candidate_list[order(candidate_list %c% 'Psi')
+                                    ][seq(K)],
+                non_sP = candidate_list[order(candidate_list %c% 'Psi')
+                                        ][(K+1:length(candidate_list))]))
   } 
 
 # Function for implementing the NSGA-II Algorithm -------------------------
@@ -1166,15 +1212,55 @@ normalize <- function(base,df){
   return(new_df)
 }
 
-plotParetoFront <- function(inputData){
-  if(any(class(inputData) == 'data.table')){
+plotParetoFront <- function(inputData,plot_angle = 120){
+  if (any(class(inputData) == 'data.table')) {
     inputData <- as.matrix(inputData)
-  } else if(class(inputData) == 'list'){
-    inputData <- candidateSettoMatrix(set = inputData,attr = 'Obj_mean')
+    paretoPlot <- scatterplot3d(inputData, grid = F)
+    addgrids3d(inputData, grid = c("xy", "xz", "yz"))
+    paretoPlot$points3d(inputData, pch = 16, type = 'h')
+  } else if (class(inputData) == 'list') {
+    inputData2 <-
+      rbindlist(lapply(
+        inputData,
+        FUN = function(i)
+          i$Cost[, -1][, sol := i$name]
+      ))
+    n_sols <- length(unique(inputData2$sol))
+    colors <-
+      palette(value = hcl.colors(n = n_sols, 
+                                 palette = 'Dynamic'))[sample(seq(n_sols),n_sols,replace = F)]
+    color_inputData <-
+      colors[as.numeric(as.factor(inputData %c% 'name'))]
+    inputData <-
+      candidateSettoMatrix(set = inputData, attr = 'Obj_mean')
+    color_inputData2 <-
+      colors[as.numeric(as.factor(inputData2[, sol]))]
+    data_groups <- inputData2[, sol]
+    axis_labels <-
+      str_to_title(gsub(
+        x = colnames(inputData2)[1:3],
+        pattern = '_',
+        replacement = ' '
+      ))
+    paretoPlot <-
+      scatterplot3d(
+        copy(inputData2)[, sol := NULL],
+        grid = F,
+        pch = 8,
+        color = alpha(color_inputData2,.5),
+        angle = plot_angle,
+        main = 'Pareto Set Objective Metrics',
+        xlab = axis_labels[1],
+        ylab = axis_labels[2],
+        zlab = axis_labels[3]
+      )
+    addgrids3d(inputData2, grid = c("xy", "xz", "yz"),angle = plot_angle)
+    paretoPlot$points3d(inputData,
+                        pch = 16,
+                        type = 'h',
+                        col = color_inputData,
+                        cex = 1.25)
   }
-  paretoPlot <- scatterplot3d(inputData, grid = F)
-  addgrids3d(inputData, grid = c("xy", "xz", "yz"))
-  paretoPlot$points3d(inputData, pch = 16, type = 'h')
 }
 
 # Adds grids for scatterplot3d plots

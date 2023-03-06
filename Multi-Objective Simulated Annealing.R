@@ -12,10 +12,8 @@ setwd("..")
 source(file.path('functions.R'))
 setwd('Inpatient Bed Allocation Optimization')
 source('MOSA Functions.R')
-
-use_test_bench <-  F
-inverted_V_logical <-  F
-
+use_test_bench <-  T
+inverted_V_logical <- T
 # Prompt for if a previous optimization problem needs to be comple --------
 # continue_previous <-
 #   readline(prompt = 'Continue DB-PSA from previously saved environment? (Y/N):')
@@ -24,70 +22,82 @@ inverted_V_logical <-  F
 #         x = continue_previous,
 #         ignore.case = T)
 continue_previous <- F
+
 if(!continue_previous) {
   if (use_test_bench) {
-    read_init <-
-      readline(prompt = 'Read from an initial solution? (Y/N):')
-    read_init <- grepl(pattern = 'y|yes|True|T',
-                       x = read_init,
-                       ignore.case = T)
-    n_queues <- nVar <- 5
+    # read_init <-
+    #   readline(prompt = 'Read from an initial solution? (Y/N):')
+    # read_init <- grepl(pattern = 'y|yes|True|T',
+    #                    x = read_init,
+    #                    ignore.case = T)
+    read_init <- T
+    n_queues <- nVar <- 1
     jackson_envir <- new.env()
-    sys.source('Jackson Network Test Bench.R',envir = jackson_envir)
-    optim_type <- c('max', 'min', 'min')
-    
+    optim_type <- c('max', 'min')
     if (read_init) {
       starter_data <-
         readRDS(file.path('Data', 'Medium Testing Initial Solution (4 queues).rds'))
       queues_df <- starter_data$network_df
       n_queues <- nVar <- queues_df[,.N]
     }
+    sys.source('Jackson Network Test Bench.R',envir = jackson_envir)
     print(queues_df)
     obj_function_list <- 
       grep(pattern = 'TB_',
            x = lsf.str(),
            value = T)
+    init_sol <- c(1, rep(0, (nVar - 1)))
+    sim_length <- 2500
+    warmup <- 200
   } else {
-    source(file.path('Simulations','Minnesota MH Network Simulation.R'))
-    siteInfo <- data.table(readRDS(file.path('Simulations','Function Requirements','Rates5.rds')))
+    source(file.path('Simulations', 'Minnesota MH Network Simulation.R'))
+    siteInfo <-
+      data.table(readRDS(
+        file.path('Simulations', 'Function Requirements', 'Rates5.rds')
+      ))
     obj_function_list <-
       grep(pattern = 'mh_',
            x = lsf.str(),
            value = T)
     nVar <- length(siteInfo[,unique(Bed_Group)])
     optim_type = rep('min', 3)
+    init_sol <- unlist(sapply(
+      X = copy(siteInfo)[!duplicated(Bed_Group)][, .N, by = Facility_name][, N],
+      FUN = function(i)
+        c(1, rep(x = 0, times = i - 1))))
+      warmup <- 1
+      sim_length <-  10
   }
   
   # Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
-  temp_init <- 1.4
-  t_min <- 1.1 * temp_init
+  temp_init <- temp <- 1
+  t_min <- .01 * temp_init
   t_damp <- .001 #Depends on cooling schedule selection
   best_limit <- 5
   pareto_limit <- 25
-  starter_reps <- 5
+  starter_reps <- 8
   stat_logical <- T
   maxChange <- 1
   itReps_Cum  <- 0
   nTotal_Cum <- 0
-  sim_length <- 3500
-  warmup <- 100
-  nTweak <- 5
+  nTweak <- 8
   itMax <- 100
   best_counter <- 0
-  delta <-  max(ceiling(nTweak / 2), 5)
+  delta <- max(ceiling(nTweak / 2), 10)
   A <- list()
   mosa_trials <- 3
   i <- it <- 1
   seed_val <- floor(runif(1) * 10000)
   analytical <- F
-  temp <- temp_init
   num_obj <- length(obj_function_list)
   best_by_min_dist <- T
-  
+
   # Generate Initial Baseline Solution ------------------------------------------------------------------------------
-  init_sol <- c(1, rep(0, (nVar - 1)))
+  init_sol <-
+    sl_ifelse(test = use_test_bench,
+              yes = c(1, rep(0, (nVar - 1))),
+              no = )
   #init_sol <- runif(n = n_queues,min = 0,max = 1)
-  
   initial <- list(
     name = 'Baseline',
     Solution = init_sol,
@@ -102,7 +112,7 @@ if(!continue_previous) {
     objective_Metrics(
       data = CostFunction(
         sol = initial$Allocation,
-        logic = TRUE,
+        logic = F,
         test_bench = use_test_bench,
         use_inv_V = inverted_V_logical
       ),
@@ -120,7 +130,8 @@ if(!continue_previous) {
       Iteration = 0,
       best$Obj_mean,
       Num_Replications = best$Cost[, max(replication)],
-      Dist = 0
+      Dist = NA_real_,
+      Pr_Select = NA_real_
     )
   
   itRepsDF <-
@@ -128,7 +139,8 @@ if(!continue_previous) {
       Iteration = 0,
       MOCBA = 0,
       Theoretical = 0,
-      Temperature = temp_init
+      Temperature = temp_init,
+      Exec_Time = NA_real_
     )
   
   all_allocations <<- t(best$Allocation)
@@ -140,130 +152,161 @@ if(!continue_previous) {
     load(file = file.path('Data', 'test_bench_paused_envr.rdata'))
   }
 }
-
   # Main Optimization Algorithm Loop ---------------------------------------------------------------------------------
-  while (termination_criteria(check_iteration = T)) {
-    browser()
+  while (termination_criteria()) {
+    now <- Sys.time()
+    extraReps <- F # Conditional for if extra simulation replications were used in the MOCBA
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
     
-    temp_obj <- gen_candidates(nTweak)
-    # if (length(temp_obj) == 0) {
-    #   break
-    # }
-    
-    # Perform OCBA to Minimize Total Simulation Replications ----------------------------------------------------------
-    temp_obj <- ocba(candidate_list =  append(temp_obj, pareto_set))
-
-    # Find the Fittest Candidate --------------------------------------------------------------------------------------
-    if(it >= 1){
-      prev_pareto_set <- pareto_set
-    }
-    pareto_set <-
-      updateParetoSet(pSet = pareto_set, candidate_list =  temp_obj)
-    
-    ranks <- pareto_set$ranks
-    pareto_set <- pareto_set$pSet
-    
-    prev_best <- best
-    best <- findBestbyDistance(pSet = pareto_set)
-    
-    if(identical(prev_best$name,best$name)){
-      best_counter <- best_counter + 1
-    } else {
-      best_counter <- 0
-    }
-    A <- updateHistory(pSet = pareto_set,candidate_list = temp_obj,history = A)
-    
-    # Kill Zombie Processes leftover from MOCBA
-    if (!any(sapply(X = c('Linux', 'Darwin'), function(i)
-      i == Sys.info()['sysname']))) {
-      reap_zombies() # Kill Zombie processes
-    }
-
-    # Update Iteration Best and Iteration Info Dataframes -------------------------------------------------------------
-    if (it == 1) {
-      itReps_Cum <- itReps
-      theoretical_cum <- N_Total
-      pareto_counter <- 0
-    } else{
-      itReps_Cum %+% itReps
-      theoretical_cum %+% N_Total
-      if(compareIterationFronts(pareto_set,prev_pareto_set)){
-        pareto_counter %+% 1
-      } else {
-        pareto_counter <- 0
+    temp_obj <- gen_candidates(tweak_left = nTweak, s_star = best)
+    if (length(temp_obj) != 0) {
+      # Perform OCBA to Minimize Total Simulation Replications ----------------------------------------------------------
+      temp_obj <- ocba(candidate_list = temp_obj)
+      ocba_removed <- temp_obj[['non_sP']]
+      ocba_removed <- ocba_removed[which(lapply(ocba_removed,length) !=0)]
+      temp_obj <- temp_obj[['sP']]
+      
+      # Find the Fittest Candidate --------------------------------------------------------------------------------------
+      if (it >= 1) {
+        prev_pareto_set <- pareto_set
       }
-    }
-    
-    best_df <- rbindlist(list(
-      best_df,
-      data.table(
-        Iteration = it,
-        best$Obj_mean,
-        Num_Replications = best$Replications,
-        Dist = cramer::cramer.test(x = as.matrix(best$Cost)[, -1],
-                                   y = matrix(data = c(rep(-100, times = 20), 
-                                                       rep(0, times = 40)), nrow = 20)
-                                   )$statistic
-      )
-    ))
-    
-    itRepsDF <-
-      rbindlist(list(
-        itRepsDF,
+      pareto_set <-
+        updateParetoSet(pSet = pareto_set, candidate_list =  temp_obj)
+      
+      ranks <- pareto_set$ranks
+      pareto_set <- pareto_set$pSet
+      
+      prev_best <- best
+      best <- findBestbyDistance(pSet = pareto_set)
+      
+      if (identical(prev_best$name, best$name)) {
+        best_counter <- best_counter + 1
+      } else {
+        best_counter <- 0
+      }
+      A <-
+        updateHistory(pSet = pareto_set,
+                      candidate_list = append(temp_obj,ocba_removed),
+                      history = A)
+      # Kill Zombie Processes leftover from MOCBA
+      if (!any(sapply(X = c('Linux', 'Darwin'), function(i)
+        i == Sys.info()['sysname']))) {
+        reap_zombies() # Kill Zombie processes
+      }
+      
+      # Update Iteration Best and Iteration Info Dataframes -------------------------------------------------------------
+      if (it == 1) {
+        itReps_Cum <- itReps
+        theoretical_cum <- N_Total
+        pareto_counter <- 0
+      } else{
+        itReps_Cum %+% itReps
+        theoretical_cum %+% N_Total
+        if (compareIterationFronts(pareto_set, prev_pareto_set)) {
+          pareto_counter %+% 1
+        } else {
+          pareto_counter <- 0
+        }
+      }
+      
+      best <- `if`(length(best) == 1, best[[1]], best)
+      best_df <- rbindlist(list(
+        best_df,
         data.table(
           Iteration = it,
-          MOCBA = itReps_Cum,
-          Theoretical = theoretical_cum,
-          Temperature = temp
+          best$Obj_mean,
+          Num_Replications = best$Replications,
+          Dist = best$Divergence,
+          Pr_Select = best$P_Selection
         )
-      ))
-    
-    # Adjust Temperature ----------------------------------------------------------------------------------------------
-    # Code removed for now
-    
-    # Tabu Style removal of earlier tested solutions ----------------------------------------------------------------------------------------------
-    
-    if(it > (pareto_limit - 1)){
-      all_allocations <-
-        all_allocations[-seq(length(A[[it -( pareto_limit - 1)]]$Rejects)),]
-      tested_allocs <- rbind(tested_allocs,t(temp_obj %c% 'Allocation'))
-    } else {
-      tested_allocs <- all_allocations
+      ), fill = T)
+      
+      itRepsDF <-
+        rbindlist(list(
+          itRepsDF,
+          data.table(
+            Iteration = it,
+            MOCBA = itReps_Cum,
+            Theoretical = theoretical_cum,
+            Temperature = temp,
+            Exec_Time = as.numeric(Sys.time() - now)
+          )
+        ))
+      
+      # Code removed for now
+      
+      # Tabu Style removal of earlier tested solutions ----------------------------------------------------------------------------------------------
+      browser(expr = itReps == starter_reps)
+      if (it > (pareto_limit - 1)) {
+        all_allocations <-
+          all_allocations[-seq(length(A[[it - (pareto_limit - 1)]]$Rejects)), ]
+        tested_allocs <-
+          rbind(tested_allocs, t(temp_obj %c% 'Allocation'))
+      } else {
+        tested_allocs <- all_allocations
+      }
+      if (it %% 1 == 0) {
+        # print(pareto_set %c% 'Obj_CI')
+        cat(
+          'Iteration',
+          it,
+          'required',
+          itReps,
+          'simulation replications and',
+          gsub(
+            pattern = '_',
+            replacement = " ",
+            x = best$name
+          ),
+          'moves on.'
+        )
+        cat('\n')
+        cat('The ideal point is', paste(g_ideal_CI, collapse = ', '))
+        cat('\n')
+        cat('There are',
+            length(pareto_set),
+            'solutions in the Pareto Set')
+        cat('\n')
+        if (extraReps) {
+          cat(
+            'An extra',itReps - candidate_reps,
+            'replications were used during MOCBA \n'
+          )
+        }
+        cat('\n')
+        if(length(pareto_set) > 1){
+          print(
+            rbindlist(lapply(pareto_set, function(i)
+              data.table(
+                name = i$name,
+                p_selection = i$P_Selection,
+                divergence = i$Divergence,
+                i$Obj_CI
+              )))
+          )
+        }
+        cat('\n')
+      }
+      if (!use_test_bench) {
+        save.image(file = file.path('Data', 'full_sim_paused_envr.rdata'))
+      } else{
+        save.image(file = file.path('Data', 'test_bench_paused_envr.rdata'))
+      }
+      it %+% 1
+      
+      # Adjust Temperature ----------------------------------------------------------------------------------------------
+      temp <-
+        cool_temp(
+          initial_temperature = temp_init,
+          alpha = t_damp,
+          current_iteration = it,
+          quad_cool = T
+        )
     }
-    if (it %% 1 == 0) {
-      # print(pareto_set %c% 'Obj_CI')
-      cat(
-        'Iteration',
-        it,
-        'required',
-        itReps,
-        'simulation replications and',
-        gsub(
-          pattern = '_',
-          replacement = " ",
-          x = best$name
-        ),
-        'moves on.'
-      )
-      cat('\n')
-      cat('The ideal point is', paste(g_ideal_CI, collapse = ', '))
-      cat('\n')
-      cat('There are',length(pareto_set),'solutions in the Pareto Set')
-      cat('\n')
-      cat('\n')
-    }
-    if (!use_test_bench) {
-      save.image(file = file.path('Data', 'full_sim_paused_envr.rdata'))
-    } else{
-      save.image(file = file.path('Data', 'test_bench_paused_envr.rdata'))
-    }
-    it %+% 1
   }
   # best_df_long <- melt(data = copy(best_df)[,`:=`(Dist = NULL, 
   #                                                 Num_Replications = NULL)],
   #                      measure.vars = colnames(best$Obj_mean))
-  
   
   print(paste('Algorithm Trial',i,'Complete'))
   save.image(file = file.path(
@@ -303,9 +346,9 @@ tested_allocs <-
 
 tested_allocs <- matrix(as.numeric(unlist(sapply(tested_allocs,strsplit,split = ','))),ncol = 4,byrow = T)
 
-browser()
 # Run Same Problem w/ NSGA-II Algorithm -----------------------------------
-if(use_test_bench) {
+# if(use_test_bench) {
+if(FALSE){
   nsgaCostFn <- function(x) {
     return(CostFunction(sol = x,
                  logic = F,

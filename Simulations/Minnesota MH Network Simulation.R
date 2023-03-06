@@ -662,8 +662,7 @@ MH.Network.sim <-
         simmer::run(until = sim.length,
                     progress = progress::progress_bar$new(format = "[:bar] :percent ETA: :eta")$update)
     } else {
-      sim_results <- #pbmclapply(
-        lapply(
+      sim_results <- mclapply(
         X = rep,
         FUN = function(i)
           simmer('MH.Network', log_level = 1) %>%
@@ -674,13 +673,13 @@ MH.Network.sim <-
           simmer::run(
             until = sim.length
           ) %>%
-          wrap()#,
-        # mc.cores = ifelse(
-        #   test = length(rep) == 1,
-        #   yes = 1,
-        #   no = availableCores()
-        # ),
-        # mc.set.seed = T
+          wrap(),
+        mc.cores = ifelse(
+          test = length(rep) == 1,
+          yes = 1,
+          no = availableCores()
+        ),
+        mc.set.seed = T
       )
     }
     
@@ -847,6 +846,7 @@ full_sim <-
     } 
     return(results)
   }
+
 # Function for Mental Health Sim MOSA -------------------------------------
 mh_wait_quantile <- function(x){
   return(x[,.(wait_90_quantile = quantile(total_wait_time,probs = 0.9,na.rm = T)),by = replication])

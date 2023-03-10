@@ -8,9 +8,8 @@ if(!all(sapply(c(res_dir,file.path(res_dir,'Inverted_V_Full_Environments')),dir.
   dir.create(path = file.path(res_dir,
                               "Inverted_V_Full_Environments"))
 }
-setwd("..")
+setwd("/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization")
 source(file.path('functions.R'))
-setwd('Inpatient Bed Allocation Optimization')
 source('MOSA Functions.R')
 use_test_bench <-  T
 inverted_V_logical <- T
@@ -72,7 +71,9 @@ if(!continue_previous) {
   # Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
   temp_init <- temp <- 1
   t_min <- .01 * temp_init
-  t_damp <- .001 #Depends on cooling schedule selection
+  t_damp <-
+   #0.01 #Quad Cool alpha
+   0.75 #Exponetial Cool alpha
   best_limit <- 5
   pareto_limit <- 25
   starter_reps <- 8
@@ -80,7 +81,7 @@ if(!continue_previous) {
   maxChange <- 1
   itReps_Cum  <- 0
   nTotal_Cum <- 0
-  nTweak <- 8
+  nTweak <- 10
   itMax <- 100
   best_counter <- 0
   delta <- max(ceiling(nTweak / 2), 10)
@@ -157,7 +158,7 @@ if(!continue_previous) {
     now <- Sys.time()
     extraReps <- F # Conditional for if extra simulation replications were used in the MOCBA
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
-    
+    browser()
     temp_obj <- gen_candidates(tweak_left = nTweak, s_star = best)
     if (length(temp_obj) != 0) {
       # Perform OCBA to Minimize Total Simulation Replications ----------------------------------------------------------
@@ -234,17 +235,16 @@ if(!continue_previous) {
         ))
       
       # Code removed for now
-      
+      all_allocations <- rbind(all_allocations,t(temp_obj %c% 'Allocation'))
       # Tabu Style removal of earlier tested solutions ----------------------------------------------------------------------------------------------
-      browser(expr = itReps == starter_reps)
-      if (it > (pareto_limit - 1)) {
-        all_allocations <-
-          all_allocations[-seq(length(A[[it - (pareto_limit - 1)]]$Rejects)), ]
-        tested_allocs <-
-          rbind(tested_allocs, t(temp_obj %c% 'Allocation'))
-      } else {
-        tested_allocs <- all_allocations
-      }
+      #if (it > (pareto_limit - 1)) {
+        #all_allocations <-
+        #  all_allocations[-seq(length(A[[it - (pareto_limit - 1)]]$Rejects)), ]
+        #tested_allocs <-
+        #  rbind(tested_allocs, t(temp_obj %c% 'Allocation'))
+      #} else {
+       # tested_allocs <- all_allocations
+      #}
       if (it %% 1 == 0) {
         # print(pareto_set %c% 'Obj_CI')
         cat(
@@ -252,7 +252,11 @@ if(!continue_previous) {
           it,
           'required',
           itReps,
-          'simulation replications and',
+          'simulation replications.')
+          cat('\n')
+          cat('The temperature is now',
+          temp,
+          ' and',
           gsub(
             pattern = '_',
             replacement = " ",
@@ -290,18 +294,22 @@ if(!continue_previous) {
       if (!use_test_bench) {
         save.image(file = file.path('Data', 'full_sim_paused_envr.rdata'))
       } else{
-        save.image(file = file.path('Data', 'test_bench_paused_envr.rdata'))
+        save.image(file = file.path(res_dir, 'test_bench_paused_envr.rdata'))
       }
       it %+% 1
       
       # Adjust Temperature ----------------------------------------------------------------------------------------------
+      if(!identical(pareto_set,prev_pareto_set)){
       temp <-
         cool_temp(
           initial_temperature = temp_init,
           alpha = t_damp,
           current_iteration = it,
-          quad_cool = T
+          exponential = T
         )
+        }
+    } else {
+      break
     }
   }
   # best_df_long <- melt(data = copy(best_df)[,`:=`(Dist = NULL, 
@@ -326,7 +334,6 @@ if(!continue_previous) {
 #pareto_sets <- extractParetoSets(res_dir)
 pareto_objectives <- 
   t(matrix(as.matrix(pareto_set %c% 'Obj_mean'),ncol = length(pareto_set)))
-
 
 saveRDS(
   object = list(

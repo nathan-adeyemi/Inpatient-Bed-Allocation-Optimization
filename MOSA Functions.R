@@ -10,7 +10,7 @@ norm_vec <- function(x) {
 }
 
 mod_softmax <- function(vec){
-  vec <- vec - max(vec)
+  vec <- scale(vec)
   return(exp(vec)/sum(exp(vec)))
 }
 
@@ -42,10 +42,9 @@ decode <- function(alg_input,test_bench = get('use_test_bench',envir = .GlobalEn
 termination_criteria <-
   function(eval_gradient = F,
            check_pareto = F,
-           check_iteration = F,
-           iteration = get('it', envir = .GlobalEnv)) {
+           check_iteration = F) {
     obj_names <- colnames(best$Obj_mean)
-    if (iteration < 1) {
+    if (it < 1) {
       logical <- T
     } else if (eval_gradient) {
       
@@ -76,7 +75,7 @@ termination_criteria <-
     } else if (check_pareto) {
       logical <- any(temp > t_min, get('pareto_counter',envir = .GlobalEnv) < pareto_limit)
     } else if (check_iteration){
-      logical <- iteration < itMax
+      logical <- it < itMax
     } else {
       logical <- temp > t_min
     }
@@ -229,7 +228,6 @@ update_sol <- function(i,sol_vector = NA,best_sol){
   if (any(is.na(sol_vector))) {
     x$Replications <- get('starter_reps',envir = .GlobalEnv)
     x$counter <- 0
-    x$name <-  paste0('Tourney_', it, '_Candidate_',i)
     x$Solution <-  tweak(x$Solution)
   } else{
     x$name <-
@@ -245,57 +243,58 @@ update_sol <- function(i,sol_vector = NA,best_sol){
 gen_candidates <- function(tweak_left,candidate_list = NULL,s_star) {
   temp_counter <- 0
   new_solns <- list()
-  if (length(candidate_list) == 0){
-    while (tweak_left > 0 & temp_counter < 60) {
-      candidate_list <-
-        mclapply(seq(tweak_left),
-                 update_sol,
-                 best_sol = s_star,
-                 mc.cores = availableCores())
-      
-      # Remove duplicate allocations within temporary obj (inital subgroup)
-      new_alloc = which({
+  while (tweak_left > 0 & temp_counter < 60) {
+    candidate_list <-
+      mclapply(seq(tweak_left) + length(new_solns),
+                update_sol,
+                best_sol = s_star,
+                mc.cores = availableCores())
+    
+    # Remove duplicate allocations within temporary obj (inital subgroup)
+    new_alloc = which({
+      function(mat)
+        ! duplicated(mat)
+    }(t(
+      as.matrix(candidate_list %c% 'Allocation')
+    )))
+    candidate_list = candidate_list[new_alloc]
+    
+    # Remove any solution that was previously tested
+    dups <-
+      rbind(all_allocations,
+            candidate_list %c% 'Allocation' %>%
+              t() %>%
+              as.matrix()) %>%
+      as.matrix() %>%
+      {
         function(mat)
-          ! duplicated(mat)
-      }(t(
-        as.matrix(candidate_list %c% 'Allocation')
-      )))
-      candidate_list = candidate_list[new_alloc]
-     
-      # Remove any solution that was previously tested
-      dups <-
-        rbind(all_allocations,
-              candidate_list %c% 'Allocation' %>%
-                t() %>%
-                as.matrix()) %>%
-        as.matrix() %>%
-        {
-          function(mat)
-            which(duplicated(mat))
-        }()
-      if (length(dups) > 0) {
-        dups <- dups - nrow(all_allocations)
-      }
-      if (length(dups) != length(candidate_list)) {
-        candidate_list <-
-          candidate_list[setdiff(seq_along(candidate_list), dups)]
-      } else {
-        candidate_list = NULL
-      }
-      
-      # Add all new generated solutions to the candidate list
-      new_solns = append(new_solns, candidate_list)
-      if (length(candidate_list) > 0 & it != 0) {
-        all_allocations <<-
-          rbind(all_allocations, as.matrix(t(candidate_list %c% 'Allocation')))
-      }
-      
-      temp_counter %+% 1
-      tweak_left <- nTweak - length(new_solns)
+          which(duplicated(mat))
+      }()
+    if (length(dups) > 0) {
+      dups <- dups - nrow(all_allocations)
     }
-    browser(expr = length(new_solns) < nTweak)
+    if (length(dups) != length(candidate_list)) {
+      candidate_list <-
+        candidate_list[setdiff(seq_along(candidate_list), dups)]
+    } else {
+      candidate_list = NULL
+    }
+    
+    # Add all new generated solutions to the candidate list
+    new_solns = append(new_solns, candidate_list)
+    if (length(candidate_list) > 0 & it != 0) {
+      all_allocations <<-
+        rbind(all_allocations, as.matrix(t(candidate_list %c% 'Allocation')))
+    }
+    
+    temp_counter %+% 1
+    tweak_left <- nTweak - length(new_solns)
   }
+  
   candidate_list <- new_solns
+  for (i in seq_along(candidate_list)){
+    candidate_list[[i]]$name <- paste0('Tourney_', it, '_Candidate_',i)
+  }
   # Make lists of all new solutions/allocations (1 entry per replication), a list of the replication #s, 
   # and a list of the allocation's index in the candidate list
   allocation_list <-
@@ -448,7 +447,7 @@ soln_comparison <-
 p_accept <- function(curr_temp) 1 - (exp(temp_init - curr_temp) / exp(temp_init))
 
 noisyNonDominatedSorting <- function (inputData) 
-{
+{ 
   #Modified from the fastNonDominatedSorting function in the nsga2R v1.1 package
   popSize = length(inputData)
   idxDominators = vector("list", popSize)
@@ -512,6 +511,7 @@ updateParetoSet <- function(pSet,candidate_list){
   n_obj <- length(optim_type)
   pSet <-  append(pSet,candidate_list)
   pSet <- removeDuplicateSolutions(pSet)
+  pSetCopy <- pSet
   if(length(pSet) > 1){
     ranks <-
       noisyNonDominatedSorting(inputData = pSet)
@@ -520,6 +520,7 @@ updateParetoSet <- function(pSet,candidate_list){
     ranks <- list(ranks = 1, rnkList = list(1))
   }
   pSet <- pSet[ranks$rnkList[[1]]]
+  browser(expr = length(pSet) < length(pSetCopy) & is.element(pSet %c% 'name',pSetCopy %c% 'name') > 0)
   return(list('pSet' = pSet, 'ranks' = ranks))
 }
 
@@ -573,7 +574,6 @@ findBestbyDistance <- function(pSet, rankInfo) {
     #     ))
     #   }
     # )
-    
     divergences <- sapply(
       X = pSet,
       FUN = function(i) {
@@ -587,7 +587,7 @@ findBestbyDistance <- function(pSet, rankInfo) {
       }
     )
 
-      selection_probs <- mod_softmax(-1 * divergences)
+      selection_probs <- mod_softmax(divergences)
       pareto_set <<- pSet <- lapply(X = seq_along(pSet),FUN = function(i){
         pSet[[i]]$Divergence <- divergences[i]
         pSet[[i]]$P_Selection <- round(selection_probs[i],digits = 4)
@@ -734,7 +734,7 @@ cool_temp  <-
     } else if (log_mult) {
       temp <-  initial_temperature / (1 + alpha * (log(1 + current_iteration)))
     } else if (quad_cool) {
-      #temp <- initial_temperature / (1 + (alpha * current_iteration ^ 2))
+      temp <- initial_temperature / (1 + (alpha * current_iteration ^ 2))
     } else if(exponential){
       alpha <- sl_ifelse(test = alpha > 0,
                          yes = alpha * -1,
@@ -885,7 +885,7 @@ ocba <-
     delta <- get('delta',envir = .GlobalEnv)
     first_time = TRUE
     N_replicated <- sum(candidate_list %c% 'Replications') # - (candidate_list[length(candidate_list)] %c% 'Replications')
-    K <- ceil(length(candidate_list) / 3)
+    K <- ceil(nTweak / 3)
     K <-
       sl_ifelse(
         test = length(candidate_list) < K,
@@ -897,6 +897,7 @@ ocba <-
       lapply(X = candidate_list,
              FUN = procedureI_func,
              all_candidates = candidate_list)
+    
     # Procedure I Step 2
     while ((N_Total  - N_replicated) > 0 & all(candidate_list %c% 'Psi' > psiTarget)){ 
       # Loop breaks once there are 0 replications left to allocate or one of the solutions is below target psi value  
@@ -928,11 +929,10 @@ ocba <-
       sP <- sP[order(sP %c% 'deltaPsiD',decreasing = T)]
       
       # Procedure II step 3
-      browser()
       k_test <- min(K,ifelse(test = any((sP %c% 'deltaPsiD') == 0),
                              yes = which(sP %c% 'deltaPsiD' == 0) - 1,
                              no = K)) # Minimum of K and the Index of last nonzero deltaPsi
-      
+      browser(expr = is.na(k_test))
       psiRef <- sP[[k_test]]$deltaPsiD
       deltaWP <- (psiRef * delta)/sum(abs((sP %c% 'deltaPsiD')[seq(k_test)]))
       # Assigning additional replications to each of the solutions
@@ -1409,4 +1409,4 @@ candidateSettoMatrix <- function(set,attr){
   return(t(matrix(unlist(set %c% attr),ncol = length(set))))
 }
 
-specify_decimal <- function(x, digits) as.numeric(trimws(format(round(x, digits), nsmall=digits)))
+specify_decimal <- function(x, digits) as.numeric(trimws(format(round(x, digits), nsmall=digits))) 

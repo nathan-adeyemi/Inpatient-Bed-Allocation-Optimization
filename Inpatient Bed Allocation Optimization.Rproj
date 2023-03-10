@@ -1,7 +1,11 @@
 Version: 1.0
 
 RestoreWorkspace: No
+<<<<<<< HEAD
 SaveWorkspace: No
+=======
+SaveWorkspace: Yes
+>>>>>>> 12ab10b (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
 AlwaysSaveHistory: Default
 
 EnableCodeIndexing: Yes

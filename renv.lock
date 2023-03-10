@@ -6,6 +6,7 @@
         "Name": "CRAN",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "URL": "http://ftp.ussg.iu.edu/CRAN"
 =======
         "URL": "https://packagemanager.rstudio.com/cran/latest"
@@ -13,6 +14,9 @@
 =======
         "URL": "https://cloud.r-project.org"
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+        "URL": "http://ftp.ussg.iu.edu/CRAN"
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       }
     ]
   },
@@ -131,6 +135,7 @@
     "Matrix": {
       "Package": "Matrix",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Version": "1.5-3",
       "Source": "Repository",
       "Repository": "CRAN",
@@ -141,6 +146,12 @@
       "Repository": "CRAN",
       "Hash": "699c47c606293bdfbc9fd78a93c9c8fe",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+      "Version": "1.5-3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4006dffe49958d2dd591c17e61e60591",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": [
         "lattice"
       ]
@@ -247,6 +258,9 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
     "assertthat": {
       "Package": "assertthat",
       "Version": "0.2.1",
@@ -255,8 +269,11 @@
       "Hash": "50c838a310445e954bc13f26f26a6ecf",
       "Requirements": []
     },
+<<<<<<< HEAD
 =======
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
     "backports": {
       "Package": "backports",
       "Version": "1.4.1",
@@ -340,10 +357,10 @@
 >>>>>>> 7fe6941 (Most recent updates)
     "boot": {
       "Package": "boot",
-      "Version": "1.3-28",
+      "Version": "1.3-28.1",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0baa960e3b49c6176a4f42addcbacc59",
+      "Repository": "RSPM",
+      "Hash": "9a052fbcbe97a98ceb18dbfd30ebd96e",
       "Requirements": []
     },
 <<<<<<< HEAD
@@ -357,11 +374,15 @@
 =======
     "broom": {
       "Package": "broom",
-      "Version": "1.0.3",
+      "Version": "1.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
+<<<<<<< HEAD
       "Hash": "ab67f5ce0aa79b8db7ddba5cb0d4012d",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+      "Hash": "1773f8d5102f9853ecd18a0d13d460fd",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": [
         "backports",
         "dplyr",
@@ -400,10 +421,10 @@
     },
     "cachem": {
       "Package": "cachem",
-      "Version": "1.0.7",
+      "Version": "1.0.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "cda74447c42f529de601fe4d4050daef",
+      "Hash": "648c5b3d71e6a37e3043617489a0a0e9",
       "Requirements": [
         "fastmap",
         "rlang"
@@ -457,6 +478,7 @@
     "class": {
       "Package": "class",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Version": "7.3-21",
       "Source": "Repository",
       "Repository": "RSPM",
@@ -467,6 +489,12 @@
       "Repository": "CRAN",
       "Hash": "da09d82223e669d270e47ed24ac8686e",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+      "Version": "7.3-21",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "8ae0d4328e2eb3a582dfd5391a3663b7",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": [
         "MASS"
       ]
@@ -501,6 +529,7 @@
     "cluster": {
       "Package": "cluster",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Version": "2.1.4",
       "Source": "Repository",
       "Repository": "CRAN",
@@ -511,6 +540,12 @@
       "Repository": "CRAN",
       "Hash": "c5f8447373ec2a0f593c694024e5b7ee",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+      "Version": "2.1.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5edbbabab6ce0bf7900a74fd4358628e",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": []
     },
     "codetools": {
@@ -528,18 +563,6 @@
       "Repository": "CRAN",
       "Hash": "f20c47fd52fae58b4e377c37bb8c335b",
       "Requirements": []
-    },
-    "conflicted": {
-      "Package": "conflicted",
-      "Version": "1.2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "bb097fccb22d156624fd07cd2894ddb6",
-      "Requirements": [
-        "cli",
-        "memoise",
-        "rlang"
-      ]
     },
     "cpp11": {
       "Package": "cpp11",
@@ -616,22 +639,26 @@
 =======
     "data.table": {
       "Package": "data.table",
-      "Version": "1.14.8",
+      "Version": "1.14.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b4c06e554f33344e044ccd7fdca750a9",
+      "Hash": "aecef50008ea7b57c76f1cb5c127fb02",
       "Requirements": []
     },
     "dbplyr": {
       "Package": "dbplyr",
-      "Version": "2.3.1",
+      "Version": "2.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6e432b1a334fc06786e2ee8627e8cbea",
+      "Hash": "f03e0e456f1cb7b068772af43772baea",
       "Requirements": [
         "DBI",
         "R6",
+<<<<<<< HEAD
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+        "assertthat",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "blob",
         "cli",
         "dplyr",
@@ -643,9 +670,12 @@
         "rlang",
         "tibble",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         "tidyr",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "tidyselect",
         "vctrs",
         "withr"
@@ -755,16 +785,19 @@
 =======
     "dtplyr": {
       "Package": "dtplyr",
-      "Version": "1.3.0",
+      "Version": "1.2.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4f640f188add4172c025920054a1f8c2",
+      "Hash": "c5f8828a0b459a703db190b001ad4818",
       "Requirements": [
-        "cli",
         "crayon",
         "data.table",
         "dplyr",
+<<<<<<< HEAD
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+        "ellipsis",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "glue",
         "lifecycle",
         "rlang",
@@ -814,10 +847,10 @@
     },
     "fastmap": {
       "Package": "fastmap",
-      "Version": "1.1.1",
+      "Version": "1.1.0",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "f7736a18de97dea803bde0a2daaafb27",
+      "Repository": "CRAN",
+      "Hash": "77bd60a6157420d4ffa93b27cf6a58b8",
       "Requirements": []
     },
     "fitdistrplus": {
@@ -850,6 +883,7 @@
     "forcats": {
       "Package": "forcats",
 <<<<<<< HEAD
+<<<<<<< HEAD
       "Version": "0.5.2",
       "Source": "Repository",
       "Repository": "CRAN",
@@ -859,16 +893,24 @@
         "ellipsis",
 =======
       "Version": "1.0.0",
+=======
+      "Version": "0.5.2",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "1a0a9a3d5083d0d573c4214576f1e690",
+      "Hash": "9d95bc88206321cd1bc98480ecfd74bb",
       "Requirements": [
         "cli",
+<<<<<<< HEAD
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+        "ellipsis",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "glue",
         "lifecycle",
         "magrittr",
         "rlang",
+<<<<<<< HEAD
 <<<<<<< HEAD
         "tibble",
         "withr"
@@ -878,6 +920,10 @@
 >>>>>>> 70c5cc2 (Adding the renv lock file)
 =======
         "tibble"
+=======
+        "tibble",
+        "withr"
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       ]
     },
 >>>>>>> 7fe6941 (Most recent updates)
@@ -950,10 +996,10 @@
     },
     "fs": {
       "Package": "fs",
-      "Version": "1.6.1",
+      "Version": "1.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f4dcd23b67e33d851d2079f703e8b985",
+      "Hash": "0120e8c933bace1141e0b0d376b0c010",
       "Requirements": []
     },
 <<<<<<< HEAD
@@ -967,11 +1013,15 @@
 =======
     "gargle": {
       "Package": "gargle",
-      "Version": "1.3.0",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
+<<<<<<< HEAD
       "Hash": "bb3208dcdfeb2e68bf33c87601b3cbe3",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+      "Hash": "cca71329ad88e21267f09255d3f008c2",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": [
         "cli",
         "fs",
@@ -979,10 +1029,13 @@
         "httr",
         "jsonlite",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         "lifecycle",
         "openssl",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "rappdirs",
         "rlang",
         "rstudioapi",
@@ -1137,11 +1190,16 @@
 =======
     "haven": {
       "Package": "haven",
-      "Version": "2.5.2",
+      "Version": "2.5.1",
       "Source": "Repository",
+<<<<<<< HEAD
       "Repository": "CRAN",
       "Hash": "8b331e659e67d757db0fcc28e689c501",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+      "Repository": "RSPM",
+      "Hash": "5b45a553fca2217a07b6f9c843304c44",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": [
         "cli",
         "cpp11",
@@ -1247,11 +1305,15 @@
 =======
     "httr": {
       "Package": "httr",
+<<<<<<< HEAD
       "Version": "1.4.5",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+      "Version": "1.4.4",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f6844033201269bec3ca0097bc6c97b3",
+      "Hash": "57557fac46471f0dbbf44705cc6a5c8c",
       "Requirements": [
         "R6",
         "curl",
@@ -1273,10 +1335,10 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "1.4.1",
+      "Version": "1.3.5",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "a7ef0d811cb66d8be9da0d7b5ab80ded",
+      "Repository": "CRAN",
+      "Hash": "132b06d7060f11ba8b4c7e7f385e9b7a",
       "Requirements": [
         "Matrix",
         "magrittr",
@@ -1356,13 +1418,14 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.42",
+      "Version": "1.41",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "8329a9bcc82943c8069104d4be3ee22d",
+      "Hash": "6d4971f3610e75220534a1befe81bc92",
       "Requirements": [
         "evaluate",
         "highr",
+        "stringr",
         "xfun",
         "yaml"
       ]
@@ -1410,10 +1473,10 @@
     },
     "lubridate": {
       "Package": "lubridate",
-      "Version": "1.9.2",
+      "Version": "1.9.1",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "e25f18436e3efd42c7c590a1c4c15390",
+      "Repository": "RSPM",
+      "Hash": "88ad585eb49669b7f2db3f5ef3c8307d",
       "Requirements": [
         "generics",
         "timechange"
@@ -1591,11 +1654,16 @@
 >>>>>>> 7fe6941 (Most recent updates)
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-157",
+      "Version": "3.1-162",
       "Source": "Repository",
+<<<<<<< HEAD
       "Repository": "CRAN",
       "Hash": "dbca60742be0c9eddc5205e5c7ca1f44",
 >>>>>>> 70c5cc2 (Adding the renv lock file)
+=======
+      "Repository": "RSPM",
+      "Hash": "0984ce8da8da9ead8643c5cbbb60f83e",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": [
         "lattice"
       ]
@@ -1611,11 +1679,16 @@
 =======
     "nnet": {
       "Package": "nnet",
-      "Version": "7.3-17",
+      "Version": "7.3-18",
       "Source": "Repository",
+<<<<<<< HEAD
       "Repository": "CRAN",
       "Hash": "cb1d8d9f300a7e536b89c8a88c53f610",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+      "Repository": "RSPM",
+      "Hash": "170da2130d5332bea7d6ede01875ba1d",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
       "Requirements": []
     },
     "nortest": {
@@ -1680,10 +1753,10 @@
     },
     "openxlsx": {
       "Package": "openxlsx",
-      "Version": "4.2.5.2",
+      "Version": "4.2.5.1",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "c03b4c18d42da881fb8e15a085c2b9d6",
+      "Repository": "CRAN",
+      "Hash": "e398ce13682a7409d16e13df09f65875",
       "Requirements": [
         "Rcpp",
         "stringi",
@@ -1846,17 +1919,6 @@
       "Hash": "1bcb703b5374f616b5926ecd3aa213e3",
       "Requirements": []
     },
-    "ragg": {
-      "Package": "ragg",
-      "Version": "1.2.5",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "690bc058ea2b1b8a407d3cfe3dce3ef9",
-      "Requirements": [
-        "systemfonts",
-        "textshaping"
-      ]
-    },
     "rappdirs": {
       "Package": "rappdirs",
       "Version": "0.3.3",
@@ -1867,10 +1929,10 @@
     },
     "readr": {
       "Package": "readr",
-      "Version": "2.1.4",
+      "Version": "2.1.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b5047343b3825f37ad9d3b5d89aa1078",
+      "Hash": "2dfbfc673ccb3de3d8836b4b3bd23d14",
       "Requirements": [
         "R6",
         "cli",
@@ -1887,10 +1949,10 @@
     },
     "readxl": {
       "Package": "readxl",
-      "Version": "1.4.2",
+      "Version": "1.4.1",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "2e6020b1399d95f947ed867045e9ca17",
+      "Repository": "CRAN",
+      "Hash": "5c1fbc365ac0a3fe7728ac79108b8e64",
       "Requirements": [
         "cellranger",
         "cpp11",
@@ -2234,6 +2296,7 @@
       "Requirements": []
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 70c5cc2 (Adding the renv lock file)
 =======
@@ -2259,6 +2322,8 @@
       ]
     },
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
     "tibble": {
       "Package": "tibble",
       "Version": "3.1.8",
@@ -2334,15 +2399,19 @@
 =======
     "tidyverse": {
       "Package": "tidyverse",
-      "Version": "2.0.0",
+      "Version": "1.3.2",
       "Source": "Repository",
       "Repository": "RSPM",
-      "Hash": "c328568cd14ea89a83bd4ca7f54ae07e",
+      "Hash": "972389aea7fa1a34739054a810d0c6f6",
       "Requirements": [
         "broom",
         "cli",
+<<<<<<< HEAD
         "conflicted",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+        "crayon",
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "dbplyr",
         "dplyr",
         "dtplyr",
@@ -2360,9 +2429,12 @@
         "pillar",
         "purrr",
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         "ragg",
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
         "readr",
         "readxl",
         "reprex",
@@ -2400,10 +2472,10 @@
     },
     "tinytex": {
       "Package": "tinytex",
-      "Version": "0.44",
+      "Version": "0.43",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "c0f007e2eeed7722ce13d42b84a22e07",
+      "Repository": "CRAN",
+      "Hash": "facc02f3d63ed7dd765513c004c394ce",
       "Requirements": [
         "xfun"
       ]
@@ -2554,10 +2626,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.37",
+      "Version": "0.36",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "a6860e1400a8fd1ddb6d9b4230cc34ab",
+      "Repository": "CRAN",
+      "Hash": "f5baec54606751aa53ac9c0e05848ed6",
       "Requirements": []
     },
     "xml2": {

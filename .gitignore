@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Custom
 <<<<<<< HEAD
 /Data/Sample\ MOSA\ Results/
@@ -87,3 +88,10 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+=======
+/Data/Sample\ MOSA\ Results
+/Data/paused_execution_envr.rdata
+/renv
+/.Rhistory
+.Rproj.user
+>>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)

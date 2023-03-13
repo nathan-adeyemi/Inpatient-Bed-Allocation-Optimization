@@ -3,11 +3,12 @@ rm(list = ls())
 
 # Directory to Store MOSA Results -----------------------------------------
 res_dir <- file.path(".","Data","Sample MOSA Results",gsub('-','_',Sys.Date()))
-if(!all(sapply(c(res_dir,file.path(res_dir,'Inverted_V_Full_Environments')),dir.exists))){
+if(!dir.exists(res_dir)){
   dir.create(res_dir)
-  dir.create(path = file.path(res_dir,
-                              "Inverted_V_Full_Environments"))
 }
+res_dir <- file.path(res_dir,paste0('Trial_',length(list.files(res_dir))+1))
+dir.create(res_dir)
+
 setwd("/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization")
 source(file.path('functions.R'))
 source('MOSA Functions.R')
@@ -32,7 +33,7 @@ if(!continue_previous) {
     read_init <- T
     n_queues <- nVar <- 1
     jackson_envir <- new.env()
-    optim_type <- c('max', 'min')
+    optim_type <- c('max', 'min','min')
     if (read_init) {
       starter_data <-
         readRDS(file.path('Data', 'Medium Testing Initial Solution (4 queues).rds'))
@@ -69,7 +70,7 @@ if(!continue_previous) {
   }
   
   # Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
-  temp_init <- temp <- 1
+  temp_init <- temp <- 3
   t_min <- .01 * temp_init
   t_damp <-
    #0.01 #Quad Cool alpha
@@ -81,7 +82,7 @@ if(!continue_previous) {
   maxChange <- 1
   itReps_Cum  <- 0
   nTotal_Cum <- 0
-  nTweak <- 10
+  nTweak <- 8
   itMax <- 100
   best_counter <- 0
   delta <- max(ceiling(nTweak / 2), 10)
@@ -158,7 +159,6 @@ if(!continue_previous) {
     now <- Sys.time()
     extraReps <- F # Conditional for if extra simulation replications were used in the MOCBA
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
-    browser()
     temp_obj <- gen_candidates(tweak_left = nTweak, s_star = best)
     if (length(temp_obj) != 0) {
       # Perform OCBA to Minimize Total Simulation Replications ----------------------------------------------------------
@@ -236,7 +236,7 @@ if(!continue_previous) {
       
       # Code removed for now
       all_allocations <- rbind(all_allocations,t(temp_obj %c% 'Allocation'))
-      # Tabu Style removal of earlier tested solutions ----------------------------------------------------------------------------------------------
+      # Tabu Style removal of earlier tested solutions ---------------------------------------------------------------------------------------------- # nolint
       #if (it > (pareto_limit - 1)) {
         #all_allocations <-
         #  all_allocations[-seq(length(A[[it - (pareto_limit - 1)]]$Rejects)), ]
@@ -256,7 +256,9 @@ if(!continue_previous) {
           cat('\n')
           cat('The temperature is now',
           temp,
-          ' and',
+          'the Pr{Acceptance} is',
+          p_accept(temp),
+          'and',
           gsub(
             pattern = '_',
             replacement = " ",
@@ -291,6 +293,7 @@ if(!continue_previous) {
         }
         cat('\n')
       }
+      browser()
       if (!use_test_bench) {
         save.image(file = file.path('Data', 'full_sim_paused_envr.rdata'))
       } else{
@@ -331,7 +334,6 @@ if(!continue_previous) {
     # best_allocations <- rbind(best_allocations,t(best$Allocation))
   }
 
-#pareto_sets <- extractParetoSets(res_dir)
 pareto_objectives <- 
   t(matrix(as.matrix(pareto_set %c% 'Obj_mean'),ncol = length(pareto_set)))
 

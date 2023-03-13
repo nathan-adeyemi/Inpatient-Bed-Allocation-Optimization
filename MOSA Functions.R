@@ -380,7 +380,7 @@ soln_comparison <-
   function(s1,
            s2,
            stat = get('stat_logical', envir = .GlobalEnv),
-           alpha = 0.1) {
+           alpha = 0.05) {
     comp_df <- rbind(copy(s1$Cost)[,soln_num := 1],
                      copy(s2$Cost)[,soln_num := 2])
     
@@ -444,7 +444,7 @@ soln_comparison <-
     return(all(mapply(sum,criteria_1,criteria_2)))
   }
 
-p_accept <- function(curr_temp) 1 - (exp(temp_init - curr_temp) / exp(temp_init))
+p_accept <- function(curr_temp,initial_temp = temp_init) 1 - (exp(initial_temp - curr_temp) / exp(initial_temp))
 
 noisyNonDominatedSorting <- function (inputData) 
 { 
@@ -520,7 +520,6 @@ updateParetoSet <- function(pSet,candidate_list){
     ranks <- list(ranks = 1, rnkList = list(1))
   }
   pSet <- pSet[ranks$rnkList[[1]]]
-  browser(expr = length(pSet) < length(pSetCopy) & is.element(pSet %c% 'name',pSetCopy %c% 'name') > 0)
   return(list('pSet' = pSet, 'ranks' = ranks))
 }
 
@@ -932,7 +931,6 @@ ocba <-
       k_test <- min(K,ifelse(test = any((sP %c% 'deltaPsiD') == 0),
                              yes = which(sP %c% 'deltaPsiD' == 0) - 1,
                              no = K)) # Minimum of K and the Index of last nonzero deltaPsi
-      browser(expr = is.na(k_test))
       psiRef <- sP[[k_test]]$deltaPsiD
       deltaWP <- (psiRef * delta)/sum(abs((sP %c% 'deltaPsiD')[seq(k_test)]))
       # Assigning additional replications to each of the solutions

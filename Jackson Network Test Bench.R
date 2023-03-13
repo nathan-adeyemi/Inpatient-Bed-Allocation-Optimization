@@ -419,7 +419,7 @@ queues_df <- queues_df[,`:=`(lambda_sub = lambda_sub)
     'total_servers' = total_servers,
     'run_test_bench' = run_test_bench,
     'TB_obj_1' = TB_obj_1,
-    'TB_obj_2' = TB_obj_2
-    #'TB_obj_3' = TB_obj_3
+    'TB_obj_2' = TB_obj_2,
+    'TB_obj_3' = TB_obj_3
   ),.GlobalEnv)
 }

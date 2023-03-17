@@ -101,4 +101,8 @@ rsconnect/
 test_file.R
 Rplots.pdf
 .Rdata
+<<<<<<< HEAD
 >>>>>>> b15efcc (Removed files)
+=======
+.gitignore
+>>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)

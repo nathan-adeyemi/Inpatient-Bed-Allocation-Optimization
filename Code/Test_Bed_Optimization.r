@@ -119,4 +119,10 @@ init_sol <- c(1, rep(0, (nVar - 1)))
 sim_length <- 2500
 warmup <- 200
 init_sol <- c(1, rep(0, (nVar - 1)))
+<<<<<<< HEAD
 >>>>>>> e29de9b (Updates:)
+=======
+
+# Run Optimization Algorithm------------------------------------------------
+source(file.path('.','Code','Multi-Objective Simulated Annealing.R'))
+>>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)

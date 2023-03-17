@@ -91,7 +91,14 @@ rsconnect/
 =======
 /Data/Sample\ MOSA\ Results
 /Data/paused_execution_envr.rdata
+/Data/test_bench_paused_envr.rds
 /renv
 /.Rhistory
 .Rproj.user
+<<<<<<< HEAD
 >>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
+=======
+test_file.R
+Rplots.pdf
+.Rdata
+>>>>>>> b15efcc (Removed files)

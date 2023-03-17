@@ -116,9 +116,10 @@ suppressPackageStartupMessages(library(cramer))
 suppressPackageStartupMessages(library(bayesmeta))
 suppressPackageStartupMessages(library(fpc))
 
-setwd("/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization")
-source(file.path('functions.R'))
+setwd(file.path('.','MH_Simulation','Inpatient Bed Allocation Optimization'))
+source(file.path('.','Code','functions.R'))
 source(file.path("Simulations",'Minnesota MH Network Simulation.R'))
+<<<<<<< HEAD
 source('MOSA Functions.R')
 res_dir <-
   file.path(".", "Data", "Sample MOSA Results") |>  
@@ -129,3 +130,6 @@ res_dir <-
 =======
     {function(i) file.path(i, list.files(i)[length(list.files(i))])}() 
 >>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
+=======
+source(file.path('.','Code','MOSA Functions.R'))
+>>>>>>> dc52996 (Minor update: removed files and modified the .Rprofile)

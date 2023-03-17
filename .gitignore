@@ -1,5 +1,9 @@
 /Data/Sample\ MOSA\ Results
 /Data/paused_execution_envr.rdata
+/Data/test_bench_paused_envr.rds
 /renv
 /.Rhistory
 .Rproj.user
+test_file.R
+Rplots.pdf
+.Rdata

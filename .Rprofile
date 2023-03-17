@@ -47,10 +47,7 @@ suppressPackageStartupMessages(library(cramer))
 suppressPackageStartupMessages(library(bayesmeta))
 suppressPackageStartupMessages(library(fpc))
 
-setwd("/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization")
-source(file.path('functions.R'))
+setwd(file.path('.','MH_Simulation','Inpatient Bed Allocation Optimization'))
+source(file.path('.','Code','functions.R'))
 source(file.path("Simulations",'Minnesota MH Network Simulation.R'))
-source('MOSA Functions.R')
-res_dir <-
-  file.path(".", "Data", "Sample MOSA Results") |>  
-    {function(i) file.path(i, list.files(i)[length(list.files(i))])}() 
+source(file.path('.','Code','MOSA Functions.R'))

@@ -172,4 +172,8 @@ if (continue_previous) {
       sim_length <-  200
       continue_previous <- F
   }
+<<<<<<< HEAD
 >>>>>>> e29de9b (Updates:)
+=======
+  source(file.path('.','Code','Multi-Objective Simulated Annealing.R'))
+>>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)

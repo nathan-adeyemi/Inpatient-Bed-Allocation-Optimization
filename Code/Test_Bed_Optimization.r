@@ -25,9 +25,7 @@ obj_function_list <-
         x = lsf.str(),
         value = T)
 init_sol <- c(1, rep(0, (nVar - 1)))
-sim_length <- 2500
-warmup <- 200
-init_sol <- c(1, rep(0, (nVar - 1)))
-
+sim_length <- 500
+warmup <- 25
 # Run Optimization Algorithm------------------------------------------------
 source(file.path('.','Code','Multi-Objective Simulated Annealing.R'))

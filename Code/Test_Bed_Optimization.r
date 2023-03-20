@@ -116,6 +116,7 @@ obj_function_list <-
         x = lsf.str(),
         value = T)
 init_sol <- c(1, rep(0, (nVar - 1)))
+<<<<<<< HEAD
 sim_length <- 2500
 warmup <- 200
 init_sol <- c(1, rep(0, (nVar - 1)))
@@ -123,6 +124,10 @@ init_sol <- c(1, rep(0, (nVar - 1)))
 >>>>>>> e29de9b (Updates:)
 =======
 
+=======
+sim_length <- 500
+warmup <- 25
+>>>>>>> db7855f (Issue: calls for "objective_metrics" function cannot read from global environment)
 # Run Optimization Algorithm------------------------------------------------
 source(file.path('.','Code','Multi-Objective Simulated Annealing.R'))
 >>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)

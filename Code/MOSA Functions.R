@@ -366,7 +366,9 @@ updateSimStats <- function(i,data,new_sol){
 
 objective_Metrics <- function(data,fun_list = NA){
   data %>% 
-    {function(data) lapply(fun_list,FUN = function(i) eval(parse(text = paste0(i,'(data)'))))}() %>%
+    {function(data) lapply(fun_list,FUN = function(i){ 
+      eval(parse(text = paste0(i,'(data)')),envir = .GlobalEnv)
+      })}() %>%
     Reduce(merge,.) %>% data.table()
 }
 

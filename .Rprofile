@@ -77,7 +77,8 @@ if (interactive() && Sys.getenv("RSTUDIO") == "") {
 
 options(scipen = 999,
         digits = 6,
-        warn = -1)
+        warn = -1,
+        languageserver.formatting_style = function(options) { styler::tidyverse_style(scope = "indention", indent_by = options$tabSize)})
 
 # Utilities ----------------------------
 suppressPackageStartupMessages(library(tidyverse))

@@ -1,133 +1,4 @@
-smart.round <- function(x) {
-  y <- floor(x)
-  indices <- tail(order(x - y), round(sum(x)) - sum(y))
-  y[indices] %+% 1
-  return(y)
-}
-
-norm_vec <- function(x) {
-  x / sum(x)
-}
-
-mod_softmax <- function(vec){
-  vec <- scale(vec)
-  return(exp(vec)/sum(exp(vec)))
-}
-
-sl_ifelse <- function(test,yes,no){
-  return(`if`(test,yes,no))
-}
-
-permute_with_duplicates <- function(v, n) {
-  perms <- permutations(length(v), n, v, repeats.allowed = TRUE)
-  return(perms)
-}
-
-decode <- function(alg_input,test_bench = get('use_test_bench',envir = .GlobalEnv)){
-  if (!test_bench) {
-    alg_input <-
-      unique(copy(siteInfo
-      )[, list(Facility_name, Bed_Group, total_beds)]
-      )[, inputs := alg_input
-      ][, `:=`(Sums = sum(inputs),
-               fac_beds = sum(total_beds)), 
-        by = Facility_name
-      ][, bed_counts := {Vectorize(smart.round)}(na.replace(inputs / Sums,1) * fac_beds)]
-    return(alg_input$bed_counts)
-  } else {
-    new_alloc <- alg_input %>% 
-      norm_vec() 
-    new_alloc <-
-      smart.round(x = new_alloc * total_servers)
-    return(new_alloc)
-  }
-}
-
-# Functions for Multi-Objective Simulated Annealing -----------------------
-termination_criteria <-
-  function(eval_gradient = F,
-           check_pareto = F,
-           check_iteration = F) {
-    obj_names <- colnames(best$Obj_mean)
-    if (it < 1) {
-      logical <- T
-    } else if (eval_gradient) {
-      
-      # Defines the minimum gradient stopping criteria
-      grad_term <- data.table(matrix(c(0,0.5,0,-0.05,0,-0.05),nrow = 2))
-      
-      #Names the gradient terminating criteria dataframe columns
-      colnames(grad_term) <- colnames(best$Obj_mean) 
-      
-      best_df <- get('best_df', envir = .GlobalEnv)
-      gradient <-
-        tail(tail(unique(best_df[, ..obj_names]), n = 2)[, lapply(
-          X = .SD,
-          FUN = function(i) {
-            100 * ((i - data.table::shift(i, n = 1)) / data.table::shift(i, n = 1))
-          }
-        ), .SDcols = obj_names],
-        n = 1)
-      
-      logical <-
-        !all(sapply(
-          X = obj_names,
-          FUN = function(column) {
-            return(min(gradient_term[, ..column]) < gradient[, ..column] &
-                     max(gradient_term[, ..column]) > gradient[, ..column])
-          }
-        ) == T)
-    } else if (check_pareto) {
-      logical <- any(temp > t_min, get('pareto_counter',envir = .GlobalEnv) < pareto_limit)
-    } else if (check_iteration){
-      logical <- it < itMax
-    } else {
-      logical <- temp > t_min
-    }
-    return(logical)
-  }
-
-fix_cell <- function(i){
-  if (i < 0){
-    i <- abs(i)
-  } else if (i > 1){
-    i <- (1-i) + 1
-  }
-  i
-}
-
-tweak <- function(x,limit_change = F) {
-  change_lim <- sl_ifelse(test = limit_change,
-                          yes = (temp/temp_init * maxChange),
-                          no = maxChange)
-
-  changes <- rep(0,nVar)
-  while (sum(changes) == 0) {
-    changes <- as.numeric(runif(nVar) < p_accept(it))
-  }
-  changes <-
-    runif(n = length(changes),
-          min = -change_lim,
-          max = change_lim) * changes
-  x <- sapply(x + changes, fix_cell)
-  return(x)
-}
-
-read_temp_files <- function(){
-  pop <- list()
-  folder <- list.files(file.path(".","Data","MOSA Results",paste0("Temp_Archive_Files_",today))) %>% 
-    {function(fl)  file.path(".","Data","MOSA Results",paste0("Temp_Archive_Files_",today), fl[length(fl)])}()
-  
-  for (a in list.files(folder)){
-    temp <- readRDS(file.path(folder,a))
-    pop <- append(pop,temp$Previous_Best)
-    temp <- NULL
-  }
-  pop <- pop[!duplicated(pop)]
-  return(pop)
-}
-
-ndsa <- function(pop){
+ndsa <- function(pop, envir = parent.frame()){
   allFronts = list()
   frontRank <- 1
   
@@ -172,7 +43,7 @@ ndsa <- function(pop){
   return(allFronts)
 }
 
-rankDF <- function(rank){
+rankDF <- function(rank, envir = parent.frame()){
   count = 1
   dt <- data.frame(matrix(data = 0,ncol = length(best$Obj_mean),nrow = length(allFronts[[rank]])))
   names(dt) <- names(best$Obj_mean)
@@ -192,7 +63,7 @@ CostFunction <- function(sol = NULL,
                          sim_length = get(x = 'sim_length', envir = .GlobalEnv),
                          sim_warmup = get(x = 'warmup', envir = .GlobalEnv),
                          use_inv_V = get(x = 'inverted_V_logical', envir = .GlobalEnv),
-                         nsga = F) {
+                         nsga = F, envir = parent.frame()) {
   if(nsga){
     sol <- decode(sol)
   }
@@ -228,7 +99,7 @@ CostFunction <- function(sol = NULL,
   return(x)
 }
 
-update_sol <- function(i,sol_vector = NA,best_sol){
+update_sol <- function(i,sol_vector = NA,best_sol, envir = parent.frame()){
   x <- best_sol
   if (any(is.na(sol_vector))) {
     x$Replications <- get('starter_reps',envir = .GlobalEnv)
@@ -245,7 +116,7 @@ update_sol <- function(i,sol_vector = NA,best_sol){
 }
 
 
-gen_candidates <- function(tweak_left,candidate_list = NULL,s_star) {
+gen_candidates <- function(tweak_left,candidate_list = NULL,s_star, envir = parent.frame()) {
   temp_counter <- 0
   new_solns <- list()
   while (tweak_left > 0 & temp_counter < 60) {
@@ -347,7 +218,7 @@ gen_candidates <- function(tweak_left,candidate_list = NULL,s_star) {
   return(candidate_list)
 }
 
-updateSimStats <- function(i,data,new_sol){
+updateSimStats <- function(i,data,new_sol, envir = parent.frame()){
   i$Cost <- if(!new_sol) rbind(i$Cost,data) else data
   i$Cost[,replication := seq(nrow(i$Cost))]
   setDT(i$Cost)
@@ -364,7 +235,7 @@ updateSimStats <- function(i,data,new_sol){
   return(i) 
 }
 
-objective_Metrics <- function(data,fun_list = NA){
+objective_Metrics <- function(data,fun_list = NA, envir = parent.frame()){
   data %>% 
     {function(data) lapply(fun_list,FUN = function(i){ 
       eval(parse(text = paste0(i,'(data)')),envir = .GlobalEnv)
@@ -372,7 +243,7 @@ objective_Metrics <- function(data,fun_list = NA){
     Reduce(merge,.) %>% data.table()
 }
 
-simple_mean_comparison <- function(metric, df, strict = T) {
+simple_mean_comparison <- function(metric, df, strict = T, envir = parent.frame()) {
   if (strict)
     df[soln_num == 2, sapply(.SD, mean), .SDcols = metric] < df[soln_num == 1, sapply(.SD, mean), .SDcols = metric]
   else
@@ -383,7 +254,8 @@ soln_comparison <-
   function(s1,
            s2,
            stat = get('stat_logical', envir = .GlobalEnv),
-           alpha = 0.05) {
+           alpha = 0.05, 
+           envir = parent.frame()) {
     comp_df <- rbind(copy(s1$Cost)[,soln_num := 1],
                      copy(s2$Cost)[,soln_num := 2])
     
@@ -449,7 +321,7 @@ soln_comparison <-
 
 p_accept <- function(curr_temp,initial_temp = temp_init) 1 - (exp(initial_temp - curr_temp) / exp(initial_temp))
 
-noisyNonDominatedSorting <- function (inputData) 
+noisyNonDominatedSorting <- function (inputData, envir = parent.frame()) 
 { 
   #Modified from the fastNonDominatedSorting function in the nsga2R v1.1 package
   popSize = length(inputData)
@@ -516,7 +388,7 @@ noisyNonDominatedSorting <- function (inputData)
               'rnkVec' = rnkVec))
 }
 
-updateParetoSet <- function(pSet,candidate_list){
+updateParetoSet <- function(pSet,candidate_list, envir = parent.frame()){
   n_obj <- length(optim_type)
   pSet <-  append(pSet,candidate_list)
   pSet <- removeDuplicateSolutions(pSet)
@@ -532,7 +404,7 @@ updateParetoSet <- function(pSet,candidate_list){
   return(list('pSet' = pSet, 'ranks' = ranks))
 }
 
-findBestbyDistance <- function(pSet, rankInfo) {
+findBestbyDistance <- function(pSet, rankInfo, envir = parent.frame()) {
   if (length(pSet) > 1) {
     obj_means <- apply(
       X = as.matrix(t(pSet %c% 'Obj_mean')),
@@ -615,7 +487,7 @@ findBestbyDistance <- function(pSet, rankInfo) {
 }
 
 findBestbyDominanceMatrix <-
-  function(current_best, candidate_list, stat_comp = F) {
+  function(current_best, candidate_list, stat_comp = F, envir = parent.frame()) {
     
     # Creates dominance matrices
     # Key:
@@ -665,7 +537,7 @@ findBestbyDominanceMatrix <-
   }
 
 findBestbySequentialComparison <- function(candidate_list,
-                                           stat_comp = get('stat_logical',envir = .GlobalEnv)) {
+                                           stat_comp = get('stat_logical'), envir = parent.frame()) {
   for (i in candidate_list) {
     # Objective Functions Statistical Tests (Non - parametric test)
     test <-  soln_comparison(best, i, stat = stat_comp)
@@ -695,11 +567,11 @@ findBestbySequentialComparison <- function(candidate_list,
   return(best)
 }
 
-findBestbyPsi <- function(candidate_list){
+findBestbyPsi <- function(candidate_list, envir = parent.frame()){
   candidate_list <- lapply(candidate_list,procedureI_func,all_candidates = candidate_list)
 }
 
-updateHistory <- function(pSet, candidate_list, history) {
+updateHistory <- function(pSet, candidate_list, history, envir = parent.frame()) {
   if (length(history) != 0) {
     history <- append(history,
                       list(list(
@@ -715,13 +587,13 @@ updateHistory <- function(pSet, candidate_list, history) {
   
 }
 
-removeDuplicateSolutions <- function(front){
+removeDuplicateSolutions <- function(front, envir = parent.frame()){
   return(front[!duplicated(lapply(
     X = front,
     FUN = function(i) i$name))])
 }
 
-compareIterationFronts <- function(curr_front,prev_front){
+compareIterationFronts <- function(curr_front,prev_front, envir = parent.frame()){
   return(identical(
     removeDuplicateSolutions(curr_front) %c% 'name',
     removeDuplicateSolutions(prev_front)  %c% 'name'
@@ -736,7 +608,7 @@ cool_temp  <-
            linear = F,
            log_mult = F,
            quad_cool = F,
-           constant = F) {
+           constant = F, envir = parent.frame()) {
     if (linear) {
       temp <-  initial_temperature / (1 + (alpha * current_iteration))
     } else if (log_mult) {
@@ -883,7 +755,7 @@ procedureII_func <-
 ocba <- 
   function(candidate_list,
            test_bench = get(x = 'use_test_bench',
-                            envir = .GlobalEnv)) {
+                            envir = .GlobalEnv),envir = parent.frame()) {
     
     # Multi-Objective Optimal Computing Budget Allocation 
     N_Total <- 20 * length(candidate_list)
@@ -1030,13 +902,13 @@ ocba <-
   } 
 
 # Function for implementing the NSGA-II Algorithm -------------------------
-objective_Metrics_nsga2 <- function(data,fun_list = NA){
+objective_Metrics_nsga2 <- function(data,fun_list = NA,envir = parent.frame()){
   data %>% 
     {function(data) lapply(fun_list,FUN = function(i) eval(parse(text = paste0(i,'(data)'))))}() %>%
     Reduce(merge,.) %>% data.table()
 }
 
-sim_nsga2 <- function(inp_vec) {
+sim_nsga2 <- function(inp_vec,envir = parent.frame()) {
   if (!all(inp_vec %% 1 == 0)) {
     inp_vec <- decode(inp_vec)
   }
@@ -1054,7 +926,7 @@ sim_nsga2 <- function(inp_vec) {
   )[, -1], 2, mean))
 }
 
-analytical_nsga2 <- function(inp_vec){
+analytical_nsga2 <- function(inp_vec,envir = parent.frame()){
   if(!all(inp_vec %% 1 == 0)){
     inp_vec <- decode(inp_vec)
   }
@@ -1076,7 +948,7 @@ analytical_nsga2 <- function(inp_vec){
 mcnsga2 <- function (fn, varNo, objDim, lowerBounds = rep(-Inf, varNo), 
           upperBounds = rep(Inf, varNo), popSize = 100, tourSize = 2, 
           generations = 20, cprob = 0.7, XoverDistIdx = 5, mprob = 0.2, 
-          MuDistIdx = 10) 
+          MuDistIdx = 10,envir = parent.frame()) 
 {
   # Modified version of the nsga2 function in the nsga2R package version 1.1
   cat("********** R based Nondominated Sorting Genetic Algorithm II *********")
@@ -1201,7 +1073,7 @@ mcnsga2 <- function (fn, varNo, objDim, lowerBounds = rep(-Inf, varNo),
 }
 
 # Function for Plotting MOSA Results --------------------------------------
-normalize <- function(base,df){
+normalize <- function(base,df,envir = parent.frame()){
   setDT(df)
   names <- unique(df$name)
   for (n in names){
@@ -1219,7 +1091,7 @@ normalize <- function(base,df){
   return(new_df)
 }
 
-plotParetoFront <- function(inputData,plot_angle = 120){
+plotParetoFront <- function(inputData,plot_angle = 120,envir = parent.frame()){
   if (any(class(inputData) == 'data.table')) {
     inputData <- as.matrix(inputData)
     paretoPlot <- scatterplot3d(inputData, grid = F)
@@ -1275,7 +1147,7 @@ addgrids3d <- function(x, y=NULL, z=NULL, grid = TRUE,
                        col.grid = "grey", lty.grid = par("lty"),
                        lab = par("lab"), lab.z = mean(lab[1:2]),
                        scale.y = 1, angle = 40,
-                       xlim=NULL, ylim=NULL, zlim=NULL){
+                       xlim=NULL, ylim=NULL, zlim=NULL,envir = parent.frame()){
   
   
   if(inherits(x, c("matrix", "data.frame"))){
@@ -1367,7 +1239,7 @@ addgrids3d <- function(x, y=NULL, z=NULL, grid = TRUE,
   
 }
 
-plotTestBenchResults <- function(df){
+plotTestBenchResults <- function(df,envir = parent.frame()){
   df_avgs <-
     setDT(
       melt(
@@ -1394,7 +1266,7 @@ plotTestBenchResults <- function(df){
 }
 
 # Convenience Functions ---------------------------------------------------
-extractParetoSets <- function(directory) {
+extractParetoSets <- function(directory,envir = parent.frame()) {
   pareto_sets <- lapply(
     X = seq(length(list.files(
       file.path(directory,
@@ -1411,7 +1283,7 @@ extractParetoSets <- function(directory) {
   )
 }
 
-candidateSettoMatrix <- function(set,attr){
+candidateSettoMatrix <- function(set,attr,envir = parent.frame()){
   attr <- if(!is.character(attr)) deparse(substitute(attr)) else attr
   return(t(matrix(unlist(set %c% attr),ncol = length(set))))
 }

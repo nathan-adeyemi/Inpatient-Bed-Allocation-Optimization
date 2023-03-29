@@ -47,6 +47,7 @@ run_test_bench <-
            warmup = NA,
            inverted_V = T) {
     
+    n_queues <- network_df[,.N]
     arrival_gen <- function(envr, id, inv_V = T) {
       if(!inv_V){
         id <- as.character(id)
@@ -139,16 +140,15 @@ run_test_bench <-
                         simmer::timeout(
                            task = function()
                               rexp(n = 1, rate = network_df[",id,", service_rates])) %>%
-                        simmer::release(resource = 'queue_",id,"',amount = 1)  %>%", 
+                        simmer::release(resource = 'queue_",id,"',amount = 1) %>%", 
                           ifelse(test = inverted_V, 
-                                 yes = "join(queueing_node_leave_trajectory)", 
+                                 yes = " join(queueing_node_leave_trajectory)", 
                                  no = "rollback(amount = 6, times = Inf)")
                           
                    )
       )
       )
     }
-    
     traj_list <- mget(intersect(grep('queueing_node_',ls(),value = T),grep('trajectory',ls(),value = T)))
     
     # Routing Trajectory ------------------------------------------------------
@@ -179,7 +179,6 @@ run_test_bench <-
         simmer::join(branch_trajectory)
     }
     sim_env <-  environment()
-    
     if (multicore) { #any(Sys.info()['sysname'] == c('Darwin', 'Linux'))
       data <- mclapply(
         X = rep_nums,
@@ -342,84 +341,65 @@ service_excess_factor <- 1.01 #How much should the network service rate exceed t
 total_servers <- 4 * n_queues
 
 if(!get('read_init',envir = .GlobalEnv)){
-if(!inverted_V_logical){
-# Define probabilities of routing from one queue to another in a completely interconnected Jackson network ----------------------------------------------------------
-p_ijs <- matrix(data = runif((n_queues + 1)^2), nrow = n_queues + 1, ncol = n_queues + 1)
-p_ijs <- t(apply(
-  X = p_ijs,
-  MARGIN = 2,
-  FUN = function(i)
-    i / sum(i)
-))
+  if(!inverted_V_logical){
+  # Define probabilities of routing from one queue to another in a completely interconnected Jackson network ----------------------------------------------------------
+  p_ijs <- matrix(data = runif((n_queues + 1)^2), nrow = n_queues + 1, ncol = n_queues + 1)
+  p_ijs <- t(apply(
+    X = p_ijs,
+    MARGIN = 2,
+    FUN = function(i)
+      i / sum(i)
+  ))
 
-# Generating random values for individual queues for fully connected Open Jackson Network ----------------------------------------------------------
-queues_df <- data.table(queue_id = seq(n_queues),
-                        lambda_cap = runif(n = n_queues,
-                                           min = min_arr_rate,
-                                           max = max_arr_rate))
-lambda_sub <-
-  solve(a = diag(n_queues) - t(p_ijs[seq(n_queues), seq(n_queues)]),
-        b = queues_df[,lambda_cap])
+  # Generating random values for individual queues for fully connected Open Jackson Network ----------------------------------------------------------
+  queues_df <- data.table(queue_id = seq(n_queues),
+                          lambda_cap = runif(n = n_queues,
+                                            min = min_arr_rate,
+                                            max = max_arr_rate))
+  lambda_sub <-
+    solve(a = diag(n_queues) - t(p_ijs[seq(n_queues), seq(n_queues)]),
+          b = queues_df[,lambda_cap])
 
-queues_df <- queues_df[,`:=`(lambda_sub = lambda_sub)
-                       ][,service_rates := runif(n = .SD[,.N],
-                                                 min = 0,
-                                                 max = 1)]
-} else {
-  # Define routing probabilities in a inverted-V queueing network --------------------------------------------------------
-  p_ijs <-
-    matrix(
-      data = runif(n = n_queues, min = 0, max = 1) %>% 
-        {function(x) x/sum(x)}(),
-      nrow = 1,
-      ncol = n_queues
-    )
-  
-# Generating random values for individual queues for inverted-V Network ----------------------------------------------------------
+  queues_df <- queues_df[,`:=`(lambda_sub = lambda_sub)
+                        ][,service_rates := runif(n = .SD[,.N],
+                                                  min = 0,
+                                                  max = 1)]
+  } else {
+    # Define routing probabilities in a inverted-V queueing network --------------------------------------------------------
+    p_ijs <-
+      matrix(
+        data = runif(n = n_queues, min = 0, max = 1) %>% 
+          {function(x) x/sum(x)}(),
+        nrow = 1,
+        ncol = n_queues
+      )
+    
+  # Generating random values for individual queues for inverted-V Network ----------------------------------------------------------
 
-  lambda_total = sum(runif(n = n_queues,
-                           min = min_arr_rate,
-                           max = max_arr_rate))
-  
-  queues_df <- data.table(
-    queue_id = seq(n_queues),
-    lambda_cap = runif(n = n_queues,
-                       min = min_arr_rate,
-                       max = max_arr_rate),
-    p_ijs = c(p_ijs)
-  )[, lambda_sub := p_ijs * lambda_total][, `:=`(service_rates = runif(n = .SD[, .N],
-                                                                       min = 0,
-                                                                       max = 1))]
-  
-  
-  min_t_servers <-
-    queues_df[, .(sum(lambda_sub))] / (queues_df[, .(sum(service_rates))] * service_excess_factor ^ -1)
-  queues_df[, `:=`(server_count = rep(NA, n_queues)), ]
-}
-
-# ][, service_rates := runif(
-#   n = 1,
-#   min = lambda_sub / server_count,
-#   max = ceiling(lambda_sub / server_count)
-# ), by = queue_id
-# ][,`:=`(rho = lambda_sub/service_rates)]
-  list2env(
-    list(
-      'total_servers' = total_servers,
-      'run_test_bench' = run_test_bench,
-      'queues_df' = queues_df,
-      'TB_obj_1' = TB_obj_1,
-      'TB_obj_2' = TB_obj_2,
-      'TB_obj_3' = TB_obj_3
-    ),
-    .GlobalEnv
-  )
-} else{
-  list2env( list(
-    'total_servers' = total_servers,
-    'run_test_bench' = run_test_bench,
-    'TB_obj_1' = TB_obj_1,
-    'TB_obj_2' = TB_obj_2,
-    'TB_obj_3' = TB_obj_3
-  ),.GlobalEnv)
-}
+    lambda_total = sum(runif(n = n_queues,
+                            min = min_arr_rate,
+                            max = max_arr_rate))
+    
+    queues_df <- data.table(
+      queue_id = seq(n_queues),
+      lambda_cap = runif(n = n_queues,
+                        min = min_arr_rate,
+                        max = max_arr_rate),
+      p_ijs = c(p_ijs)
+    )[, lambda_sub := p_ijs * lambda_total][, `:=`(service_rates = runif(n = .SD[, .N],
+                                                                        min = 0,
+                                                                        max = 1))]
+    
+    
+    min_t_servers <-
+      queues_df[, .(sum(lambda_sub))] / (queues_df[, .(sum(service_rates))] * service_excess_factor ^ -1)
+    queues_df[, `:=`(server_count = rep(NA, n_queues)), ]
+  }
+} 
+list2env( list(
+  'total_servers' = total_servers,
+  'run_test_bench' = run_test_bench,
+  'TB_obj_1' = TB_obj_1,
+  'TB_obj_2' = TB_obj_2,
+  'TB_obj_3' = TB_obj_3
+),.GlobalEnv)

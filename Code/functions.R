@@ -13,7 +13,7 @@ if (exists('full_sim')){
   }else{
     fun_list <- lsf.str()
   }
-  rm(list = fun_list)
+  #rm(list = fun_list)
 }
 
 # Simulation Call and Output Processing Functions --------------------------

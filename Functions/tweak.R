@@ -9,7 +9,8 @@ tweak <- function(x,
   
   changes <- rep(0, .envir$nVar)
   while (sum(changes) == 0) {
-    changes <- as.numeric(runif(.envir$nVar) < p_accept(.envir$it))
+    changes <-
+      as.numeric(runif(.envir$nVar) < p_accept(.envir = .envir))
   }
   changes <-
     runif(n = length(changes),

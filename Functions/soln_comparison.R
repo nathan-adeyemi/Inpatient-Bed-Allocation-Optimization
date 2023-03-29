@@ -3,6 +3,7 @@ soln_comparison <-
            s2,
            alpha = 0.05,
            .envir = parent.frame()) {
+<<<<<<< HEAD
     if(any(class(s1) == 'data.table')) {
       comp_df <- rbind(s1[, soln_num := 1],
                        s2[, soln_num := 2])
@@ -10,6 +11,11 @@ soln_comparison <-
       comp_df <- rbind(copy(s1$Cost)[, soln_num := 1],
                        copy(s2$Cost)[, soln_num := 2])
     }
+=======
+    comp_df <- rbind(copy(s1$Cost)[, soln_num := 1],
+                     copy(s2$Cost)[, soln_num := 2])
+    stat <- .envir$stat_logical
+>>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
     alpha <- 0.05
     #Less strict alpha value if there are few simulation replications
     if (any(sapply(list(s1, s2), function(i)
@@ -32,7 +38,11 @@ soln_comparison <-
           'max' = -1
         )[match(col, indx)]
     }
+<<<<<<< HEAD
     if (.envir$stat_logical) {
+=======
+    if (stat) {
+>>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
       criteria_1 <- sapply(
         X = seq_along(indx),
         FUN = function(variable)

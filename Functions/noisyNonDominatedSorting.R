@@ -13,12 +13,20 @@ noisyNonDominatedSorting <-
           # Test if xi dominates xj
           crit_1 <- soln_comparison(s1 = xj,
                                     s2 = xi,
+<<<<<<< HEAD
                                     .envir = .envir)
+=======
+                                    stat = T)
+>>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
           
           # Test if xj dominates xi
           crit_2 <- soln_comparison(s1 = xi,
                                     s2 = xj,
+<<<<<<< HEAD
                                     .envir = .envir)
+=======
+                                    stat = T)
+>>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
           
           # Assign dominating and dominated solutions
           if (crit_1 && !crit_2) {

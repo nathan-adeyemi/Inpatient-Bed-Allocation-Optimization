@@ -27,19 +27,20 @@ gen_candidates <-
     temp_counter <- 0
     new_solns <- list()
     tweak_left <- if(is.na(tweak_left)) .envir$nTweak
-    
   
     while (tweak_left > 0 & temp_counter < 60) {
       candidate_list <-
         mclapply(
-          seq(tweak_left) + length(new_solns),
+          seq(tweak_left),
           update_sol,
-          best_sol = .envir$best,
           mc.cores = availableCores(),
           .envir = .envir
         )
+<<<<<<< HEAD
       
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+>>>>>>> 8c8946d (Fixed some custom functions.)
       # Remove duplicate allocations within temporary obj (inital subgroup)
       new_alloc = which({
         function(mat)
@@ -126,18 +127,18 @@ gen_candidates <-
       
       # Add all new generated solutions to the candidate list
       new_solns = append(new_solns, candidate_list)
-      if (length(candidate_list) > 0 & it != 0) {
+      if (length(candidate_list) > 0 & .envir$it != 0) {
         all_allocations <<-
           rbind(all_allocations, as.matrix(t(candidate_list %c% 'Allocation')))
       }
       
       temp_counter %+% 1
-      tweak_left <- nTweak - length(new_solns)
+      tweak_left <- tweak_left - length(new_solns)
     }
     
     candidate_list <- new_solns
     for (i in seq_along(candidate_list)) {
-      candidate_list[[i]]$name <- paste0('Tourney_', it, '_Candidate_', i)
+      candidate_list[[i]]$name <- paste0('Tourney_', .envir$it, '_Candidate_', i)
     }
     # Make lists of all new solutions/allocations (1 entry per replication), a list of the replication #s,
     # and a list of the allocation's index in the candidate list

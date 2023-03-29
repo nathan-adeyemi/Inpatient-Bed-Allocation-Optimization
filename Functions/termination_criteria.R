@@ -26,7 +26,7 @@ termination_criteria <-
            check_iteration = F,
            .envir = parent.frame()) {
     obj_names <- colnames(.envir$best$Obj_mean)
-    if (it < 1) {
+    if (.envir$it < 1) {
       logical <- T
     } else if (eval_gradient) {
       # Defines the minimum gradient stopping criteria

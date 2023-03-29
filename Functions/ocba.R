@@ -9,7 +9,7 @@ ocba <-
     delta <- .envir$delta
     first_time = TRUE
     N_replicated <- sum(candidate_list %c% 'Replications') # - (candidate_list[length(candidate_list)] %c% 'Replications')
-    K <- ceil(nTweak / 3)
+    K <- ceil(.envir$nTweak / 3)
     K <-
       sl_ifelse(
         test = length(candidate_list) < K,
@@ -120,7 +120,7 @@ ocba <-
             .envir = .envir
           )
       }
-      sP <- lapply(
+      sP <- mclapply(
         X = sP,
         FUN = function(Object, res) {
           new_stats <- rbindlist(res[which(job_names == Object$name)])
@@ -130,8 +130,8 @@ ocba <-
                            new_sol = F)
           return(Object)
         },
-        res = newResults
-        # mc.cores = availableCores()
+        res = newResults,
+        mc.cores = availableCores()
       )
       candidate_list[psiOrder[seq(K)]] <- sP
       

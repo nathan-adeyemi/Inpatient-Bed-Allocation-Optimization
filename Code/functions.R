@@ -22,13 +22,16 @@ sim_code_path <- file.path(".","Minnesota MH Network Simulation.R")
 
 # Custom Functions for analyzing the Mental Health Simulation
 `%+%` <- function(x,y){
+  # Re assigns x to be x + y (Equivalent of ++ in python)
   eval.parent(substitute(x <- x + y))
 }
 `%*%` <- function(x, y) {
+  # Reassigns x to be the product of x and y
   eval.parent(substitute(x <- x * y))
 }
-`%c%` <- # helper function to find list elements with the same name
-  function(x, n) {
+
+`%c%` <- function(x, n) {
+  # helper function to find list elements with the same name
     sapply(x, `[[`, n)
   }
 remove_zeros <- function(data) {
@@ -118,7 +121,7 @@ validate_fun <- function(text,
   }
 }
 
-swfun <- Vectorize(function(i){
+swfun <- function(i){
   if(grepl('Mayo',i)){
     return(switch(i,
                   "Mayo Rochester Pediatric/Adolescent" = "Child/Adolescent Psych",
@@ -131,7 +134,7 @@ swfun <- Vectorize(function(i){
                   "Adult" = "Adult Psych",
                   "Geriatric" = "Geriatric/Med Psych"))
   }
-})
+}
 
 sim_val_subfunction <-
   function(df,
@@ -574,8 +577,7 @@ progressive_mean <- function(df){
   )
 }
 
-rep_prog_func <-
-  function(x) {
+rep_prog_func <- function(x) {
     data.table(Ts = as.double(x$IP.Arrival.Timestamp),
                Average.TTP = progressive_mean(x))
   }
@@ -773,14 +775,16 @@ extract_results <- function(df,
 }
 
 # Results Visualization Functions ------------------------------------------
-results_boxplot <- function(data,col){ # results_boxplot: creates boxplots for results
+results_boxplot <- function(data,col){ 
+  # results_boxplot: creates boxplots for results
   ggplot(data,aes(x = log2(wait_times),y = col, group = col)) +
     geom_boxplot() +
     rotate() +
     scale_x_continuous(limits = c(-3.75,7))
 }
 
-results_density <- function(data){ # results_densityt: creates desnity plot for results
+results_density <- function(data){ 
+  # results_densityt: creates desnity plot for results
   lapply(seq(8),function(i) ggplot(data[[i]],aes(x = wait_times)) +
            geom_density() +
            scale_x_continuous(limits = c(0,100)) +
@@ -804,11 +808,11 @@ plot_usage <- function(resources,patients){
 }
 
 #Validation Target Value Calculation Functions-----------
-samplewmean <- Vectorize(function(d, i, j) {
+samplewmean <- function(d, i, j) {
   d <- d[i]
   w <- j[i]
   return(weighted.mean(d, w))
-})
+}
 
 weighted.var = function(x,w,type="reliability") {
   m=weighted.mean(x,w)
@@ -829,50 +833,50 @@ weighted.ttest.ci <- function(x, weights, conf.level = 0.95) {
   cint * stderr
 }
 
-extract_time_validation_metric <-
-  function(data,
+bs <- function(x) {
+  FUNCTION = val_func
+  interval = 95
+  interval_type = 'basic'
+  # boot_confInt_target_val
+  boot_name <- switch(
+    interval_type,
+    'basic' = 'basic',
+    'perc' = 'percent',
+    'norm' = 'normal',
+    'stud' = 'student',
+    'bca' = 'bca'
+  )
+  endpoint_indices <-
+    ifelse(rep(interval_type == 'norm', 2), c(2, 3), c(4, 5))
+  
+  if (length(unique(x)) >= 10) {
+    x = remove_outliers(x)
+  }
+  
+  p <- tryCatch({
+    signif(boot.ci(
+      one.boot(x, FUNCTION, 500),
+      conf = interval * 0.01,
+      type = interval_type
+    )[[boot_name]][endpoint_indices],
+    4) %>%
+      {function(x) paste0('(', x[1], ",", x[2], ")")}()
+  },
+  error = function(e) {
+    err <- cat("ERROR :", conditionMessage(e))
+    return (err)
+  })
+  
+  return(p)
+}
+
+extract_time_validation_metric <- function(data,
            val_group = NA,
            metric = 'disp_to_dep',
            val_func = {
              function(i)
                mean(i, na.rm = T)
            }) {
-    bs <- function(x) {
-      FUNCTION = val_func
-      interval = 95
-      interval_type = 'basic'
-      # boot_confInt_target_val
-      boot_name <- switch(
-        interval_type,
-        'basic' = 'basic',
-        'perc' = 'percent',
-        'norm' = 'normal',
-        'stud' = 'student',
-        'bca' = 'bca'
-      )
-      endpoint_indices <-
-        ifelse(rep(interval_type == 'norm', 2), c(2, 3), c(4, 5))
-      
-      if (length(unique(x)) >= 10) {
-        x = remove_outliers(x)
-      }
-      
-      p <- tryCatch({
-        signif(boot.ci(
-          one.boot(x, FUNCTION, 500),
-          conf = interval * 0.01,
-          type = interval_type
-        )[[boot_name]][endpoint_indices],
-        4) %>%
-          {function(x) paste0('(', x[1], ",", x[2], ")")}()
-      },
-      error = function(e) {
-        err <- cat("ERROR :", conditionMessage(e))
-        return (err)
-      })
-      
-      return(p)
-    }
     
     if (!any(is.na(val_group))) {
       data$val_group <-
@@ -940,7 +944,7 @@ extract_time_validation_metric <-
 # Mayo Data reading and formatting functions -----------------------------
 
 # Categorize Ages
-age.classify <- function(x) {
+age_classify <- function(x) {
   if(is.na(x)){
     y <- 'Adolescent' 
   } else if (x < 12){
@@ -955,7 +959,7 @@ age.classify <- function(x) {
   return(y)
 }
 
-unit.classify <- function(x) {
+unit_classify <- function(x) {
   if (grepl('RST ROGE 03 E BEH|Geriatric/Med Psych', x, ignore.case = T)) {
     return('Geriatric/Med Psych')
   } else if (grepl('RST ROGE 01 W BEH|Child/Adolescent Psych', x, ignore.case = T)) {
@@ -970,7 +974,7 @@ unit.classify <- function(x) {
 }
 
 
-ED.classify <- function(ed) {
+ED_classify <- function(ed) {
   return(switch(
     ed,
     'MCHS NPNH ED' = 'Mayo Clinic Health System in New Praugue',
@@ -995,7 +999,7 @@ ED.classify <- function(ed) {
   ))
 }
 
-source.classify <- function(origin){
+source_classify <- function(origin){
   if(origin == 'Transfer from a Hospital (Different Facility)'){
     return('External Transfer')
   }else if(origin == 'ED'){
@@ -1179,8 +1183,7 @@ boot_confInt_val <-function(x,
   }
 }
 
-boot_confInt_inputs <-
-  Vectorize(function(x,
+boot_confInt_inputs <-function(x,
                      FUNCTION,
                      interval = 95,
                      mean.only = FALSE,
@@ -1203,7 +1206,7 @@ boot_confInt_inputs <-
         return(result)
       }
     }
-  })
+  }
 
 dist_fit <- function(data){
   data <- as.numeric(data)

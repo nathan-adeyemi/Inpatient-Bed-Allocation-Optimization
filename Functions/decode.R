@@ -20,20 +20,28 @@ decode <-
                           fac_beds = sum(total_beds)),
                    by = Facility_name
 <<<<<<< HEAD
+<<<<<<< HEAD
                    ][, bed_counts := {Vectorize(smart_round)}(na.replace(inputs / Sums, 1) * fac_beds)]
 =======
                    ][, bed_counts := {Vectorize(smart.round)}(na.replace(inputs / Sums, 1) * fac_beds)]
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+                   ][, bed_counts := {Vectorize(smart_round)}(na.replace(inputs / Sums, 1) * fac_beds)]
+>>>>>>> 8c8946d (Fixed some custom functions.)
       return(alg_input$bed_counts)
     } else {
       new_alloc <- alg_input %>%
         norm_vec()
       new_alloc <-
 <<<<<<< HEAD
+<<<<<<< HEAD
         smart_round(x = new_alloc * .envir$total_servers)
 =======
         smart.round(x = new_alloc * .envir$total_servers)
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+        smart_round(x = new_alloc * .envir$total_servers)
+>>>>>>> 8c8946d (Fixed some custom functions.)
       return(new_alloc)
     }
   }

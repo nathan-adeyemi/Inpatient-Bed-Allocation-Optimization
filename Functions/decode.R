@@ -8,13 +8,13 @@ decode <-
                  ][, `:=`(Sums = sum(inputs), 
                           fac_beds = sum(total_beds)),
                    by = Facility_name
-                   ][, bed_counts := {Vectorize(smart.round)}(na.replace(inputs / Sums, 1) * fac_beds)]
+                   ][, bed_counts := {Vectorize(smart_round)}(na.replace(inputs / Sums, 1) * fac_beds)]
       return(alg_input$bed_counts)
     } else {
       new_alloc <- alg_input %>%
         norm_vec()
       new_alloc <-
-        smart.round(x = new_alloc * .envir$total_servers)
+        smart_round(x = new_alloc * .envir$total_servers)
       return(new_alloc)
     }
   }

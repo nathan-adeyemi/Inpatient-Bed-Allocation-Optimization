@@ -9,9 +9,6 @@ source(paste0(
     '.Rprofile'
   )
 ))
-source(file.path('.', 'Code', 'functions.R'))
-source(file.path('.', 'Code', 'MOSA Functions.R'))
-source(file.path('.', 'Code', 'Multi-Objective Simulated Annealing.R'))
 
 inverted_V_logical <- T
 use_test_bench <- T
@@ -29,7 +26,7 @@ read_init <- T
 jackson_envir <- new.env()
 if (read_init) {
   starter_data <-
-    readRDS(file.path("Data", paste0(size," Testing Initial Solution.rds")))
+    readRDS(file.path("Data",'Test Inverted V Networks',paste0(size," Testing Initial Solution.rds")))
   queues_df <- starter_data$network_df
   n_queues <- nVar <- queues_df[, .N]
 } else {

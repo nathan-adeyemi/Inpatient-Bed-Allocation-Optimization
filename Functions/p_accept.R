@@ -1,5 +1,7 @@
 p_accept <-
-  function(curr_temp, initial_temp) {
+  function(curr_temp = NA,
+           initial_temp = NA,
+           .envir = parent.frame()) {
     curr_temp <-
       ifelse(test = is.na(curr_temp),
              yes = .envir$temp,

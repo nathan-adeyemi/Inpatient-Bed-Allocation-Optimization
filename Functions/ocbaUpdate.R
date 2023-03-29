@@ -6,8 +6,9 @@ ocbaUpdate <-
     temp_results <-
       CostFunction(sol = arg_list[[arg]],
                    logic = FALSE,
-                   reps = 1)
-    temp_results <-
-      data.table(objective_Metrics(data = temp_results, fun_list = .envir$obj_function_list))[, replication := job_list[arg]]
+                   reps = 1,
+                   .envir = .envir)
+    temp_results <- objective_Metrics(temp_results,.envir = .envir)
+    temp_results <- data.table(temp_results)[, replication := job_list[arg]]
     return(temp_results)
   }

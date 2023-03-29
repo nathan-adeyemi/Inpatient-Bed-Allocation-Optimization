@@ -47,5 +47,5 @@ library(bayesmeta, quietly = T)
 library(fpc, quietly = T)
 library(rslurm, quietly = T)
 
-lapply(X = list.files(path = "./Functions"), FUN = source)
+lapply(X = file.path('.','Functions',list.files(path = file.path('.','Functions'))), FUN = source)
 source(file = file.path(".", 'Simulations', 'Minnesota MH Network Simulation.R'))

@@ -1,20 +1,8 @@
 # Algorithm Set Up --------------------------------------------------------
-rm(list = ls())
-use_test_bench <- T
-inverted_V_logical <- T
-continue_previous <- F
-
 # Load necessary files ----------------------------------------------------
 source(file.path('.','Code','functions.R'))
 source(file.path('.','Code','MOSA Functions.R'))
-
 if(!continue_previous) {
-  if (use_test_bench) {
-    source(file = file.path('.','Code','Test_Bed_Optimization.r'))
-  } else {
-    source(file = file.path('.','Code','Full_Sim_Optimization.r'))
-  }
-  
   # Initialize First Solution and Algorithm Hyper-parameters  ---------------------------------------------------------------------------
   temp_init <- temp <- 3
   t_min <- .01 * temp_init
@@ -51,7 +39,6 @@ if(!continue_previous) {
     Dist = 0,
     deltaPsi = 0
   )
-  
   init_data <-
     objective_Metrics(
       data = CostFunction(
@@ -92,7 +79,6 @@ if(!continue_previous) {
 } 
   # Main Optimization Algorithm Loop ---------------------------------------------------------------------------------
   while (termination_criteria()) {
-    browser()
     now <- Sys.time()
     extraReps <- F # Conditional for if extra simulation replications were used in the MOCBA
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
@@ -113,8 +99,10 @@ if(!continue_previous) {
        
       ranks <- pareto_set$ranks
       pareto_set <- pareto_set$pSet
-      pareto_order <- data.table(name = pareto_set %c% 'name',t(pareto_set %c% 'Obj_mean'))[,.(apply(.SD,2,unlist))][,order(mean_server_utilization,max_mean_queue,avg_wait,decreasing = F)]
-      pareto_set <- pareto_set[pareto_order]
+      if(length(pareto_set) > 1){
+        pareto_order <- data.table(name = pareto_set %c% 'name',t(pareto_set %c% 'Obj_mean'))[,.(apply(.SD,2,unlist))][,order(mean_server_utilization,max_mean_queue,avg_wait,decreasing = F)]
+        pareto_set <- pareto_set[pareto_order]
+      }
       
       prev_best <- best
       best <- findBestbyDistance(pSet = pareto_set)

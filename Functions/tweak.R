@@ -9,8 +9,12 @@ tweak <- function(x,
   
   changes <- rep(0, .envir$nVar)
   while (sum(changes) == 0) {
+<<<<<<< HEAD
     changes <-
       as.numeric(runif(.envir$nVar) < p_accept(.envir = .envir))
+=======
+    changes <- as.numeric(runif(.envir$nVar) < p_accept(.envir$it))
+>>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
   }
   changes <-
     runif(n = length(changes),

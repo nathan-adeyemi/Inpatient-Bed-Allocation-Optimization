@@ -127,6 +127,7 @@ library(fpc, quietly = T)
 library(rslurm, quietly = T)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 setwd(file.path('.','MH_Simulation','Inpatient Bed Allocation Optimization'))
 source(file.path('.','Code','functions.R'))
 source(file.path("Simulations",'Minnesota MH Network Simulation.R'))
@@ -146,5 +147,8 @@ source(file.path('.','Code','MOSA Functions.R'))
 >>>>>>> dc52996 (Minor update: removed files and modified the .Rprofile)
 =======
 lapply(X = list.files(path = "./Functions"), FUN = source)
+=======
+lapply(X = file.path('.','Functions',list.files(path = file.path('.','Functions'))), FUN = source)
+>>>>>>> 8c8946d (Fixed some custom functions.)
 source(file = file.path(".", 'Simulations', 'Minnesota MH Network Simulation.R'))
 >>>>>>> 1487b4d (Commit Attempt 2)

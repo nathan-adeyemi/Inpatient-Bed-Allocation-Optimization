@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 objective_Metrics <- function(x, .envir = parent.frame()){
   
   # Applies the selected objective functions to the simulation data
@@ -9,11 +10,15 @@ objective_Metrics <- function(x, .envir = parent.frame()){
   # Returns:
   #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replication 
   
+=======
+objective_Metrics <- function(x, .envir = parent.frame()){
+>>>>>>> 8c8946d (Fixed some custom functions.)
   data <- lapply(
     X = .envir$obj_function_list,
     FUN = function(func) {
       do.call(what = func,
               args = list(x))
+<<<<<<< HEAD
     }
   )
     data <- Reduce(merge,data)
@@ -1075,3 +1080,10 @@ candidateSettoMatrix <- function(set,attr,envir = parent.frame()){
 
 specify_decimal <- function(x, digits) as.numeric(trimws(format(round(x, digits), nsmall=digits))) 
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+    }
+  )
+    data <- Reduce(merge,data)
+    return(data)
+}
+>>>>>>> 8c8946d (Fixed some custom functions.)

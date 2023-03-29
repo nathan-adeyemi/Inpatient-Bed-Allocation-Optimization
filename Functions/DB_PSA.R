@@ -83,11 +83,10 @@ DB_PSA <- function(continue_previous = F,
       #debug(objective_Metrics)
       init_data <-
         objective_Metrics(
-          data = CostFunction(
+          x = CostFunction(
             sol = initial$Allocation,
-            logic = F),
-          fun_list = obj_function_list
-        )
+            logic = F))
+      
       initial <-
         updateSimStats(i = initial,
                        data = init_data,

@@ -43,6 +43,7 @@ ndsa <- function(pop, envir = parent.frame()){
   return(allFronts)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 rankDF <- function(rank, envir = parent.frame()){
@@ -1292,3 +1293,5 @@ candidateSettoMatrix <- function(set,attr,envir = parent.frame()){
 
 specify_decimal <- function(x, digits) as.numeric(trimws(format(round(x, digits), nsmall=digits))) 
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+>>>>>>> 8c8946d (Fixed some custom functions.)

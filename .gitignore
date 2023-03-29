@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Custom
 <<<<<<< HEAD
 /Data/Sample\ MOSA\ Results/
@@ -90,9 +91,15 @@ po/*~
 rsconnect/
 =======
 /Data/Sample\ MOSA\ Results
+=======
+/Data/Sample\ MOSA\ Results/
+/Data/Full\ Sim\Results/
+>>>>>>> 1487b4d (Commit Attempt 2)
 /Data/paused_execution_envr.rdata
 /Data/test_bench_paused_envr.rds
-/renv
+/Data/Small_hyperparameter_search_results.rds
+/Data/test_bench_paused_envr.rdata
+/renv/
 /.Rhistory
 .Rproj.user
 <<<<<<< HEAD
@@ -102,7 +109,18 @@ test_file.R
 Rplots.pdf
 .Rdata
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> b15efcc (Removed files)
 =======
 .gitignore
 >>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)
+=======
+.gitignore
+/_rslurm_hyperparameter_search
+/_rslurm_Small_hyperparameter_search
+/_rslurm_Medium_hyperparameter_search
+slurm_run_template_DONT_DELETE.R
+/Code/slurm_hyperparameter_template.txt
+/Code/slurm_job_template.txt
+/Code/MOSA\ Functions\ \(latest Github\).R
+>>>>>>> 1487b4d (Commit Attempt 2)

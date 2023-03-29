@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 suppressMessages(source('.Rprofile'))
 
 
@@ -152,28 +153,59 @@ if (continue_previous) {
       dir.create(res_dir)
     }
     res_dir <- file.path(res_dir,paste0('Trial_',length(list.files(res_dir))+1))
+=======
+source(file.path('.','Code','functions.R'))
+source(file.path('.','Code','MOSA Functions.R'))
+source(file.path('.','Code','Multi-Objective Simulated Annealing.R'))
+
+unfinished_dir <- file.path('home','adeyemi.n','MH_Simulation','Inpatient Bed Allocation Optimization','Data','full_sim_paused_envr.rdata')
+use_test_bench <- F
+if(dir.exists(unfinished_dir)){
+  load(unfinished_dir)
+  continue_previous <- T
+} else{
+  # Directory to Store MOSA Results -----------------------------------------
+  res_dir <- file.path(".","Data","Full Sim Results",gsub('-','_',Sys.Date()))
+  if(!dir.exists(res_dir)){
+>>>>>>> 1487b4d (Commit Attempt 2)
     dir.create(res_dir)
-    source(file.path('Simulations', 'Minnesota MH Network Simulation.R'))
-    siteInfo <-
-      data.table(readRDS(
-        file.path('Simulations', 'Function Requirements', 'Rates5.rds')
-      ))
-    obj_function_list <-
-      grep(pattern = 'mh_',
-           x = lsf.str(),
-           value = T)
-    nVar <- length(siteInfo[,unique(Bed_Group)])
-    optim_type = rep('min', 3)
-    init_sol <- unlist(sapply(
-      X = copy(siteInfo)[!duplicated(Bed_Group)][, .N, by = Facility_name][, N],
-      FUN = function(i)
-        c(1, rep(x = 0, times = i - 1))))
-      warmup <- 30
-      sim_length <-  200
-      continue_previous <- F
   }
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> e29de9b (Updates:)
 =======
   source(file.path('.','Code','Multi-Objective Simulated Annealing.R'))
 >>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)
+=======
+  res_dir <- file.path(res_dir,paste0('Trial_',length(list.files(res_dir))+1))
+  dir.create(res_dir)
+  source(file.path('Simulations', 'Minnesota MH Network Simulation.R'))
+  siteInfo <-
+    data.table(readRDS(
+      file.path('Simulations', 'Function Requirements', 'Rates5.rds')
+    ))
+  obj_function_list <-
+    grep(pattern = 'mh_',
+          x = lsf.str(),
+          value = T)
+  nVar <- length(siteInfo[,unique(Bed_Group)])
+  optim_type = rep('min', 3)
+  init_sol <- unlist(sapply(
+    X = copy(siteInfo)[!duplicated(Bed_Group)][, .N, by = Facility_name][, N],
+    FUN = function(i)
+      c(1, rep(x = 0, times = i - 1))))
+    warmup <- 30
+    sim_length <-  200
+    continue_previous <- F
+}
+results <- DB_PSA(
+  results_directory = res_dir,
+  sim_length = sim_length,
+  warmup = warmup,
+  obj_function_list = obj_function_list,
+  optim_type = c("max", "min", "min"),
+  nVar = queues_df[, .N],
+  use_test_bench = use_test_bench,
+  total_servers = total_servers
+)
+>>>>>>> 1487b4d (Commit Attempt 2)

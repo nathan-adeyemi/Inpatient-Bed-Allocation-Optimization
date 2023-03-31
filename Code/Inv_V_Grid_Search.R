@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 rm(list = ls())
 source('.Rprofile')
 source(
@@ -132,40 +133,21 @@ source(file = file.path('.','Code',"MOSA Functions.R"))
 source(file = file.path('.','Code',"functions.R"))
 >>>>>>> 1487b4d (Commit Attempt 2)
 nVar <- 4
+=======
+rm(list = ls())
+source('.Rprofile')
+source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
+
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
 nRep <- 20
-res_dir <- file.path(".", "Data",'Test Networks True Pareto Sets')
+res_dir <- file.path(".", "Data", 'Test Networks True Pareto Sets')
 
-read_init <- T
-use_test_bench <- T
-inverted_V_logical <- T
-stat_logical <- T
-jackson_envir <- new.env()
-size <- 'Small'
-optim_type <- c("max", "min", "min")
-starter_data <-   readRDS(file.path("Data", paste0(size," Testing Initial Solution.rds")))
-
-queues_df <- starter_data$network_df
-n_queues <- nVar <- queues_df[, .N]
-nServers <- 4* n_queues
-sys.source(file.path('.','Code',"Jackson Network Test Bench.R"), envir = jackson_envir)
-obj_function_list <-
-  grep(
-    pattern = "TB_",
-    x = lsf.str(),
-    value = T
-  )
-init_sol <- c(1, rep(0, (nVar - 1)))
-sim_length <- 2500
-warmup <- 200
-
-possible_allocs <- data.table(permute_with_duplicates(v = c(0, seq(nServers)), n = nVar)
-                              )[, sum := apply(.SD, 1, sum)
-                                ][sum == nServers, 
-                                  ][, sum := NULL]
+possible_allocs <-
+  data.table(permute_with_duplicates(v = c(0, seq(nServers)), n = nVar))[, sum := apply(.SD, 1, sum)][sum == nServers,][, sum := NULL]
 possible_allocs <- lapply(
   X = seq(nrow(possible_allocs)),
   FUN = function(i)
-    list("Allocation" = unlist(possible_allocs[i,]))
+    list("Allocation" = unlist(possible_allocs[i, ]))
 )
 
 possible_allocs <- lapply(
@@ -187,13 +169,12 @@ allocation_list <-
     FUN = function(i) {
       rep(x = list(i$Allocation), times = nRep)
     }
-  ), recursive = F)
+  ),
+  recursive = F)
 
 replication_list <-
-  rep(
-    x = seq(nRep),
-    times = length(possible_allocs)
-  )
+  rep(x = seq(nRep),
+      times = length(possible_allocs))
 
 index_list <- as.vector(sapply(
   seq_along(possible_allocs),
@@ -217,11 +198,9 @@ possible_allocs <- lapply(
     obj_ind <- which(possible_allocs %c% "name" == Object$name)
     stats <- rbindlist(test[which(index_list == obj_ind)])
     Object <-
-      updateSimStats(
-        i = Object,
-        data = stats,
-        new_sol = T
-      )
+      updateSimStats(i = Object,
+                     data = stats,
+                     new_sol = T)
   }
 )
 
@@ -229,5 +208,9 @@ pareto_set <-
   updateParetoSet(pSet = list(),
                   candidate_list = possible_allocs,
                   envir = .GlobalEnv)
+<<<<<<< HEAD
 save.image(file = file.path(res_dir, paste0(size," Network True Pareto Set.Rdata")))
 >>>>>>> 1487b4d (Commit Attempt 2)
+=======
+save.image(file = file.path(res_dir, paste0(size, " Network True Pareto Set.Rdata")))
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)

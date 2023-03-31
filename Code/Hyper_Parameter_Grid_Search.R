@@ -1,5 +1,6 @@
 rm(list = ls())
 <<<<<<< HEAD
+<<<<<<< HEAD
 source('.Rprofile')
 bi_objective <- F
 source(
@@ -29,6 +30,11 @@ source(file.path('.', 'Code', 'Multi-Objective Simulated Annealing.R'))
 
 size <- 'Small'
 >>>>>>> 8c8946d (Fixed some custom functions.)
+=======
+source('.Rprofile')
+source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
+
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
 true_pareto_set <-
   readRDS(
     file.path(
@@ -41,6 +47,7 @@ true_pareto_set <-
     )
   )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 nTweak_vec <- c(3,7,12)
 =======
@@ -84,6 +91,9 @@ sim_length <- 1000
 warmup <- 100
 nTweak_vec <- c(5,7,10)
 >>>>>>> 8c8946d (Fixed some custom functions.)
+=======
+nTweak_vec <- c(3,7,12)
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
 param_df <- rbind(
   data.table(sched_type = 'quadratic', t_damp = seq(0, 0.5, 0.025)[-1]),
   data.table(sched_type = 'linear', t_damp = seq(0, 1, 0.05)[-1]),
@@ -122,7 +132,6 @@ slurm_func <- function(sched_type,t_damp,nTweak) {
     hyper = T
   )
 }
-#browser()
 test_param_df <- param_df[seq(4),]
 >>>>>>> 8c8946d (Fixed some custom functions.)
 orig_dir <- getwd()
@@ -195,14 +204,13 @@ saveRDS(object = results_df,
     submit = F,
     jobname = paste(size,'hyperparameter_search',sep = '_'),
     global_objects = ls(),
-    r_template = '/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization/Code/slurm_hyperparameter_template.txt',
-    sh_template = '/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization/Code/slurm_job_template.txt'
+    r_template = file.path(orig_dir,'Code','slurm_hyperparameter_template.txt'),
+    sh_template = file.path(orig_dir,'Code','slurm_job_template.txt')
   )
-#undebug(DB_PSA)
 browser()
-
 results <- get_slurm_out(sjob,outtype = 'raw',wait = T)
-saveRDS(results,file = file.path('.','Data',paste(size,'hyperparameter_search_results.rds',sep = '_')))
+saveRDS(results,file = file.path(orig_dir,'Data',paste(size,'hyperparameter_search_results.rds',sep = '_')))
+setwd(orig_dir)
 # cleanup_files(sjob)
 param_df[row, `:=`(
   nIterations = res$total_iterations,

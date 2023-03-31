@@ -44,8 +44,8 @@ DB_PSA <- function(continue_previous = F,
     } else if (sched_type == 'exponential') {
       exp_logical <- T
     }
-    
-    reduce_temp  <- function() cool_temp(envir = parent.frame())
+    cool_env <- environment()
+    reduce_temp  <- function() cool_temp(cool_sched = sched_type,.envir = cool_env)
     
     if(!continue_previous) {
       temp <- temp_init
@@ -138,19 +138,19 @@ DB_PSA <- function(continue_previous = F,
         
         ranks <- pareto_set$ranks
         pareto_set <- pareto_set$pSet
+        
         if(length(pareto_set) > 1){
           pareto_order <- data.table(name = pareto_set %c% 'name',t(pareto_set %c% 'Obj_mean')
                                      )[,.(apply(.SD,2,unlist))]
-          pareto_set <- pareto_set[pareto_order[,order(mapply(
-            FUN = function(name, optim) {
-              ifelse(grepl('max', optim),
-                     yes = paste0('-', name),
-                     no = name)
-            },
-            name = setdiff(colnames(pareto_order), 'name'),
-            optim = optim_type
-          ),
-          decreasing = F)]]
+          pareto_order <- pareto_order[,setdiff(colnames(pareto_order),'name') := lapply(.SD,as.numeric), .SDcols = setdiff(colnames(pareto_order),'name')]
+          pareto_order <-
+            pareto_order[, (setdiff(colnames(pareto_order), 'name')[grep('min', optim_type)]) := lapply(
+              pareto_order = .SD,
+              FUN = function(i)
+                i * -1
+            ), .SDcols = setdiff(colnames(pareto_order), 'name')[grep('min', optim_type)], by = name]
+          setkeyv(pareto_order,setdiff(colnames(pareto_order),'name'))
+          pareto_set <- pareto_set[match(pareto_order$name,pareto_set %c% 'name')]
         }
         
         # Finding the "best" solution to be modified in the next iteration ----------------------------------------------------------
@@ -216,10 +216,9 @@ DB_PSA <- function(continue_previous = F,
         # Code removed for now
         all_allocations <- rbind(all_allocations,t(temp_obj %c% 'Allocation'))
         
-        if(length(pareto_set) > 1 & length(optim_type) == 2){ 
-          plotParetoFront(inputData = pareto_set)
-        } 
-        
+        # if(length(pareto_set) > 1 & length(optim_type) == 2){ 
+        #   plotParetoFront(inputData = pareto_set)
+        # } 
         if (print_it_results) {
           cat(
             'Iteration',
@@ -286,6 +285,7 @@ DB_PSA <- function(continue_previous = F,
       } else { 
         break
       }
+      
     }
   if(hyper){
     return(list(

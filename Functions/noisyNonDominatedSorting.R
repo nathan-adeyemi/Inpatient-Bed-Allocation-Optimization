@@ -13,12 +13,12 @@ noisyNonDominatedSorting <-
           # Test if xi dominates xj
           crit_1 <- soln_comparison(s1 = xj,
                                     s2 = xi,
-                                    stat = T)
+                                    .envir = .envir)
           
           # Test if xj dominates xi
           crit_2 <- soln_comparison(s1 = xi,
                                     s2 = xj,
-                                    stat = T)
+                                    .envir = .envir)
           
           # Assign dominating and dominated solutions
           if (crit_1 && !crit_2) {

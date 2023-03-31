@@ -14,7 +14,7 @@ findBestbyDistance <-
         X = seq(ncol(obj_means)),
         FUN = function(index)
           eval(parse(
-            text = paste0('which.', optim_type[index], '(obj_means[,', index, '])')
+            text = paste0('which.', .envir$optim_type[index], '(obj_means[,', index, '])')
           ))
       )
       g_ideal_dist <-
@@ -26,7 +26,7 @@ findBestbyDistance <-
       
       if (is.list(g_ideal_dist)) {
         multiple <- Reduce(Lcm, sapply(g_ideal_dist, length))
-        g_ideal_dist <-
+        g_ideal_dist <<- g_ideal_dist <-
           sapply(g_ideal_dist, function(i)
             unlist(rep(i, multiple / length(i))))
       }
@@ -55,6 +55,7 @@ findBestbyDistance <-
         X = pSet,
         FUN = function(i) {
           sd_cols <- setdiff(colnames(i$Cost), 'replication')
+          # return(kldiv(
           return(bhattacharyya.dist(
             mu1 = apply(g_ideal_dist, 2, mean),
             mu2 = i$Cost[, sapply(.SD, mean), .SDcols = sd_cols],
@@ -64,9 +65,10 @@ findBestbyDistance <-
         }
       )
       
-      selection_probs <- mod_softmax(scale(divergences))
-      pareto_set <<-
-        pSet <- lapply(
+      selection_probs <-
+        `if`(length(pSet) > 2, mod_softmax(scale(divergences)), rep(.5, 2))
+      
+      pSet <- lapply(
           X = seq_along(pSet),
           FUN = function(i) {
             pSet[[i]]$Divergence <- divergences[i]
@@ -82,8 +84,8 @@ findBestbyDistance <-
                prob = selection_probs)
       
     } else {
-      g_ideal_CI <<- unlist(best$Obj_CI)
+      g_ideal_CI <<- unlist(.envir$best$Obj_CI)
       best <- pSet[[1]]
     }
-    return(best)
+    return(list(`best` = best,`pareto_set` = pSet))
   }

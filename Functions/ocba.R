@@ -62,7 +62,7 @@ ocba <-
       deltaWP <- (psiRef * delta)/sum(abs((sP %c% 'deltaPsiD')[seq(k_test)]))
       # Assigning additional replications to each of the solutions
       addReps <-
-        smart.round({function(i) delta * (i/sum(i))}(sapply(
+        smart_round({function(i) delta * (i/sum(i))}(sapply(
           X = seq_along(sP),
           FUN = addReps_fun,
           candidate_list = sP,

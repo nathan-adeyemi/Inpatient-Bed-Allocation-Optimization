@@ -1,19 +1,7 @@
 rm(list = ls())
-source(paste0(
-  '/',
-  file.path(
-    'home',
-    'adeyemi.n',
-    'MH_Simulation',
-    'Inpatient Bed Allocation Optimization',
-    '.Rprofile'
-  )
-))
-source(file.path('.', 'Code', 'functions.R'))
-source(file.path('.', 'Code', 'MOSA Functions.R'))
-source(file.path('.', 'Code', 'Multi-Objective Simulated Annealing.R'))
+source('.Rprofile')
+source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
 
-size <- 'Small'
 true_pareto_set <-
   readRDS(
     file.path(
@@ -26,45 +14,7 @@ true_pareto_set <-
     )
   )
 
-conv_pSet_to_table <- function(set){
-  data.table(t(set[[1]] %c% 'Allocation'))
-}
-
-pareto_perc_correct <-
-  function(i) {
-    i <- conv_pSet_to_table(i)
-    100 * (merge(
-      x = i,
-      y = true_pareto_set,
-      by = colnames(true_pareto_set)
-    )[, .N] /
-      true_pareto_set[, .N])
-  }
-
-inverted_V_logical <- T
-continue_previous <- F
-use_test_bench <- T
-
-read_init <- T
-n_queues <- nVar <- 1
-jackson_envir <- new.env()
-optim_type <- c("max", "min", "min")
-if (read_init) {
-  starter_data <-
-    readRDS(file.path("Data", paste0(size, " Testing Initial Solution.rds")))
-  queues_df <- starter_data$network_df
-}
-sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
-obj_function_list <-
-  grep(
-    pattern = "TB_",
-    x = lsf.str(),
-    value = T
-  )
-init_sol <- c(1, rep(0, (nVar - 1)))
-sim_length <- 1000
-warmup <- 100
-nTweak_vec <- c(5,7,10)
+nTweak_vec <- c(3,7,12)
 param_df <- rbind(
   data.table(sched_type = 'quadratic', t_damp = seq(0, 0.5, 0.025)[-1]),
   data.table(sched_type = 'linear', t_damp = seq(0, 1, 0.05)[-1]),
@@ -98,7 +48,6 @@ slurm_func <- function(sched_type,t_damp,nTweak) {
     hyper = T
   )
 }
-#browser()
 test_param_df <- param_df[seq(4),]
 orig_dir <- getwd()
 setwd('/home/adeyemi.n/')
@@ -111,14 +60,13 @@ sjob <-
     submit = F,
     jobname = paste(size,'hyperparameter_search',sep = '_'),
     global_objects = ls(),
-    r_template = '/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization/Code/slurm_hyperparameter_template.txt',
-    sh_template = '/home/adeyemi.n/MH_Simulation/Inpatient Bed Allocation Optimization/Code/slurm_job_template.txt'
+    r_template = file.path(orig_dir,'Code','slurm_hyperparameter_template.txt'),
+    sh_template = file.path(orig_dir,'Code','slurm_job_template.txt')
   )
-#undebug(DB_PSA)
 browser()
-
 results <- get_slurm_out(sjob,outtype = 'raw',wait = T)
-saveRDS(results,file = file.path('.','Data',paste(size,'hyperparameter_search_results.rds',sep = '_')))
+saveRDS(results,file = file.path(orig_dir,'Data',paste(size,'hyperparameter_search_results.rds',sep = '_')))
+setwd(orig_dir)
 # cleanup_files(sjob)
 param_df[row, `:=`(
   nIterations = res$total_iterations,

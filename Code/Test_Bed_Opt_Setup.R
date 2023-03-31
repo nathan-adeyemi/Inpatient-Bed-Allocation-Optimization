@@ -1,4 +1,5 @@
 inverted_V_logical <- T
+<<<<<<< HEAD
 use_test_bench <- T
 stat_logical <- T
 
@@ -15,16 +16,29 @@ if(length(args) > 0){
 }
 read_init <- T
 jackson_envir <- new.env()
+=======
+continue_previous <- F
+use_test_bench <- T
+
+size <- 'Small'
+read_init <- T
+jackson_envir <- new.env()
+optim_type <- c("max", "min", "min")
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
 
 if (read_init) {
   starter_data <-
     readRDS(file.path(
+<<<<<<< HEAD
       ".",
+=======
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
       "Data",
       'Test Inverted V Networks',
       paste0(size, " Testing Initial Solution.rds")
     ))
   queues_df <- starter_data$network_df
+<<<<<<< HEAD
   n_queues <- queues_df[, .N]
 }
 
@@ -57,3 +71,16 @@ if(grepl(pattern = 'Small',
   sim_length <- 5000
   warmup <- 500
 }
+=======
+  n_queues <- nVar <- queues_df[, .N]
+}
+
+sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
+obj_function_list <-
+  grep(pattern = "TB_",
+       x = lsf.str(),
+       value = T)
+init_sol <- c(1, rep(0, (nVar - 1)))
+sim_length <- 2500
+warmup <- 150
+>>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)

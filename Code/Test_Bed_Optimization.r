@@ -1,5 +1,6 @@
 rm(list = ls())
 source('.Rprofile')
+bi_objective <- T
 source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
 
 # Directory to Store MOSA Results -----------------------------------------
@@ -13,13 +14,14 @@ dir.create(res_dir)
 # Run Optimization Algorithm------------------------------------------------
 results <- DB_PSA(
   results_directory = res_dir,
-  sim_length = sim_length,
   nTweak = 7,
+  sim_length = sim_length,
   warmup = warmup,
   obj_function_list = obj_function_list,
-  optim_type = c('max','min','min'),
-  nVar = queues_df[, .N],
+  optim_type = optim_type,
+  nVar = n_queues,
   use_test_bench = use_test_bench,
   total_servers = total_servers,
-  generate_plots = F
+  generate_plots = T,
+  print_it_results = T
 )

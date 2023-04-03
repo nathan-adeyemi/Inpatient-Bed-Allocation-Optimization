@@ -77,7 +77,7 @@ CostFunction <- function(sol = NULL,
       )
   }
   if (nsga) {
-    x <- apply(X = objective_Metrics_nsga2(x, fun_list = grep('TB_', lsf.str(envir = .envir), value = T))[,-1],
+    x <- apply(X = objective_Metrics_nsga2(x, fun_list = .envir$obj_function_list)[,-1],
                MARGIN = 2,
                FUN = mean)
   }

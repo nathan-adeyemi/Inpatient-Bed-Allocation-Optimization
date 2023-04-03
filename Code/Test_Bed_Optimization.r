@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 rm(list = ls())
 source('.Rprofile')
+<<<<<<< HEAD
 source(
   file.path(
     "~",
@@ -111,6 +112,9 @@ continue_previous <- F
 size <- 'Medium'
 =======
 source('.Rprofile')
+=======
+bi_objective <- T
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
 source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
 >>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
 
@@ -154,14 +158,15 @@ warmup <- 100
 # Run Optimization Algorithm------------------------------------------------
 results <- DB_PSA(
   results_directory = res_dir,
-  sim_length = sim_length,
   nTweak = 7,
+  sim_length = sim_length,
   warmup = warmup,
   obj_function_list = obj_function_list,
-  optim_type = c('max','min','min'),
-  nVar = queues_df[, .N],
+  optim_type = optim_type,
+  nVar = n_queues,
   use_test_bench = use_test_bench,
   total_servers = total_servers,
-  generate_plots = F
+  generate_plots = T,
+  print_it_results = T
 )
 >>>>>>> 1487b4d (Commit Attempt 2)

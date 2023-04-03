@@ -32,7 +32,16 @@ size <- 'Small'
 >>>>>>> 8c8946d (Fixed some custom functions.)
 =======
 source('.Rprofile')
-source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
+bi_objective <- F
+source(
+  file.path(
+    "~",
+    "MH_Simulation",
+    "Inpatient Bed Allocation Optimization",
+    "Code",
+    "Test_Bed_Opt_Setup.R"
+  )
+)
 
 >>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
 true_pareto_set <-
@@ -110,6 +119,7 @@ if (!dir.exists(res_dir)) {
   dir.create(res_dir)
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 slurm_results_dir <- '~/_rslurm_hyperparameter_search/results_folder'
 
@@ -134,11 +144,19 @@ slurm_func <- function(sched_type,t_damp,nTweak) {
 }
 test_param_df <- param_df[seq(4),]
 >>>>>>> 8c8946d (Fixed some custom functions.)
+=======
+
+slurm_results_dir <- '~/_rslurm_hyperparameter_search/results_folder'
+
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
 orig_dir <- getwd()
 setwd('/home/adeyemi.n/')
 sjob <-
   slurm_apply(
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
     f = DB_PSA,
     params = param_df,
     sim_length = sim_length,
@@ -155,6 +173,7 @@ sjob <-
     continue_previous = F,
     print_it_results = F,
     nodes = 20,
+<<<<<<< HEAD
     processes_per_node = 1,
     submit = F,
     jobname = 'hyperparameter_search',
@@ -200,17 +219,18 @@ saveRDS(object = results_df,
     f = slurm_func,
     params = test_param_df,
     nodes = 2,
+=======
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
     processes_per_node = 1,
     submit = F,
-    jobname = paste(size,'hyperparameter_search',sep = '_'),
+    jobname = 'hyperparameter_search',
     global_objects = ls(),
     r_template = file.path(orig_dir,'Code','slurm_hyperparameter_template.txt'),
     sh_template = file.path(orig_dir,'Code','slurm_job_template.txt')
   )
-browser()
-results <- get_slurm_out(sjob,outtype = 'raw',wait = T)
-saveRDS(results,file = file.path(orig_dir,'Data',paste(size,'hyperparameter_search_results.rds',sep = '_')))
+
 setwd(orig_dir)
+<<<<<<< HEAD
 # cleanup_files(sjob)
 param_df[row, `:=`(
   nIterations = res$total_iterations,
@@ -222,3 +242,35 @@ param_df[, pareto_len := length(pareto_set[[1]]), by = list(sched_type, alpha)
            ][order(-percent_correct, nIterations, nReplications, decreasing = F), ]
 save.image(file.path(res_dir, 'Completed Search environment.rdata'))
 >>>>>>> 8c8946d (Fixed some custom functions.)
+=======
+browser()
+
+results_df <-
+  rbindlist(lapply(
+    X = file.path(slurm_results_dir,list.files(slurm_results_dir)),
+    FUN = function(i){
+      i <- readRDS(i)
+      with(
+        i,
+        data.table(
+          'sched_type' = sched_type,
+          't_damp' = t_damp,
+          'nTweak' = nTweak,
+          'nIterations' = total_iterations,
+          'nReplications' = nReplications,
+          'pareto_set' = list(pSet)
+        )
+      )}
+  ))
+
+results_df[, pareto_len := length(pareto_set[[1]]), by = list(sched_type, t_damp)
+           ][, percent_correct := pareto_perc_correct(pareto_set), by = list(sched_type, t_damp)
+             ][order(-percent_correct, nIterations, nReplications, decreasing = F), ]
+
+saveRDS(object = results_df,
+        file = file.path(
+          '.',
+          'Data',
+          paste(size, 'hyperparameter_search_results.rds', sep = '_')
+        ))
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)

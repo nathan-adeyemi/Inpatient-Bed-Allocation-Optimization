@@ -19,12 +19,16 @@ jackson_envir <- new.env()
 =======
 continue_previous <- F
 use_test_bench <- T
+# bi_objective <- F
 
-size <- 'Small'
+size <- 'Medium'
 read_init <- T
 jackson_envir <- new.env()
+<<<<<<< HEAD
 optim_type <- c("max", "min", "min")
 >>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
+=======
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
 
 if (read_init) {
   starter_data <-
@@ -38,6 +42,7 @@ if (read_init) {
       paste0(size, " Testing Initial Solution.rds")
     ))
   queues_df <- starter_data$network_df
+<<<<<<< HEAD
 <<<<<<< HEAD
   n_queues <- queues_df[, .N]
 }
@@ -84,3 +89,20 @@ init_sol <- c(1, rep(0, (nVar - 1)))
 sim_length <- 2500
 warmup <- 150
 >>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
+=======
+  n_queues <- queues_df[, .N]
+}
+
+sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
+if (bi_objective) {
+  optim_type <- c('max', 'min')
+  obj_function_list <- c('TB_obj_1', 'TB_obj_2')
+} else {
+  optim_type <- c("max", "min", "min")
+  obj_function_list <- c('TB_obj_1', 'TB_obj_2', 'TB_obj_3')
+}
+
+init_sol <- c(1, rep(0, (n_queues - 1)))
+sim_length <- 3000
+warmup <- 200
+>>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)

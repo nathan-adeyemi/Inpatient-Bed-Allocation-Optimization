@@ -1,6 +1,15 @@
 rm(list = ls())
 source('.Rprofile')
-source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Code","Test_Bed_Opt_Setup.R"))
+bi_objective <- F
+source(
+  file.path(
+    "~",
+    "MH_Simulation",
+    "Inpatient Bed Allocation Optimization",
+    "Code",
+    "Test_Bed_Opt_Setup.R"
+  )
+)
 
 true_pareto_set <-
   readRDS(
@@ -30,50 +39,65 @@ res_dir <-
 if (!dir.exists(res_dir)) {
   dir.create(res_dir)
 }
-slurm_func <- function(sched_type,t_damp,nTweak) {
-  DB_PSA(
-    continue_previous = F,
-    print_it_results = F,
-    sched_type = sched_type,
-    t_damp = t_damp,
-    nTweak = nTweak,
-    sim_length = sim_length,
-    warmup = warmup,
-    obj_function_list = obj_function_list,
-    optim_type = optim_type,
-    nVar = queues_df[, .N],
-    use_test_bench = use_test_bench,
-    total_servers = 4 * queues_df[, .N],
-    generate_plots = F,
-    hyper = T
-  )
-}
-test_param_df <- param_df[seq(4),]
+
+slurm_results_dir <- '~/_rslurm_hyperparameter_search/results_folder'
+
 orig_dir <- getwd()
 setwd('/home/adeyemi.n/')
 sjob <-
   slurm_apply(
-    f = slurm_func,
-    params = test_param_df,
-    nodes = 2,
+    f = DB_PSA,
+    params = param_df,
+    sim_length = sim_length,
+    warmup = warmup,
+    obj_function_list = obj_function_list,
+    optim_type = c('max','min','min'),
+    nVar = queues_df[, .N],
+    use_test_bench = use_test_bench,
+    total_servers = total_servers,
+    generate_plots = F,
+    hyper = T,
+    results_directory = slurm_results_dir,
+    init_sol = init_sol,
+    continue_previous = F,
+    print_it_results = F,
+    nodes = 20,
     processes_per_node = 1,
     submit = F,
-    jobname = paste(size,'hyperparameter_search',sep = '_'),
+    jobname = 'hyperparameter_search',
     global_objects = ls(),
     r_template = file.path(orig_dir,'Code','slurm_hyperparameter_template.txt'),
     sh_template = file.path(orig_dir,'Code','slurm_job_template.txt')
   )
-browser()
-results <- get_slurm_out(sjob,outtype = 'raw',wait = T)
-saveRDS(results,file = file.path(orig_dir,'Data',paste(size,'hyperparameter_search_results.rds',sep = '_')))
+
 setwd(orig_dir)
-# cleanup_files(sjob)
-param_df[row, `:=`(
-  nIterations = res$total_iterations,
-  nReplications = res$nReplications,
-  pareto_set = list(res$pSet)
-)]
-param_df[, pareto_len := length(pareto_set[[1]]), by = list(sched_type, alpha)
-         ][, percent_correct := pareto_perc_correct(pareto_set), by = list(sched_type, alpha)
-           ][order(-percent_correct, nIterations, nReplications, decreasing = F), ]
-save.image(file.path(res_dir, 'Completed Search environment.rdata'))
+browser()
+
+results_df <-
+  rbindlist(lapply(
+    X = file.path(slurm_results_dir,list.files(slurm_results_dir)),
+    FUN = function(i){
+      i <- readRDS(i)
+      with(
+        i,
+        data.table(
+          'sched_type' = sched_type,
+          't_damp' = t_damp,
+          'nTweak' = nTweak,
+          'nIterations' = total_iterations,
+          'nReplications' = nReplications,
+          'pareto_set' = list(pSet)
+        )
+      )}
+  ))
+
+results_df[, pareto_len := length(pareto_set[[1]]), by = list(sched_type, t_damp)
+           ][, percent_correct := pareto_perc_correct(pareto_set), by = list(sched_type, t_damp)
+             ][order(-percent_correct, nIterations, nReplications, decreasing = F), ]
+
+saveRDS(object = results_df,
+        file = file.path(
+          '.',
+          'Data',
+          paste(size, 'hyperparameter_search_results.rds', sep = '_')
+        ))

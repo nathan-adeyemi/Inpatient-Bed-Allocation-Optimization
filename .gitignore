@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Custom
 <<<<<<< HEAD
 /Data/Sample\ MOSA\ Results/
@@ -92,6 +93,9 @@ rsconnect/
 =======
 /Data/Sample\ MOSA\ Results
 =======
+=======
+# Custom
+>>>>>>> d142961 (Update .gitignore)
 /Data/Sample\ MOSA\ Results/
 /Data/Full\ Sim\Results/
 >>>>>>> 1487b4d (Commit Attempt 2)
@@ -123,4 +127,58 @@ slurm_run_template_DONT_DELETE.R
 /Code/slurm_hyperparameter_template.txt
 /Code/slurm_job_template.txt
 /Code/MOSA\ Functions\ \(latest Github\).R
+<<<<<<< HEAD
 >>>>>>> 1487b4d (Commit Attempt 2)
+=======
+
+# Stock
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# pkgdown site
+docs/
+
+# translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+>>>>>>> d142961 (Update .gitignore)

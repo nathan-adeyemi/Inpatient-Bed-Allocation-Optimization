@@ -1,12 +1,14 @@
 DB_PSA <- function(continue_previous = F,
                    temp_init = 3,
                    t_damp = 0.75,
-                   sched_type = 'exponential',
-                   hyper = F,
+                   sched_type = 'e',
                    nTweak = 5,
+                   pareto_limit = NA_real_,
+                   itMax = NA_real_,
                    total_servers,
                    sim_length,
                    warmup,
+                   starter_reps = 8,
                    obj_function_list,
                    optim_type,
                    nVar,
@@ -15,23 +17,44 @@ DB_PSA <- function(continue_previous = F,
                    results_directory = NA,
                    use_test_bench = T,
                    inverted_V_logical = T,
-                   generate_plots = T) {
-  # This function implements the Distance-Based Pareto Simulated-Annealing optimization algorithm
+                   hyper = F,
+                   generate_plots = T,
+                   ...) {
+  
+  # Implements the Distance-Based Pareto Simulated-Annealing optimization algorithm
   
   # Function Inputs:
-  #   temp_init - initial temperature
-  #   t_damp: temperature modification parameter, effect of this parameter depends on the chosen cooling schedule
-  #   sched_type - hyper parameter indicating how the temperature changes over time. Four schedules are currently available (linear, quadratic, exponential and logarithmic)
-  #   nTweak - maximum number of candidate solutions generated during an iteration
-  #   print_it_results - logical indicating whether to print individual iteration results to the console
-  #   total_servers - decision variable upper bound
-  #   warmup - How long before the DES reaches steady state
-  #   sim_length - How long should the DES record statistics after the warmup period
-  #   obj_function_list - character vector of functions used as objective functions
-  #   optim_type - character vector indicating if the corresponding objective function is maximized ("max") or minimized ("min")
-  #   nVar - number of decision variables
-  #   init_sol - a starting solution.
-  #   generate_plots - logical indicating whether to produce plots of the Pareto image as it evolves
+  #   temp_init - (Numeric) initial temperature
+  #   t_damp: (Numeric) temperature modification parameter, effect of this parameter depends on the chosen cooling schedule
+  #   sched_type - (Character) hyper parameter indicating how the temperature changes over time. 
+  #                 Four schedules are currently available: 
+  #                           - linear ("linear" or "l")
+  #                           - quadratic ("quadratic" or "q")
+  #                           - exponential ("exponential" or "e) 
+  #                           - logarithmic ("log_mult" or "r")
+  #   pareto_limit - (Integer) Denotes the maximum number of iterations in which the Pareto set can remain unchanged before termination.
+  #   itMax - (Integer) If specified, algorithm will terminate after this iteration
+  #   nTweak - (Integer) maximum number of candidate solutions generated during an iteration
+  #   print_it_results - (logical) Indicates whether to print individual iteration results to the console
+  #   total_servers - (Numeric) Decision variable upper bound - useful for allocation problems
+  #   warmup - (Numeric) How long before the DES reaches steady state
+  #   sim_length - (Numeric) How long should the DES record statistics after the warmup period
+  #   obj_function_list - (Character) Vector of function names used as objective functions 
+  #   optim_type - (Character) Vector indicating if the corresponding objective function is maximized ("max" or "+") or minimized ("min" or "-")
+  #   nVar - (Integer) Number of decision variables
+  #   init_sol - (Numeric) Starting solution vector.
+  #   generate_plots - (Logical) Indicates whether to produce plots of the Pareto image as it evolves
+  
+  # Function Return (List):
+  #   sched_type - (Character) hyper parameter indicating how the temperature changes over time. 
+  #   t_damp: (Numeric) temperature modification parameter, effect of this parameter depends on the chosen cooling schedule
+  #   nTweak - (Integer) maximum number of candidate solutions generated during an iteration
+  #   total_iterations - (Integer) Number of DB-PSA iterations used
+  #   nReplications - (Integer) Total number of simulation replications used
+  #   pareto_set - (List) List of solutions belonging to the estimated Pareto set. Each object contains a name, solution vector, objective function means, standard deviation and confidence interval
+  #   itRepsDF - (Data frame) Shows the number of replications used in each iteration
+  #   History - (List) History of the algorithm performance. Holds the pareto set at each iteration and all rejected candidate solutions
+  #   execution_time - (Numeric) Time taken to complete the DB-PSA algorithm
   
   # Initialize Algorithm Hyper-parameters  ---------------------------------------------------------------------------
   if (any(is.na(init_sol))) {
@@ -49,76 +72,46 @@ DB_PSA <- function(continue_previous = F,
     }
   }
   
-  cat('Schedule =',
-      sched_type,
-      '\n',
-      'Alpha =',
-      t_damp,
-      '\n',
-      'nTweak =',
-      nTweak,
-      '\n')
-  
-  # Set the cooling schedule from function inputs
-  quad_logical <-
-    linear_logical  <- log_logical  <- exp_logical <- F
-  if (sched_type == 'quadratic') {
-    quad_logical  <- T
-  } else if (sched_type == 'linear') {
-    linear_logical  <- T
-  } else if (sched_type == 'log_mult') {
-    log_logical  <- T
-  } else if (sched_type == 'exponential') {
-    exp_logical <- T
-  }
+  # Set the cooling schedule from function inputs and other temperature related params
+  temp <- temp_init
+  t_min <- .01 * temp_init
   cool_env <- environment()
   reduce_temp  <-
     function()
       cool_temp(cool_sched = sched_type, .envir = cool_env)
   
-  if (!continue_previous) {
-    temp <- temp_init
-    t_min <- .01 * temp_init
-    best_limit <- 5
-    pareto_limit <- 25
-    starter_reps <- 8
-    stat_logical <- T
-    maxChange <- 1
-    itReps_Cum  <- 0
-    nTotal_Cum <- 0
-    nTweak <- 5
-    itMax <- 100
-    best_counter <- 0
-    delta <- max(ceiling(nTweak / 2), 10)
-    A <- list()
-    mosa_trials <- 3
-    i <- it <- 1
-    seed_val <- floor(runif(1) * 10000)
-    analytical <- F
-    num_obj <- length(obj_function_list)
-    best_by_min_dist <- T
-    
+  # Initialize algorithm performance variables/parameters
+  stat_logical <- T
+  maxChange <- 1
+  itReps_Cum  <- 0
+  nTotal_Cum <- 0
+  delta <- max(ceiling(nTweak / 2), 10)
+  A <- list()
+  i <- it <- 1
+  optim_type <- fix_optim_type(optim_type)
+
+  if(!continue_previous){
+    now <- Sys.time()
+    if(!use_test_bench){
+      siteInfo <- (...)
+    }
     # Generate Initial Baseline Solution ------------------------------------------------------------------------------
     initial <- list(
       name = 'Baseline',
       Solution = init_sol,
       Replications = 12,
-      # Should == reps argument from CostFunction function (MOSA Functions.R line 150)
       Allocation = decode(init_sol),
       counter = 0,
       Dist = 0,
       deltaPsi = 0
     )
-    #debug(objective_Metrics)
-    init_data <-
-      objective_Metrics(x = CostFunction(sol = initial$Allocation,
-                                         logic = F))
-    
-    initial <-
+
+    best <- initial <-
       updateSimStats(i = initial,
-                     data = init_data,
+                     data = objective_Metrics(x = CostFunction(sol = initial$Allocation,
+                                                               logic = F)),
                      new_sol = T)
-    best <- initial
+    
     
     # Initialize Dataframe of Best Solutions---------------------------------------------------------------------------
     best_df <-
@@ -143,10 +136,9 @@ DB_PSA <- function(continue_previous = F,
     pareto_set <-  list()
   }
   # Main Optimization Algorithm Loop ---------------------------------------------------------------------------------
-  while (termination_criteria(check_pareto = T)) {
-    now <- Sys.time()
-    extraReps <-
-      F # Conditional for if extra simulation replications were used in the MOCBA
+  while (termination_criteria()) {
+    
+    extraReps <- F # Conditional for if extra simulation replications were used in the MOCBA
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
     temp_obj <- gen_candidates()
     if (length(temp_obj) != 0) {
@@ -169,19 +161,7 @@ DB_PSA <- function(continue_previous = F,
       pareto_set <- pareto_set$pSet
       
       if (length(pareto_set) > 1) {
-        pareto_order <-
-          data.table(name = pareto_set %c% 'name', t(pareto_set %c% 'Obj_mean'))[, .(apply(.SD, 2, unlist))]
-        pareto_order <-
-          pareto_order[, setdiff(colnames(pareto_order), 'name') := lapply(.SD, as.numeric), .SDcols = setdiff(colnames(pareto_order), 'name')]
-        pareto_order <-
-          pareto_order[, (setdiff(colnames(pareto_order), 'name')[grep('min', optim_type)]) := lapply(
-            pareto_order = .SD,
-            FUN = function(i)
-              i * -1
-          ), .SDcols = setdiff(colnames(pareto_order), 'name')[grep('min', optim_type)], by = name]
-        setkeyv(pareto_order, setdiff(colnames(pareto_order), 'name'))
-        pareto_set <-
-          pareto_set[match(pareto_order$name, pareto_set %c% 'name')]
+        pareto_set <- reorder_pSet(pSet = pareto_set,.envir = parent.frame())
       }
       
       # Finding the "best" solution to be modified in the next iteration ----------------------------------------------------------
@@ -243,9 +223,10 @@ DB_PSA <- function(continue_previous = F,
       all_allocations <-
         rbind(all_allocations, t(temp_obj %c% 'Allocation'))
       
-      # if(length(pareto_set) > 1 & length(optim_type) == 2){
-      #   plotParetoFront(inputData = pareto_set)
-      # }
+      if(all(length(pareto_set) > 3,length(optim_type) == 2,generate_plots)){
+        plotParetoFront(inputData = pareto_set)
+      }
+      
       if (print_it_results) {
         cat('Iteration',
             it,
@@ -290,7 +271,7 @@ DB_PSA <- function(continue_previous = F,
         }
         cat('\n')
       }
-      if (!is.na(results_directory)) {
+      if (!is.na(results_directory) & !hyper) {
         save.image(file = file.path(results_directory, 'paused_envr.rdata'))
       }
       it %+% 1
@@ -298,21 +279,12 @@ DB_PSA <- function(continue_previous = F,
       # Adjust Temperature ----------------------------------------------------------------------------------------------
       if (!identical(pareto_set, prev_pareto_set)) {
         temp <- reduce_temp()
-        if (length(pareto_set) > 1. & generate_plots) {
-          jpeg(file = file.path(
-            plot_dir,
-            paste0('Iteration_', it, '_pareto_image.jpeg')
-          ))
-          plotParetoFront(pareto_set)
-          dev.off()
-        }
       }
     } else {
       break
     }
-    
   }
-  if (hyper) {
+  exec_time <- as.numeric(Sys.time() - now)
     
     res_list <- list(
       'sched_type' = sched_type,
@@ -320,12 +292,29 @@ DB_PSA <- function(continue_previous = F,
       'nTweak' = nTweak,
       'total_iterations' = it,
       'nReplications' = itReps_Cum,
-      'pSet' = pareto_set
-    )
+      'pSet' = pareto_set,
+      'itReps' = itRepsDF,
+      'execution_time' = exec_time,
+      'history' = A)
     
-    saveRDS(res_list, file = file.path(results_directory, paste0(
-      paste(sched_type, t_damp, nTweak, sep = '_'), '.rds'
-    )))
+    if (generate_plots) {
+      lapply(
+        X = seq_along(A),
+        FUN = function(ind) {
+          jpeg(file = file.path(plot_dir,
+                                paste0(
+                                  'Iteration_', it, '_pareto_image.jpeg'
+                                )))
+          plotParetoFront(A[[ind]]$itBest)
+          dev.off()
+        }
+      )
+    }
+    
+    if (hyper) {
+      saveRDS(res_list, file = file.path(results_directory, paste0(
+        paste(sched_type, t_damp, nTweak, sep = '_'), '.rds'
+      )))
+    }
     return(res_list)
-  }
 }

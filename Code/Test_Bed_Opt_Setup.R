@@ -28,5 +28,17 @@ if (bi_objective) {
 }
 
 init_sol <- c(1, rep(0, (n_queues - 1)))
-sim_length <- 3000
-warmup <- 200
+if(grepl(pattern = 'Small',
+         x = size,
+         ignore.case = T)) {
+  sim_length <- 2000
+  warmup <- 150
+} else if (grepl(pattern = 'Medium',
+                 x = size,
+                 ignore.case = T)) {
+  sim_length <- 3000
+  warmup <- 200
+} else{
+  sim_length <- 4000
+  warmup <- 300
+}

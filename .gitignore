@@ -104,6 +104,7 @@ rsconnect/
 /Data/Small_hyperparameter_search_results.rds
 /Data/test_bench_paused_envr.rdata
 /renv/
+<<<<<<< HEAD
 /.Rhistory
 .Rproj.user
 <<<<<<< HEAD
@@ -130,6 +131,11 @@ slurm_run_template_DONT_DELETE.R
 <<<<<<< HEAD
 >>>>>>> 1487b4d (Commit Attempt 2)
 =======
+=======
+/Code/slurm_txt_templates
+/_rslurm_Small_hyperparameter_search
+/_rslurm_Medium_hyperparameter_search
+>>>>>>> 2ce8b33 (Small .gitignore updates)
 
 # Stock
 # History files
@@ -138,6 +144,7 @@ slurm_run_template_DONT_DELETE.R
 
 # Session Data files
 .RData
+.Rdata
 .RDataTmp
 
 # User-specific files

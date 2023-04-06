@@ -1,6 +1,11 @@
-decode <-
-  function(alg_input,
-           .envir = parent.frame()) {
+decode <-function(alg_input, .envir = parent.frame()) {
+  # Function: This function converts a solution vector of real values into a integer vector for use in simulation.
+  
+  # Inputs:
+  #   alg_input - (Numeric) - a vector of real values
+  
+  # Returns:
+  #   new_alloc - (Integer) - vector of integers representing servers at each queue.
     if (!.envir$use_test_bench) {
       alg_input <-
         unique(copy(.envir$siteInfo)[, list(Facility_name, Bed_Group, total_beds)]

@@ -3,33 +3,7 @@ findBestbyDistance <-
            rankInfo, 
            .envir = parent.frame()) {
     if (length(pSet) > 1) {
-      obj_means <- apply(
-        X = as.matrix(t(pSet %c% 'Obj_mean')),
-        MARGIN = 2,
-        FUN = function(u)
-          matrix(unlist(u))
-      )
-      
-      g_ideal_dist <- sapply(
-        X = seq(ncol(obj_means)),
-        FUN = function(index)
-          eval(parse(
-            text = paste0('which.', .envir$optim_type[index], '(obj_means[,', index, '])')
-          ))
-      )
-      g_ideal_dist <-
-        sapply(
-          X = seq_along(g_ideal_dist),
-          FUN = function(i)
-            as.matrix(pSet[[g_ideal_dist[i]]]$Cost)[, i + 1]
-        )
-      
-      if (is.list(g_ideal_dist)) {
-        multiple <- Reduce(Lcm, sapply(g_ideal_dist, length))
-        g_ideal_dist <<- g_ideal_dist <-
-          sapply(g_ideal_dist, function(i)
-            unlist(rep(i, multiple / length(i))))
-      }
+      g_ideal_dist <- find_g_ideal(pSet = pSet,.envir = .envir)
       g_ideal_CI <<-
         apply(
           X = g_ideal_dist,

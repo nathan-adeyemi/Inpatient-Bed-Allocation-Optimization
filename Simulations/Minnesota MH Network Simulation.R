@@ -461,7 +461,7 @@ MH.Network.sim <-
     ### Convert a vector of real numbers to a bed allocation (alg_input should be the number of unique bed groups)
     if (!is.null(alg_input)) {
       # Does the supplied solution need to be decoded
-      if (identical(alg_input, as.integer(alg_input))) {
+      if (all(alg_input == as.integer(alg_input))) {
         counts <- alg_input
       } else{
         counts <-  decode(alg_input)

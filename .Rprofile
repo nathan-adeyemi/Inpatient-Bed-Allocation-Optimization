@@ -119,7 +119,7 @@ library(doParallel, quietly = T)
 library(pbmcapply, quietly = T)
 library(parallelly, quietly = T)
 
-# Packages for MOSO -------------------------------------------------------
+# Packages for DB-PSA -------------------------------------------------------
 library(labdsv, quietly = T)
 library(mco, quietly = T)
 library(scatterplot3d, quietly = T)
@@ -128,6 +128,7 @@ library(cramer, quietly = T)
 library(bayesmeta, quietly = T)
 library(fpc, quietly = T)
 library(rslurm, quietly = T)
+library(ggrepel)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

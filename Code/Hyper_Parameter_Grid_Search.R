@@ -197,6 +197,7 @@ results_df <-
           't_damp' = t_damp,
           'nTweak' = nTweak,
           'execution_time' = execution_time,
+<<<<<<< HEAD
           'nIterations' = total_iterations,
           'nReplications' = nReplications,
           'pareto_set' = list(pSet)
@@ -256,6 +257,8 @@ results_df <-
           'sched_type' = sched_type,
           't_damp' = t_damp,
           'nTweak' = nTweak,
+=======
+>>>>>>> 9f23a66 (Function updates:)
           'nIterations' = total_iterations,
           'nReplications' = nReplications,
           'pareto_set' = list(pSet)
@@ -263,9 +266,10 @@ results_df <-
       )}
   ))
 
-results_df[, pareto_len := length(pareto_set[[1]]), by = list(sched_type, t_damp)
-           ][, percent_correct := pareto_perc_correct(pareto_set), by = list(sched_type, t_damp)
-             ][order(-percent_correct, nIterations, nReplications, decreasing = F), ]
+results_df <- results_df[, pareto_len := length(pareto_set[[1]]), by = list(sched_type, t_damp)
+                         ][, percent_correct := pareto_perc_correct(pareto_set), by = list(sched_type, t_damp)
+                           ][, non_true_pSet := pareto_perc_correct(pareto_set,extras = T), by = list(sched_type, t_damp)
+                            ][order(-percent_correct,non_true_pSet, nIterations, nReplications, decreasing = F), ]
 
 saveRDS(object = results_df,
         file = file.path(
@@ -273,4 +277,7 @@ saveRDS(object = results_df,
           'Data',
           paste(size, 'hyperparameter_search_results.rds', sep = '_')
         ))
+<<<<<<< HEAD
 >>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
+=======
+>>>>>>> 9f23a66 (Function updates:)

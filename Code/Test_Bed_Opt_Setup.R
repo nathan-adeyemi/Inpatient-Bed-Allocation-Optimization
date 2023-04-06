@@ -103,6 +103,23 @@ if (bi_objective) {
 }
 
 init_sol <- c(1, rep(0, (n_queues - 1)))
+<<<<<<< HEAD
 sim_length <- 3000
 warmup <- 200
 >>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
+=======
+if(grepl(pattern = 'Small',
+         x = size,
+         ignore.case = T)) {
+  sim_length <- 2000
+  warmup <- 150
+} else if (grepl(pattern = 'Medium',
+                 x = size,
+                 ignore.case = T)) {
+  sim_length <- 3000
+  warmup <- 200
+} else{
+  sim_length <- 4000
+  warmup <- 300
+}
+>>>>>>> 9f23a66 (Function updates:)

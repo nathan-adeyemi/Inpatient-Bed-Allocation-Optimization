@@ -4,6 +4,7 @@ findBestbyDistance <-
            .envir = parent.frame()) {
     if (length(pSet) > 1) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       g_ideal_dist <- find_g_ideal(pSet = pSet,.envir = .envir)
 =======
       obj_means <- apply(
@@ -34,6 +35,9 @@ findBestbyDistance <-
             unlist(rep(i, multiple / length(i))))
       }
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+      g_ideal_dist <- find_g_ideal(pSet = pSet,.envir = .envir)
+>>>>>>> 9f23a66 (Function updates:)
       g_ideal_CI <<-
         apply(
           X = g_ideal_dist,

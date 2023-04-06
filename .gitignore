@@ -6,19 +6,9 @@
 /Data/Small_hyperparameter_search_results.rds
 /Data/test_bench_paused_envr.rdata
 /renv/
-/.Rhistory
-.Rproj.user
-test_file.R
-Rplots.pdf
-.Rdata
-.gitignore
-/_rslurm_hyperparameter_search
+/Code/slurm_txt_templates
 /_rslurm_Small_hyperparameter_search
 /_rslurm_Medium_hyperparameter_search
-slurm_run_template_DONT_DELETE.R
-/Code/slurm_hyperparameter_template.txt
-/Code/slurm_job_template.txt
-/Code/MOSA\ Functions\ \(latest Github\).R
 
 # Stock
 # History files
@@ -27,6 +17,7 @@ slurm_run_template_DONT_DELETE.R
 
 # Session Data files
 .RData
+.Rdata
 .RDataTmp
 
 # User-specific files

@@ -223,10 +223,6 @@ DB_PSA <- function(continue_previous = F,
       all_allocations <-
         rbind(all_allocations, t(temp_obj %c% 'Allocation'))
       
-      if(all(length(pareto_set) > 3,length(optim_type) == 2,generate_plots)){
-        plotParetoFront(inputData = pareto_set)
-      }
-      
       if (print_it_results) {
         cat('Iteration',
             it,

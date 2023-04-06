@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9f23a66 (Function updates:)
 decode <-function(alg_input, .envir = parent.frame()) {
   # Function: This function converts a solution vector of real values into a integer vector for use in simulation.
   
@@ -7,11 +10,14 @@ decode <-function(alg_input, .envir = parent.frame()) {
   
   # Returns:
   #   new_alloc - (Integer) - vector of integers representing servers at each queue.
+<<<<<<< HEAD
 =======
 decode <-
   function(alg_input,
            .envir = parent.frame()) {
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+>>>>>>> 9f23a66 (Function updates:)
     if (!.envir$use_test_bench) {
       alg_input <-
         unique(copy(.envir$siteInfo)[, list(Facility_name, Bed_Group, total_beds)]

@@ -158,7 +158,9 @@ warmup <- 100
 # Run Optimization Algorithm------------------------------------------------
 results <- DB_PSA(
   results_directory = res_dir,
-  nTweak = 7,
+  nTweak = 5,
+  sched_type = 'q',
+  t_damp = 0.4,
   sim_length = sim_length,
   warmup = warmup,
   obj_function_list = obj_function_list,

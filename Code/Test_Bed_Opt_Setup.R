@@ -1,7 +1,14 @@
 inverted_V_logical <- T
-continue_previous <- F
 use_test_bench <- T
 # bi_objective <- F
+
+if(exists(x = 'single_objective',where = -1)){
+  if(single_objective){
+    bi_objective <- F
+  } 
+} else if(exists('bi_objective')){
+  single_objective <- F
+}
 
 size <- 'Medium'
 read_init <- T
@@ -10,6 +17,7 @@ jackson_envir <- new.env()
 if (read_init) {
   starter_data <-
     readRDS(file.path(
+      ".",
       "Data",
       'Test Inverted V Networks',
       paste0(size, " Testing Initial Solution.rds")
@@ -19,7 +27,10 @@ if (read_init) {
 }
 
 sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
-if (bi_objective) {
+if(single_objective){
+  optim_type <- 'max'
+  obj_function_list <- list('TB_obj_1')
+}else if (bi_objective) {
   optim_type <- c('max', 'min')
   obj_function_list <- c('TB_obj_1', 'TB_obj_2')
 } else {

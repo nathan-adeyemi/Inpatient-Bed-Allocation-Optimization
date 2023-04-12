@@ -1,6 +1,7 @@
 CostFunction <- function(sol = NULL,
                          logic,
 <<<<<<< HEAD
+<<<<<<< HEAD
                          reps = NA,
                          # nsga = F,
                          .envir = parent.frame()) {
@@ -30,15 +31,41 @@ CostFunction <- function(sol = NULL,
                          reps = seq(10),
                          analytical = FALSE,
                          nsga = F,
+=======
+                         reps = NA,
+                         # nsga = F,
+>>>>>>> f4d354d (Further Updates:)
                          .envir = parent.frame()) {
-  if (nsga) {
-    sol <- decode(sol)
+  
+  # Runs the simulation (via the simmer package) with the new solution vector
+  
+  # Inputs:
+  #   sol: (Numeric) A solution vector
+  #   reps: (Integer) The number of simulation replications to be executed
+  #
+  
+  # Returns:
+  #   x: (List) AS list of simmer output data.frames
+  
+  
+  # if (nsga) {
+  #   sol <- decode(sol)
+  # }
+  
+  if(is.na(reps)){
+    reps <- seq(.envir$initial_trials)
+  } else if (all(length(reps) == 1,reps != 1)){
+    reps <- seq(reps)
   }
   
+<<<<<<< HEAD
   if (analytical == T) {
     
   } else if (.envir$use_test_bench == T) {
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+  if (.envir$use_test_bench == T) {
+>>>>>>> f4d354d (Further Updates:)
     x <- run_test_bench(
       rep_nums = reps,
       network_df = copy(queues_df)[, server_count := sol],
@@ -49,6 +76,9 @@ CostFunction <- function(sol = NULL,
     )
   } else{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f4d354d (Further Updates:)
     x <-  MH.Network.sim(
       rep = reps,
       warm = .envir$warmup,
@@ -58,6 +88,7 @@ CostFunction <- function(sol = NULL,
       alg_input = sol,
       resources = F
     )
+<<<<<<< HEAD
   }
   # if (nsga) {
   #   x <- apply(X = objective_Metrics_nsga2(x, fun_list = .envir$obj_function_list)[,-1],
@@ -82,5 +113,13 @@ CostFunction <- function(sol = NULL,
                FUN = mean)
   }
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+  }
+  # if (nsga) {
+  #   x <- apply(X = objective_Metrics_nsga2(x, fun_list = .envir$obj_function_list)[,-1],
+  #              MARGIN = 2,
+  #              FUN = mean)
+  # }
+>>>>>>> f4d354d (Further Updates:)
   return(x)
 }

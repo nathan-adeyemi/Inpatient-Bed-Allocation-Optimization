@@ -128,7 +128,8 @@ library(cramer, quietly = T)
 library(bayesmeta, quietly = T)
 library(fpc, quietly = T)
 library(rslurm, quietly = T)
-library(ggrepel)
+library(ggrepel,quietly = T)
+library(optimization,quietly = T)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

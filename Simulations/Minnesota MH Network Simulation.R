@@ -646,7 +646,6 @@ MH.Network.sim <-
 
     # Create the Simulation Environment and Run the Replication --------------
     sim_func_env <- environment()
-    # browser()
     if (length(rep) == 1) {
       #If running multiple replications, run in parallel
       
@@ -662,7 +661,7 @@ MH.Network.sim <-
         simmer::run(until = sim.length,
                     progress = progress::progress_bar$new(format = "[:bar] :percent ETA: :eta")$update)
     } else {
-      sim_results <- mclapply(
+      sim_results <- pbmclapply(
         X = rep,
         FUN = function(i)
           simmer('MH.Network', log_level = 1) %>%
@@ -689,11 +688,7 @@ MH.Network.sim <-
 >>>>>>> c5cae59 (Minor updates)
 =======
           wrap(),
-        mc.cores = ifelse(
-          test = length(rep) == 1,
-          yes = 1,
-          no = availableCores()
-        ),
+        mc.cores = min(length(rep),availableCores()),
         mc.set.seed = T
 >>>>>>> 7fe6941 (Most recent updates)
       )
@@ -863,6 +858,7 @@ full_sim <-
     return(results)
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 # Function for Mental Health Sim MOSA -------------------------------------
@@ -880,3 +876,5 @@ mh_distance_range <- function(x){
            ][,.(max_travel_range = max(variable)),by = replication])
 }
 >>>>>>> 7fe6941 (Most recent updates)
+=======
+>>>>>>> f4d354d (Further Updates:)

@@ -1,5 +1,6 @@
 inverted_V_logical <- T
 <<<<<<< HEAD
+<<<<<<< HEAD
 use_test_bench <- T
 stat_logical <- T
 
@@ -18,8 +19,18 @@ read_init <- T
 jackson_envir <- new.env()
 =======
 continue_previous <- F
+=======
+>>>>>>> f4d354d (Further Updates:)
 use_test_bench <- T
 # bi_objective <- F
+
+if(exists(x = 'single_objective',where = -1)){
+  if(single_objective){
+    bi_objective <- F
+  } 
+} else if(exists('bi_objective')){
+  single_objective <- F
+}
 
 size <- 'Medium'
 read_init <- T
@@ -34,9 +45,13 @@ if (read_init) {
   starter_data <-
     readRDS(file.path(
 <<<<<<< HEAD
+<<<<<<< HEAD
       ".",
 =======
 >>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
+=======
+      ".",
+>>>>>>> f4d354d (Further Updates:)
       "Data",
       'Test Inverted V Networks',
       paste0(size, " Testing Initial Solution.rds")
@@ -94,7 +109,10 @@ warmup <- 150
 }
 
 sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
-if (bi_objective) {
+if(single_objective){
+  optim_type <- 'max'
+  obj_function_list <- list('TB_obj_1')
+}else if (bi_objective) {
   optim_type <- c('max', 'min')
   obj_function_list <- c('TB_obj_1', 'TB_obj_2')
 } else {

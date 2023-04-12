@@ -8,11 +8,16 @@ objective_Metrics <- function(x, .envir = parent.frame()){
   #   x: (Lisr) A list of Simmer output data.frames
   
   # Returns:
+<<<<<<< HEAD
   #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replication 
   
 =======
 objective_Metrics <- function(x, .envir = parent.frame()){
 >>>>>>> 8c8946d (Fixed some custom functions.)
+=======
+  #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replicatin 
+  
+>>>>>>> f4d354d (Further Updates:)
   data <- lapply(
     X = .envir$obj_function_list,
     FUN = function(func) {

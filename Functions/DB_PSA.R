@@ -6,9 +6,9 @@ DB_PSA <- function(continue_previous = F,
                    pareto_limit = NA_real_,
                    itMax = NA_real_,
                    total_servers,
+                   initial_trials = 8,
                    sim_length,
                    warmup,
-                   starter_reps = 8,
                    obj_function_list,
                    optim_type,
                    nVar,
@@ -81,25 +81,25 @@ DB_PSA <- function(continue_previous = F,
       cool_temp(cool_sched = sched_type, .envir = cool_env)
   
   # Initialize algorithm performance variables/parameters
+  arg_list <- list(...)
   stat_logical <- T
   maxChange <- 1
   itReps_Cum  <- 0
   nTotal_Cum <- 0
-  delta <- max(ceiling(nTweak / 2), 10)
+  delta <- max(ceiling(nTweak / 2), 20)
   A <- list()
   i <- it <- 1
   optim_type <- fix_optim_type(optim_type)
-
   if(!continue_previous){
     now <- Sys.time()
     if(!use_test_bench){
-      siteInfo <- (...)
+      siteInfo <- arg_list$siteInfo
     }
     # Generate Initial Baseline Solution ------------------------------------------------------------------------------
     initial <- list(
       name = 'Baseline',
       Solution = init_sol,
-      Replications = 12,
+      Replications = initial_trials,
       Allocation = decode(init_sol),
       counter = 0,
       Dist = 0,
@@ -111,8 +111,6 @@ DB_PSA <- function(continue_previous = F,
                      data = objective_Metrics(x = CostFunction(sol = initial$Allocation,
                                                                logic = F)),
                      new_sol = T)
-    
-    
     # Initialize Dataframe of Best Solutions---------------------------------------------------------------------------
     best_df <-
       data.table(
@@ -134,10 +132,25 @@ DB_PSA <- function(continue_previous = F,
     
     all_allocations <<- t(best$Allocation)
     pareto_set <-  list()
+  } else {
+    load(arg_list$env_path)
+    pareto_set <- arg_list$pareto_set
+    A <- arg_list$A
+    it <- length(A)
+    temp <-
+      cool_temp(
+        initial_temperature = temp_init,
+        alpha_param = t_damp,
+        cool_sched = sched_type,
+        current_iteration = it
+      )
+    best <- findBestbyDistance(pareto_set)
+    best <- best$best
+    rm(list = lsf.str())
+    lapply(X = file.path('.','Functions',list.files(path = file.path('.','Functions'))), FUN = source)
   }
   # Main Optimization Algorithm Loop ---------------------------------------------------------------------------------
   while (termination_criteria()) {
-    
     extraReps <- F # Conditional for if extra simulation replications were used in the MOCBA
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
     temp_obj <- gen_candidates()
@@ -267,10 +280,18 @@ DB_PSA <- function(continue_previous = F,
         }
         cat('\n')
       }
-      if (!is.na(results_directory) & !hyper) {
-        save.image(file = file.path(results_directory, 'paused_envr.rdata'))
+      #if (!is.na(results_directory) & !hyper) {
+      if(!use_test_bench){
+        save.image(file = file.path(results_directory, paste('Iteration',it,'paused_envr.rdata',sep = '_')))
+        saveRDS(object = A,file = file.path(results_directory,paste('Iteration',it,'history.rds',sep = '_')))
       }
+      
       it %+% 1
+      
+      if(length(pareto_set) > 2){
+        plotParetoFront(pareto_set)
+        browser()
+      }
       
       # Adjust Temperature ----------------------------------------------------------------------------------------------
       if (!identical(pareto_set, prev_pareto_set)) {

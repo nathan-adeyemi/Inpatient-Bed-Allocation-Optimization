@@ -646,7 +646,6 @@ MH.Network.sim <-
 
     # Create the Simulation Environment and Run the Replication --------------
     sim_func_env <- environment()
-    # browser()
     if (length(rep) == 1) {
       #If running multiple replications, run in parallel
       
@@ -662,7 +661,7 @@ MH.Network.sim <-
         simmer::run(until = sim.length,
                     progress = progress::progress_bar$new(format = "[:bar] :percent ETA: :eta")$update)
     } else {
-      sim_results <- mclapply(
+      sim_results <- pbmclapply(
         X = rep,
         FUN = function(i)
           simmer('MH.Network', log_level = 1) %>%
@@ -674,11 +673,7 @@ MH.Network.sim <-
             until = sim.length
           ) %>%
           wrap(),
-        mc.cores = ifelse(
-          test = length(rep) == 1,
-          yes = 1,
-          no = availableCores()
-        ),
+        mc.cores = min(length(rep),availableCores()),
         mc.set.seed = T
       )
     }
@@ -692,7 +687,7 @@ MH.Network.sim <-
     attributes <- data.table(simmer::get_mon_attributes(sim_results))
     timestamps <- 
       rbindlist(
-      pbmclapply(X = split(attributes,attributes$replication),
+      mclapply(X = split(attributes,attributes$replication),
                FUN = function(i){
                  dcast(i[grepl('Transfer', name)
                                 ][nchar(name) != 0, `:=`(Sim.ID = paste(name, replication, sep = '_Rep_'))
@@ -726,7 +721,7 @@ MH.Network.sim <-
                                     ][, time := NULL],
                          formula = name + replication ~ key,
                          value.var = 'value')
-                 }))
+                 }),fill = T,use.names = T)
       resources <-
         data.table(simmer::get_mon_resources(sim_results))
       
@@ -797,13 +792,13 @@ full_sim <-
 
     if(!rep_parallel_combo){
     results <- MH.Network.sim(
-      rep = seq(num_iter),
-      warm = warmup,
-      sim_days = sim_length,
-      sort_by_prob = prob_sort,
-      n.parallel = concurrent_requests,
-      alg_input = new_sol,
-      resources = return_resources)
+            warm = warmup,
+            sim_days = sim_length,
+            sort_by_prob = prob_sort,
+            n.parallel = runs[index, n.concurrent],
+            alg_input = new_sol,
+            resources = F
+          )
     } else {
       runs <-
         data.table(expand_grid(
@@ -846,18 +841,3 @@ full_sim <-
     } 
     return(results)
   }
-
-# Function for Mental Health Sim MOSA -------------------------------------
-mh_wait_quantile <- function(x){
-  return(x[,.(wait_90_quantile = quantile(total_wait_time,probs = 0.9,na.rm = T)),by = replication])
-}
-
-mh_wait_sigma <- function(x){
-  return(x[,.(variable = sd(total_wait_time,na.rm = T)^2),by = list(Age,replication)
-           ][,.(wait_variance = max(variable)),by = replication])
-}
-
-mh_distance_range <- function(x){
-  return(x[,.(variable = diff(range(Travel.Distance,na.rm = T))),by = list(Age,replication)
-           ][,.(max_travel_range = max(variable)),by = replication])
-}

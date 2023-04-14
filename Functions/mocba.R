@@ -1,4 +1,4 @@
-ocba <- 
+mocba <- 
   function(candidate_list,.envir = parent.frame()) {
     
     # Multi-Objective Optimal Computing Budget Allocation 

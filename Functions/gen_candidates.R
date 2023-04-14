@@ -8,7 +8,6 @@ gen_candidates <-
     #   tweak_left - the maximum number of candidate solutions to be evaluated 
     #                during a DB-PSA iteration
     
-    
     temp_counter <- 0
     candidate_list <- list()
     tweak_left <- if(is.na(tweak_left)) .envir$nTweak
@@ -31,7 +30,7 @@ gen_candidates <-
       
       # Remove any solution that was previously tested
       dups <-
-        rbind(all_allocations,
+        rbind(.envir$all_allocations,
               new_solns %c% 'Allocation' %>%
                 t() %>%
                 as.matrix()) %>%
@@ -41,7 +40,7 @@ gen_candidates <-
             which(duplicated(mat))
         }()
       if (length(dups) > 0) {
-        dups <- dups - nrow(all_allocations)
+        dups <- dups - nrow(.envir$all_allocations)
       }
       if (length(dups) != length(new_solns)) {
         new_solns <-
@@ -54,13 +53,12 @@ gen_candidates <-
       candidate_list <- append(candidate_list, new_solns)
       if (length(new_solns) > 0 & .envir$it != 0) {
         all_allocations <<-
-          rbind(all_allocations, as.matrix(t(new_solns %c% 'Allocation')))
+          rbind(.envir$all_allocations, as.matrix(t(new_solns %c% 'Allocation')))
       }
       
       temp_counter %+% 1
       tweak_left <- tweak_left - length(candidate_list)
     }
-    
     if (length(candidate_list) > 0) {
       for (i in seq_along(candidate_list)) {
         candidate_list[[i]]$name <-
@@ -87,7 +85,6 @@ gen_candidates <-
         FUN = function(i)
           rep(x = i, times = candidate_list[[i]]$Replications)
       )
-      
       
       test <- mclapply(
         X = seq_along(allocation_list),

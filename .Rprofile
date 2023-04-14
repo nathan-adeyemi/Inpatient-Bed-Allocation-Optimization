@@ -49,5 +49,9 @@ library(rslurm, quietly = T)
 library(ggrepel,quietly = T)
 library(optimization,quietly = T)
 
-lapply(X = file.path('.','Functions',list.files(path = file.path('.','Functions'))), FUN = source)
+invisible(lapply(
+  X = file.path('.', 'Functions', list.files(path = file.path('.', 'Functions'))),
+  FUN = source,
+  echo = FALSE
+))
 source(file = file.path(".", 'Simulations', 'Minnesota MH Network Simulation.R'))

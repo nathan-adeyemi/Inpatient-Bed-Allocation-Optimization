@@ -5,7 +5,7 @@ DB_PSA <- function(continue_previous = F,
                    nTweak = 5,
                    pareto_limit = NA_real_,
                    itMax = NA_real_,
-                   total_servers,
+                   total_servers = NA_real_,
                    initial_trials = 8,
                    sim_length,
                    warmup,
@@ -133,19 +133,11 @@ DB_PSA <- function(continue_previous = F,
     all_allocations <<- t(best$Allocation)
     pareto_set <-  list()
   } else {
+    main_env <- environment()
     load(arg_list$env_path)
-    pareto_set <- arg_list$pareto_set
-    A <- arg_list$A
-    it <- length(A)
-    temp <-
-      cool_temp(
-        initial_temperature = temp_init,
-        alpha_param = t_damp,
-        cool_sched = sched_type,
-        current_iteration = it
-      )
-    best <- findBestbyDistance(pareto_set)
-    best <- best$best
+    reconstruct_envir(arg_list,.envir = main_env)
+    rm(list = 'main_env')
+    total_servers <- NA_real_ 
     rm(list = lsf.str())
     lapply(X = file.path('.','Functions',list.files(path = file.path('.','Functions'))), FUN = source)
   }
@@ -155,8 +147,8 @@ DB_PSA <- function(continue_previous = F,
     # Generate Candidates for the Iteration ---------------------------------------------------------------------------
     temp_obj <- gen_candidates()
     if (length(temp_obj) != 0) {
-      # Perform OCBA to Minimize Total Simulation Replications ----------------------------------------------------------
-      temp_obj <- ocba(candidate_list = temp_obj)
+      # Perform MOCBA to Minimize Total Simulation Replications ----------------------------------------------------------
+      temp_obj <- mocba(candidate_list = temp_obj)
       ocba_removed <- temp_obj[['non_sP']]
       ocba_removed <-
         ocba_removed[which(lapply(ocba_removed, length) != 0)]
@@ -281,17 +273,19 @@ DB_PSA <- function(continue_previous = F,
         cat('\n')
       }
       #if (!is.na(results_directory) & !hyper) {
-      if(!use_test_bench){
-        save.image(file = file.path(results_directory, paste('Iteration',it,'paused_envr.rdata',sep = '_')))
-        saveRDS(object = A,file = file.path(results_directory,paste('Iteration',it,'history.rds',sep = '_')))
-      }
+      
+      save(list = setdiff(ls(), lsf.str()),
+           file = file.path(
+             results_directory,
+             paste('Iteration', it, 'paused_envr.rdata', sep = '_')
+           ))
+      saveRDS(object = A,
+              file = file.path(
+                results_directory,
+                paste('Iteration', it, 'history.rds', sep = '_')
+              ))
       
       it %+% 1
-      
-      if(length(pareto_set) > 2){
-        plotParetoFront(pareto_set)
-        browser()
-      }
       
       # Adjust Temperature ----------------------------------------------------------------------------------------------
       if (!identical(pareto_set, prev_pareto_set)) {

@@ -1,16 +1,24 @@
 inverted_V_logical <- T
 use_test_bench <- T
-# bi_objective <- F
 
-if(exists(x = 'single_objective',where = -1)){
-  if(single_objective){
-    bi_objective <- F
-  } 
-} else if(exists('bi_objective')){
-  single_objective <- F
+args <- commandArgs(trailingOnly=TRUE)
+if(length(args) > 0){
+  size <- as.character(args[1])
+  obj_function_list <- unlist(strsplit(args[2],","))
+  optim_type <- unlist(strsplit(args[3],","))
+} else {
+  size <- 'Medium'
+  if (single_objective) {
+    optim_type <- 'max'
+    obj_function_list <- list('TB_obj_1')
+  } else if (bi_objective) {
+    optim_type <- c('max', 'min')
+    obj_function_list <- c('TB_obj_1', 'TB_obj_2')
+  } else {
+    optim_type <- c("max", "min", "min")
+    obj_function_list <- c('TB_obj_1', 'TB_obj_2', 'TB_obj_3')
+  }
 }
-
-size <- 'Medium'
 read_init <- T
 jackson_envir <- new.env()
 
@@ -27,16 +35,18 @@ if (read_init) {
 }
 
 sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
-if(single_objective){
-  optim_type <- 'max'
-  obj_function_list <- list('TB_obj_1')
-}else if (bi_objective) {
-  optim_type <- c('max', 'min')
-  obj_function_list <- c('TB_obj_1', 'TB_obj_2')
-} else {
-  optim_type <- c("max", "min", "min")
-  obj_function_list <- c('TB_obj_1', 'TB_obj_2', 'TB_obj_3')
-}
+n_obj <- length(obj_function_list)
+optim_type_print <- optim_type
+obj_fun_print <- obj_function_list
+obj_fun_print[n_obj] <- paste0("and ",obj_fun_print[n_obj])
+optim_type_print[n_obj] <- paste0("and ",optim_type_print[n_obj])
+
+cat("Test Network size is:", size)
+cat("\n")
+cat("Objective metrics are", paste0(obj_fun_print,collapse = `if`(n_obj == 2," ",", ")))
+cat("\n")
+cat('Optimization directions are',paste0(optim_type_print,collapse = `if`(n_obj == 2," ",", ")))
+cat("\n")
 
 init_sol <- c(1, rep(0, (n_queues - 1)))
 if(grepl(pattern = 'Small',

@@ -2,6 +2,7 @@ plotParetoFront <-
   function(inputData = NULL,
            plot_angle = 120,
 <<<<<<< HEAD
+<<<<<<< HEAD
            plot_replications = T,
            plot_ideal_point = T,
            plot_initial_point = F,
@@ -393,6 +394,9 @@ plotParetoFront <-
   }
 
 =======
+=======
+           plot_replications = T,
+>>>>>>> 2d8d6de (Further Updates)
            .envir = parent.frame()) {
     # Function to plot the image of the Pareto front along the specified objective functions.
     
@@ -527,7 +531,6 @@ plotParetoFront <-
         labs(x = str_to_title(gsub("_", " ", metric_names[1])), 
              y = str_to_title(gsub("_", " ", metric_names[2]))) +
         ggtitle('DB-PSA Pareto Image')
-      browser()
 
     } else if (length(.envir$optim_type) == 3) {
       if (any(class(inputData) == 'data.table')) {
@@ -561,7 +564,7 @@ plotParetoFront <-
         n_sols <- inputData[,.N]
         colors <-
           palette(value = hcl.colors(n = n_sols,
-                                     palette = 'viridis'))[sample(seq(n_sols), n_sols, replace = F)]
+                                     palette = 'Dark 2'))[sample(seq(n_sols), n_sols, replace = F)]
         color_inputData <-
           colors[as.numeric(as.factor(inputData[, sol]))]
         names(color_inputData) <- inputData[,sol]
@@ -570,7 +573,7 @@ plotParetoFront <-
         inputData <- inputData[inputData2[,lapply(.SD,unique),.SDcols = c('distance','Probability','colour'),by = 'sol'],on = .(sol)]
         rep_points_colors <- inputData2[,colour]
         names(rep_points_colors) <- inputData2$sol
-        inputData2 <- inputData2[,colour :=paste0(colour,'60')]
+        inputData2 <- inputData2[,colour :=paste0(colour,'99')]
         axis_labels <-
           str_to_title(gsub(
             x = colnames(inputData2)[1:3],
@@ -580,40 +583,64 @@ plotParetoFront <-
         x_col <- metric_names[1]
         y_col <- metric_names[2]
         z_col <- metric_names[3]
-        paretoPlot <-
-          scatterplot3d(
-            x = inputData2[, sol := NULL][,..x_col] %>% unlist(),
-            y = inputData2[, sol := NULL][,..y_col] %>% unlist(),
-            z = inputData2[, sol := NULL][,..z_col] %>% unlist(),
-            grid = F,
-            pch = 3,
-            color = inputData2[,colour]%>% unlist(),
-            angle = plot_angle,
-            main = 'Pareto Set Objective Metrics',
-            xlab = axis_labels[1],
-            ylab = axis_labels[2],
-            zlab = axis_labels[3],
-            highlight.3d = F
-          )
-        addgrids3d(inputData2,
-                   grid = c("xy", "xz", "yz"),
-                   angle = plot_angle)
         
-        paretoPlot$points3d(
-          copy(inputData)[,`:=`(sol = NULL,colour = NULL)],
-          pch = 16,
-          type = 'h',
-          col = color_inputData,
-          cex = 1.25
-        )
+        if (plot_replications) {
+          paretoPlot <-
+            scatterplot3d(
+              x = inputData2[, sol := NULL][, ..x_col] %>% unlist(),
+              y = inputData2[, sol := NULL][, ..y_col] %>% unlist(),
+              z = inputData2[, sol := NULL][, ..z_col] %>% unlist(),
+              grid = F,
+              pch = 3,
+              color = inputData2[, colour] %>% unlist(),
+              angle = plot_angle,
+              main = 'Pareto Set Objective Metrics',
+              xlab = axis_labels[1],
+              ylab = axis_labels[2],
+              zlab = axis_labels[3],
+              highlight.3d = F
+            )
+          addgrids3d(inputData2,
+                     grid = c("xy", "xz", "yz"),
+                     angle = plot_angle)
+          
+          paretoPlot$points3d(
+            copy(inputData)[, `:=`(sol = NULL, colour = NULL)],
+            pch = 16,
+            type = 'h',
+            col = color_inputData,
+            cex = 1.25
+          )
+        } else {
+          paretoPlot <-
+            scatterplot3d(
+              x = unlist(inputData[, sol := NULL][, ..x_col]),
+              y = unlist(inputData[, sol := NULL][, ..y_col]),
+              z = unlist(inputData[, sol := NULL][, ..z_col]),
+              grid = F,
+              pch = 16,
+              color = unlist(inputData[, colour]),
+              angle = plot_angle,
+              main = 'Pareto Set Objective Metrics',
+              xlab = axis_labels[1],
+              ylab = axis_labels[2],
+              zlab = axis_labels[3],
+              type = 'h',
+              cex.symbols = 1.25
+            )
+          addgrids3d(inputData,
+                     grid = c("xy", "xz", "yz"),
+                     angle = plot_angle)
+        }
         
         paretoPlot$points3d(idealPointDF[,`:=`(sol = NULL)],pch = 16,type = 'h',color = 'black',cex = 1.25)
         id_pt <- paretoPlot$xyz.convert(idealPointDF[1,])
         for(i in seq(inputData[,.N])){
           assign(paste0('p',i),copy(inputData)[,`:=`(sol = NULL)][i,])
-          eval(parse(text = paste0('paretoPlot$points3d(rbind(copy(p',i,')[,colour := NULL],copy(idealPointDF),fill = T)[,`:=`(sol = NULL,colour = NULL)],type = "l",col = p',i,'[,colour])')))
-          eval(parse(text = paste0("label <- paretoPlot$xyz.convert(rbind(p",i,",copy(idealPointDF)[,`:=`(sol = NULL)],fill = T)[,lapply(.SD,mean),.SDcols = colnames(idealPointDF)])")))
-          eval(parse(text = paste0("text(label$x,label$y,labels = paste0('(',p",i,"[,distance],',',p",i,"[,Probability],')'),pos = 1,cex = 0.5, col = p",i,"[,colour])")))
+          eval(parse(text = paste0('paretoPlot$points3d(rbind(copy(p',i,')[,colour := NULL],copy(idealPointDF),fill = T)[,`:=`(sol = NULL,colour = NULL)],type = "l",lty = 2,col = p',i,'[,colour])')))
+          # eval(parse(text = paste0("label <- paretoPlot$xyz.convert(rbind(p",i,",copy(idealPointDF)[,`:=`(sol = NULL)],fill = T)[,lapply(.SD,mean),.SDcols = colnames(idealPointDF)])")))
+          eval(parse(text = paste0("label <- paretoPlot$xyz.convert(p",i,")")))
+          eval(parse(text = paste0("text(label$x,label$y,labels = paste0('(',p",i,"[,distance],',',p",i,"[,Probability],')'),pos = 3,font = 2,cex = 0.85, col = p",i,"[,colour])")))
         }
       }
     } else if (length(.envir$optim_type) > 3) {

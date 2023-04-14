@@ -33,7 +33,6 @@ gen_candidates <-
     #   tweak_left - the maximum number of candidate solutions to be evaluated 
     #                during a DB-PSA iteration
     
-    
     temp_counter <- 0
     candidate_list <- list()
     tweak_left <- if(is.na(tweak_left)) .envir$nTweak
@@ -63,7 +62,11 @@ gen_candidates <-
       
       # Remove any solution that was previously tested
       dups <-
+<<<<<<< HEAD
         rbind(prev_tested,
+=======
+        rbind(.envir$all_allocations,
+>>>>>>> 2d8d6de (Further Updates)
               new_solns %c% 'Allocation' %>%
 =======
         as.matrix(candidate_list %c% 'Allocation')
@@ -90,6 +93,7 @@ gen_candidates <-
             which(duplicated(mat))
         }()
       if (length(dups) > 0) {
+<<<<<<< HEAD
 <<<<<<< HEAD
         dups <- dups - nrow(prev_tested)
       }
@@ -134,6 +138,9 @@ gen_candidates <-
       
 =======
         dups <- dups - nrow(all_allocations)
+=======
+        dups <- dups - nrow(.envir$all_allocations)
+>>>>>>> 2d8d6de (Further Updates)
       }
       if (length(dups) != length(new_solns)) {
         new_solns <-
@@ -146,12 +153,13 @@ gen_candidates <-
       candidate_list <- append(candidate_list, new_solns)
       if (length(new_solns) > 0 & .envir$it != 0) {
         all_allocations <<-
-          rbind(all_allocations, as.matrix(t(new_solns %c% 'Allocation')))
+          rbind(.envir$all_allocations, as.matrix(t(new_solns %c% 'Allocation')))
       }
       
       temp_counter %+% 1
       tweak_left <- tweak_left - length(candidate_list)
     }
+<<<<<<< HEAD
     
 <<<<<<< HEAD
     candidate_list <- new_solns
@@ -185,6 +193,8 @@ gen_candidates <-
     } else{
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
 =======
+=======
+>>>>>>> 2d8d6de (Further Updates)
     if (length(candidate_list) > 0) {
       for (i in seq_along(candidate_list)) {
         candidate_list[[i]]$name <-
@@ -212,8 +222,11 @@ gen_candidates <-
           rep(x = i, times = candidate_list[[i]]$Replications)
       )
       
+<<<<<<< HEAD
       
 >>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
+=======
+>>>>>>> 2d8d6de (Further Updates)
       test <- mclapply(
         X = seq_along(allocation_list),
         FUN = ocbaUpdate,

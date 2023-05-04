@@ -1,5 +1,6 @@
 inverted_V_logical <- T
 use_test_bench <- T
+stat_logical <- T
 
 args <- commandArgs(trailingOnly=TRUE)
 if(length(args) > 0){
@@ -7,17 +8,10 @@ if(length(args) > 0){
   obj_function_list <- unlist(strsplit(args[2],","))
   optim_type <- unlist(strsplit(args[3],","))
 } else {
-  size <- 'Medium'
-  if (single_objective) {
-    optim_type <- 'max'
-    obj_function_list <- list('TB_obj_1')
-  } else if (bi_objective) {
-    optim_type <- c('max', 'min')
-    obj_function_list <- c('TB_obj_1', 'TB_obj_2')
-  } else {
-    optim_type <- c("max", "min", "min")
-    obj_function_list <- c('TB_obj_1', 'TB_obj_2', 'TB_obj_3')
-  }
+  size <- 'Large'
+  optim_type <- c('max', 'min')
+  obj_function_list <- c('TB_obj_1', 'TB_obj_2')
+
 }
 read_init <- T
 jackson_envir <- new.env()
@@ -60,6 +54,6 @@ if(grepl(pattern = 'Small',
   sim_length <- 3000
   warmup <- 200
 } else{
-  sim_length <- 4000
-  warmup <- 300
+  sim_length <- 5000
+  warmup <- 500
 }

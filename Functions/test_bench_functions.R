@@ -9,7 +9,14 @@ TB_obj_1 <- function(x) {
   return(z)
 }
 
-TB_obj_2 <- function(x) {
+TB_obj_2 <- function(x){
+  #browser(expr = get('it',envir = .GlobalEnv))
+  return(
+    x[[1]][, wait_time := Vectorize(function(x, y, z) { max(0, ((x - y) - z))})(end_time, start_time, activity_time)
+    ][,.(avg_wait = mean(wait_time,na.rm = T)),by = replication])
+}
+
+TB_obj_3 <- function(x) {
   if (is.list(x)) {
     z <-
       x[[2]][, .(queue_length = mean(system)), by = list(resource, replication)][, .(max_mean_queue = max(queue_length)), by = replication]
@@ -19,11 +26,4 @@ TB_obj_2 <- function(x) {
       x[, .(time_std_dev = sd(activity_time, na.rm = T)), by = list(replication)]
   }
   return(z)
-}
-
-TB_obj_3 <- function(x){
-  #browser(expr = get('it',envir = .GlobalEnv))
-  return(
-    x[[1]][, wait_time := Vectorize(function(x, y, z) { max(0, ((x - y) - z))})(end_time, start_time, activity_time)
-    ][,.(avg_wait = mean(wait_time,na.rm = T)),by = replication])
 }

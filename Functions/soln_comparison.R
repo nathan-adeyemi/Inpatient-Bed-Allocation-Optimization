@@ -3,9 +3,13 @@ soln_comparison <-
            s2,
            alpha = 0.05,
            .envir = parent.frame()) {
-    comp_df <- rbind(copy(s1$Cost)[, soln_num := 1],
-                     copy(s2$Cost)[, soln_num := 2])
-    stat <- .envir$stat_logical
+    if(any(class(s1) == 'data.table')) {
+      comp_df <- rbind(s1[, soln_num := 1],
+                       s2[, soln_num := 2])
+    } else {
+      comp_df <- rbind(copy(s1$Cost)[, soln_num := 1],
+                       copy(s2$Cost)[, soln_num := 2])
+    }
     alpha <- 0.05
     #Less strict alpha value if there are few simulation replications
     if (any(sapply(list(s1, s2), function(i)
@@ -28,7 +32,7 @@ soln_comparison <-
           'max' = -1
         )[match(col, indx)]
     }
-    if (stat) {
+    if (.envir$stat_logical) {
       criteria_1 <- sapply(
         X = seq_along(indx),
         FUN = function(variable)

@@ -9,7 +9,7 @@ CostFunction <- function(sol = NULL,
   # Inputs:
   #   sol: (Numeric) A solution vector
   #   reps: (Integer) The number of simulation replications to be executed
-  #
+  #   logic: (Logical) should simulation replications be run on multiple cores
   
   # Returns:
   #   x: (List) AS list of simmer output data.frames
@@ -18,7 +18,6 @@ CostFunction <- function(sol = NULL,
   # if (nsga) {
   #   sol <- decode(sol)
   # }
-  
   if(is.na(reps)){
     reps <- seq(.envir$initial_trials)
   } else if (all(length(reps) == 1,reps != 1)){

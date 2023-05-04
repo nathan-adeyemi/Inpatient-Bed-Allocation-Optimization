@@ -6,7 +6,7 @@ objective_Metrics <- function(x, .envir = parent.frame()){
   #   x: (Lisr) A list of Simmer output data.frames
   
   # Returns:
-  #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replicatin 
+  #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replication 
   
   data <- lapply(
     X = .envir$obj_function_list,

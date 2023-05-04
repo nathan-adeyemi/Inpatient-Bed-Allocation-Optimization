@@ -26,16 +26,19 @@ reconstruct_envir <- function(arg_list,.envir = parent.frame()) {
   unique_sols <- unique_sols[unique_names]
   itReps_Cum <- sum(unique_sols %c% 'Replications') + .envir$initial_trials
   theoretical_cum <- .envir$N_Total * it
+  pareto_counter <- sum(unlist(lapply(A, function(i) identical(A[[length(A)]]$itBest %c% 'name', i$itBest %c% 'name'))))
   list2env(
     x = list(
       "A" = A,
       "pareto_set" = pareto_set,
-      "it" = it,
+      "it" = it + 1,
       "temp" = temp,
       "best" = best,
       "all_allocations" = all_allocations,
       "itReps_Cum" = itReps_Cum,
-      "theoretical_cum" = theoretical_cum
+      "theoretical_cum" = theoretical_cum,
+      "pareto_counter" = pareto_counter,
+      "pareto_limit" = 20
     ),
     envir = .envir
   )

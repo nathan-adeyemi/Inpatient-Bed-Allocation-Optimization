@@ -1,3 +1,6 @@
 conv_pSet_to_table <- function(set){
-  data.table(t(set[[1]] %c% 'Allocation'))
+  if(length(set) == 1){
+    set = set[[1]]
+  }
+  data.table(t(set %c% 'Allocation'))
 }

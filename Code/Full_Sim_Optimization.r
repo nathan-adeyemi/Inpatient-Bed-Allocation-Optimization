@@ -275,7 +275,7 @@ if (length(args) > 0) {
   continue_previous <-
     readline(prompt = 'Continue previous DB-PSA algorithm run? (y/n)')
   continue_previous <-
-    grep(pattern = 'y|yes',
+    grepl(pattern = 'y|yes',
          x = continue_previous,
          ignore.case = T)
   obj_function_list <-
@@ -297,12 +297,10 @@ cat('Optimization directions are',
     paste0(optim_type_print, collapse = `if`(n_obj == 2, " ", ", ")))
 cat("\n")
 
-if (any(grepl("mh_total_throughput", obj_function_list))) {
-  if (n_obj == 3) {
-    full_sim_folder <- "Full Sim Results (Throughput Objective)"
-  } else{
-    full_sim_folder <- "Full Sim Results (4 Objectives)"
-  }
+if(n_obj == 4) {
+  full_sim_folder <- "Full Sim Results (4 Objectives)"
+} else if (any(grepl("mh_total_throughput", obj_function_list))) {
+  full_sim_folder <- "Full Sim Results (Throughput Objective)"
 } else{
   full_sim_folder <- "Full Sim Results"
 }
@@ -310,23 +308,28 @@ if (any(grepl("mh_total_throughput", obj_function_list))) {
 res_dir <-
   file.path(".",
             "Data", full_sim_folder)
-
 if (continue_previous) {
-  res_dir <-
-    file.path(res_dir, paste('Trial', length(list.files(res_dir)), sep = '_'))
+  # res_dir <-
+  #   file.path(res_dir, paste('Trial', length(list.files(res_dir,pattern = 'Trial_')), sep = '_'))
+  
+  if(n_obj == 4) {
+    res_dir <- file.path(res_dir,'Trial_1')
+  } else if (any(grepl("mh_total_throughput", obj_function_list))) {
+    res_dir <- file.path(res_dir,'Trial_2')
+  } else{
+    res_dir <- file.path(res_dir,'Trial_2')
+  }
+  
+  cat('The results file path is:', res_dir)
   n_iter <-
     max(na.omit(unique(unlist(
       lapply(X = strsplit(list.files(res_dir), '_'), FUN = as.numeric)
     ))))
-  history <-
-    readRDS(file.path(res_dir, paste(
-      'Iteration', n_iter, 'history.rds', sep = '_'
-    )))
-  pSet <- history[[length(history)]]$itBest
-  results <- DB_PSA(
+  results <- DD_PUSA(
     continue_previous = T,
     results_directory = res_dir,
     sched_type = 'q',
+    temp_init = 100,
     t_damp = 0.45,
     nTweak = 7,
     initial_trials = 18,
@@ -341,13 +344,10 @@ if (continue_previous) {
         c(1, rep(x = 0, times = i - 1))
     )),
     use_test_bench = F,
-    total_servers = total_servers,
     generate_plots = T,
     print_it_results = T,
-    hyper = F,
+    pareto_limit = 12,
     siteInfo = siteInfo,
-    pareto_set = pSet,
-    A = history,
     env_path = file.path(
       res_dir,
       paste('Iteration', n_iter, 'paused_envr.rdata', sep = '_')
@@ -355,11 +355,12 @@ if (continue_previous) {
   )
 } else {
   res_dir <-
-    file.path(res_dir, paste('Trial', length(list.files(res_dir)) + 1, sep = '_'))
-  
-  results <- DB_PSA(
+    file.path(res_dir, paste('Trial', length(list.files(res_dir,pattern = 'Trial_')) + 1, sep = '_'))
+  dir.create(res_dir)
+  results <- DD_PUSA(
     continue_previous = F,
     results_directory = res_dir,
+    temp_init = 100,
     sched_type = 'q',
     t_damp = 0.45,
     nTweak = 7,
@@ -375,11 +376,22 @@ if (continue_previous) {
         c(1, rep(x = 0, times = i - 1))
     )),
     use_test_bench = F,
-    total_servers = total_servers,
+    pareto_limit = 20,
     generate_plots = T,
     print_it_results = T,
     hyper = F,
-    siteInfo = siteInfo
+    siteInfo = siteInfo,
+    origin_alloc_path = file.path(
+      "~",
+      "MH_Simulation",
+      "Policy Interventions to Improve Mental Healthcare Access",
+      "Data",
+      "Simulation and Alternatives Results",
+      "Validation Results",
+      "temp_results_11_14",
+      "Trial_3",
+      "Patients Results (All Replications).rds"
+    )
   )
 }
 >>>>>>> f4d354d (Further Updates:)

@@ -5,6 +5,7 @@ source('.Rprofile')
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 # continue_previous <-
 #   readline(prompt = 'Continue previous DB-PSA algorithm run? (y/n)')
@@ -14,6 +15,8 @@ source('.Rprofile')
 #         ignore.case = T)
 continue_previous <- F
 >>>>>>> 2d8d6de (Further Updates)
+=======
+>>>>>>> a420328 (Git Repo updates)
 source(
   file.path(
     "~",
@@ -142,19 +145,20 @@ source(file.path("~","MH_Simulation","Inpatient Bed Allocation Optimization","Co
 
 # Directory to Store MOSA Results -----------------------------------------
 res_dir <-
-  file.path(".", "Data", "Sample MOSA Results", gsub("-", "_", Sys.Date()))
+  file.path(".", "Data", paste0("Testbench Results (",length(optim_type)," Objectives)"),size)
 if (!dir.exists(res_dir)) {
   dir.create(res_dir)
 }
-if (!continue_previous) {
-  res_dir <-
-    file.path(res_dir, paste0("Trial_", length(list.files(res_dir)) + 1))
-  dir.create(res_dir)
-  results <- DB_PSA(
-    continue_previous = continue_previous,
+  # res_dir <-
+  #   file.path(res_dir, paste0("Trial_", length(list.files(res_dir)) + 1))
+  #dir.create(res_dir)
+for(instance in seq(15)){
+  results <- DD_PUSA(
+    continue_previous = F,
     results_directory = res_dir,
-    nTweak = 5,
+    nTweak = 7,
     sched_type = 'q',
+<<<<<<< HEAD
     t_damp = 0.4,
     sim_length = sim_length,
     warmup = warmup,
@@ -263,7 +267,12 @@ results <- DB_PSA(continue_previous = T,
     nTweak = 5,
     sched_type = 'q',
     t_damp = 0.4,
+=======
+    temp_init = 100,
+    t_damp = 0.45,
+>>>>>>> a420328 (Git Repo updates)
     sim_length = sim_length,
+    initial_trials = 8,
     warmup = warmup,
     obj_function_list = obj_function_list,
     optim_type = optim_type,
@@ -272,9 +281,57 @@ results <- DB_PSA(continue_previous = T,
     total_servers = total_servers,
     generate_plots = T,
     print_it_results = T,
-    pareto_set = pSet,
-    A = history
-  )
-  saveRDS(results,file.path(res_dir,'DB_PSA_results.rds'))
+    tabu_limit = `if`(size == 'Small',7,12)
+    )
+  
+  results <-
+    c(
+      results,
+      percent_correct = pareto_perc_correct(
+        i = results$pSet,
+        size = size,
+        extras = F
+      ),
+      extra_solns = pareto_perc_correct(
+        i = results$pSet,
+        size = size,
+        extras = T
+      )
+    )
+  if (!dir.exists(file.path(res_dir, 'Instance Results'))) {
+    dir.create(file.path(res_dir, 'Instance Results'))
+  }
+  saveRDS(results, file = file.path(
+    res_dir,
+    'Instance Results',
+    paste0('Instance_', instance, '_results.rds')
+  ))
+  par.env <- environment()
+  if(instance == 1){
+    instance_df <- with(results,
+                        data.table(perc_correct = percent_correct,
+                              extra_solns = extra_solns,
+                              exec_time = execution_time,
+                              total_replications = nReplications,
+                              nIterations = total_iterations,
+                              g_ideal1 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[1],
+                              g_ideal_2 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[2]))
+  } else{
+    instance_df <- rbind(instance_df,
+                         with(results,
+                              data.table(perc_correct = percent_correct,
+                                         extra_solns = extra_solns,
+                                         exec_time = execution_time,
+                                         total_replications = nReplications,
+                                         nIterations = total_iterations,
+                                         g_ideal1 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[1],
+                                         g_ideal_2 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[2])))
+  }
 }
+<<<<<<< HEAD
 >>>>>>> 2d8d6de (Further Updates)
+=======
+  # saveRDS(results, file.path(res_dir, paste0(size, '_Network_DD_PUSA_results.rds')))
+  saveRDS(instance_df, file.path(res_dir, paste0(size, '_Network_DD_PUSA_dataframe.rds')))
+  
+>>>>>>> a420328 (Git Repo updates)

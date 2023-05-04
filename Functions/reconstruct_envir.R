@@ -27,22 +27,31 @@ reconstruct_envir <- function(arg_list,.envir = parent.frame()) {
   itReps_Cum <- sum(unique_sols %c% 'Replications') + .envir$initial_trials
   theoretical_cum <- .envir$N_Total * it
 <<<<<<< HEAD
+<<<<<<< HEAD
   pareto_counter <- sum(unlist(lapply(A, function(i) identical(A[[length(A)]]$itBest %c% 'name', i$itBest %c% 'name'))))
 =======
 >>>>>>> 2d8d6de (Further Updates)
+=======
+  pareto_counter <- sum(unlist(lapply(A, function(i) identical(A[[length(A)]]$itBest %c% 'name', i$itBest %c% 'name'))))
+>>>>>>> a420328 (Git Repo updates)
   list2env(
     x = list(
       "A" = A,
       "pareto_set" = pareto_set,
 <<<<<<< HEAD
+<<<<<<< HEAD
       "it" = it + 1,
 =======
       "it" = it,
 >>>>>>> 2d8d6de (Further Updates)
+=======
+      "it" = it + 1,
+>>>>>>> a420328 (Git Repo updates)
       "temp" = temp,
       "best" = best,
       "all_allocations" = all_allocations,
       "itReps_Cum" = itReps_Cum,
+<<<<<<< HEAD
 <<<<<<< HEAD
       "theoretical_cum" = theoretical_cum,
       "pareto_counter" = pareto_counter,
@@ -50,6 +59,11 @@ reconstruct_envir <- function(arg_list,.envir = parent.frame()) {
 =======
       "theoretical_cum" = theoretical_cum
 >>>>>>> 2d8d6de (Further Updates)
+=======
+      "theoretical_cum" = theoretical_cum,
+      "pareto_counter" = pareto_counter,
+      "pareto_limit" = 20
+>>>>>>> a420328 (Git Repo updates)
     ),
     envir = .envir
   )

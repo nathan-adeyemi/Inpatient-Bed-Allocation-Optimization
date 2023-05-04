@@ -9,6 +9,7 @@ objective_Metrics <- function(x, .envir = parent.frame()){
   
   # Returns:
 <<<<<<< HEAD
+<<<<<<< HEAD
   #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replication 
   
 =======
@@ -16,6 +17,9 @@ objective_Metrics <- function(x, .envir = parent.frame()){
 >>>>>>> 8c8946d (Fixed some custom functions.)
 =======
   #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replicatin 
+=======
+  #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replication 
+>>>>>>> a420328 (Git Repo updates)
   
 >>>>>>> f4d354d (Further Updates:)
   data <- lapply(

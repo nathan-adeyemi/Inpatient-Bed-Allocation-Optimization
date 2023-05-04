@@ -7,7 +7,7 @@ gen_candidates <-
     # Function Inputs:
     #   tweak_left - the maximum number of candidate solutions to be evaluated 
     #                during a DB-PSA iteration
-    
+    prev_tested <- `if`(any(grepl('tabu_limit',names(.envir$arg_list))),.envir$tabu_allocations,.envir$all_allocations)
     temp_counter <- 0
     candidate_list <- list()
     tweak_left <- if(is.na(tweak_left)) .envir$nTweak
@@ -30,7 +30,7 @@ gen_candidates <-
       
       # Remove any solution that was previously tested
       dups <-
-        rbind(.envir$all_allocations,
+        rbind(prev_tested,
               new_solns %c% 'Allocation' %>%
                 t() %>%
                 as.matrix()) %>%
@@ -40,7 +40,7 @@ gen_candidates <-
             which(duplicated(mat))
         }()
       if (length(dups) > 0) {
-        dups <- dups - nrow(.envir$all_allocations)
+        dups <- dups - nrow(prev_tested)
       }
       if (length(dups) != length(new_solns)) {
         new_solns <-
@@ -51,11 +51,6 @@ gen_candidates <-
       
       # Add all new generated solutions to the candidate list
       candidate_list <- append(candidate_list, new_solns)
-      if (length(new_solns) > 0 & .envir$it != 0) {
-        all_allocations <<-
-          rbind(.envir$all_allocations, as.matrix(t(new_solns %c% 'Allocation')))
-      }
-      
       temp_counter %+% 1
       tweak_left <- tweak_left - length(candidate_list)
     }

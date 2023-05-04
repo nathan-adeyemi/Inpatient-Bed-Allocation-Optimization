@@ -11,7 +11,7 @@ update_sol <- function(i,sol_vector = NA, .envir = parent.frame()){
     x$name <-
       paste0("test_nsga_sol_",i)
     x$Solution <- sol_vector
-    x$Replications <- 12
+    x$Replications <- 20
   }
   x$Allocation <- decode(x$Solution,.envir = .envir)
   return(x)

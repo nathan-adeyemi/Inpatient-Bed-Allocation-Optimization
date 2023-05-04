@@ -11,6 +11,9 @@ options(
 
 # Utilities ----------------------------
 # library(tidyverse, quietly = T)
+if(!interactive()){
+  library(tidyverse, quietly = T)
+}
 library(data.table, quietly = T)
 library(readxl, quietly = T)
 library(openxlsx, quietly = T)
@@ -20,6 +23,8 @@ library(gtools, quietly = T)
 library(ps, quietly = T)
 library(lubridate, quietly = T)
 library(pracma, quietly = T)
+library(dplyr,quietly = T)
+library(stringr,quietly = T)
 
 # Packages for Statistics/Bootstrapping/etc. ------------------------------
 library(fitdistrplus, quietly = T)
@@ -48,6 +53,7 @@ library(fpc, quietly = T)
 library(rslurm, quietly = T)
 library(ggrepel,quietly = T)
 library(optimization,quietly = T)
+library(partitions,quietly = T)
 
 invisible(lapply(
   X = file.path('.', 'Functions', list.files(path = file.path('.', 'Functions'))),

@@ -15,6 +15,7 @@ options(
 # Utilities ----------------------------
 # library(tidyverse, quietly = T)
 <<<<<<< HEAD
+<<<<<<< HEAD
 if(!interactive()){
   library(tidyverse, quietly = T)
 }
@@ -93,6 +94,11 @@ options(
 library(tidyverse, quietly = T)
 =======
 >>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
+=======
+if(!interactive()){
+  library(tidyverse, quietly = T)
+}
+>>>>>>> a420328 (Git Repo updates)
 library(data.table, quietly = T)
 library(readxl, quietly = T)
 library(openxlsx, quietly = T)
@@ -102,6 +108,8 @@ library(gtools, quietly = T)
 library(ps, quietly = T)
 library(lubridate, quietly = T)
 library(pracma, quietly = T)
+library(dplyr,quietly = T)
+library(stringr,quietly = T)
 
 # Packages for Statistics/Bootstrapping/etc. ------------------------------
 library(fitdistrplus, quietly = T)
@@ -130,6 +138,7 @@ library(fpc, quietly = T)
 library(rslurm, quietly = T)
 library(ggrepel,quietly = T)
 library(optimization,quietly = T)
+library(partitions,quietly = T)
 
 <<<<<<< HEAD
 <<<<<<< HEAD

@@ -32,7 +32,7 @@ gen_candidates <-
     # Function Inputs:
     #   tweak_left - the maximum number of candidate solutions to be evaluated 
     #                during a DB-PSA iteration
-    
+    prev_tested <- `if`(any(grepl('tabu_limit',names(.envir$arg_list))),.envir$tabu_allocations,.envir$all_allocations)
     temp_counter <- 0
     candidate_list <- list()
     tweak_left <- if(is.na(tweak_left)) .envir$nTweak
@@ -63,10 +63,14 @@ gen_candidates <-
       # Remove any solution that was previously tested
       dups <-
 <<<<<<< HEAD
+<<<<<<< HEAD
         rbind(prev_tested,
 =======
         rbind(.envir$all_allocations,
 >>>>>>> 2d8d6de (Further Updates)
+=======
+        rbind(prev_tested,
+>>>>>>> a420328 (Git Repo updates)
               new_solns %c% 'Allocation' %>%
 =======
         as.matrix(candidate_list %c% 'Allocation')
@@ -95,6 +99,9 @@ gen_candidates <-
       if (length(dups) > 0) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a420328 (Git Repo updates)
         dups <- dups - nrow(prev_tested)
       }
       if (length(dups) != length(new_solns)) {

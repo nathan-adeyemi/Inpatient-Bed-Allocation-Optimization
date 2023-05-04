@@ -25,10 +25,14 @@ update_sol <- function(i,sol_vector = NA, .envir = parent.frame()){
       paste0("test_nsga_sol_",i)
     x$Solution <- sol_vector
 <<<<<<< HEAD
+<<<<<<< HEAD
     x$Replications <- 20
 =======
     x$Replications <- 12
 >>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
+=======
+    x$Replications <- 20
+>>>>>>> a420328 (Git Repo updates)
   }
   x$Allocation <- decode(x$Solution,.envir = .envir)
   return(x)

@@ -6,6 +6,7 @@ siteInfo <-
   data.table(readRDS(
     file.path('Simulations', 'Function Requirements', 'Rates5.rds')
   ))
+orig_alloc_path <- file.path('.','Data','plotting_utilities','Baseline Simulation Results','Patients Results (All Replications).rds')
   
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) > 0) {
@@ -53,22 +54,22 @@ res_dir <-
   file.path(".",
             "Data", full_sim_folder)
 if (continue_previous) {
-  # res_dir <-
-  #   file.path(res_dir, paste('Trial', length(list.files(res_dir,pattern = 'Trial_')), sep = '_'))
   
-  if(n_obj == 4) {
-    res_dir <- file.path(res_dir,'Trial_1')
-  } else if (any(grepl("mh_total_throughput", obj_function_list))) {
-    res_dir <- file.path(res_dir,'Trial_2')
-  } else{
-    res_dir <- file.path(res_dir,'Trial_2')
-  }
+  res_dir <-
+    file.path(res_dir, paste('Trial', max(na.omit(unique(
+      unlist(lapply(
+        X = strsplit(list.files(res_dir, pattern = 'Trial_'), '_'), FUN = as.numeric
+      ))
+    ))), sep = '_'))
   
   cat('The results file path is:', res_dir)
   n_iter <-
     max(na.omit(unique(unlist(
-      lapply(X = strsplit(list.files(res_dir), '_'), FUN = as.numeric)
+      lapply(X = strsplit(list.files(
+        file.path(res_dir, 'Iteration Environments')
+      ), '_'), FUN = as.numeric)
     ))))
+  
   results <- DD_PUSA(
     continue_previous = T,
     results_directory = res_dir,
@@ -90,10 +91,11 @@ if (continue_previous) {
     use_test_bench = F,
     generate_plots = T,
     print_it_results = T,
-    pareto_limit = 12,
+    pareto_limit = 20,
     siteInfo = siteInfo,
     env_path = file.path(
       res_dir,
+      'Iteration Environments',
       paste('Iteration', n_iter, 'paused_envr.rdata', sep = '_')
     )
   )
@@ -125,7 +127,7 @@ if (continue_previous) {
     print_it_results = T,
     hyper = F,
     siteInfo = siteInfo,
-    origin_alloc_path = file.path(
+    orig_alloc_path = file.path(
       "~",
       "MH_Simulation",
       "Policy Interventions to Improve Mental Healthcare Access",
@@ -138,3 +140,15 @@ if (continue_previous) {
     )
   )
 }
+solutions_df <- 
+  rbindlist(lapply(
+  X = pareto_set,
+  FUN = function(i)
+    with(i, cbind(
+      data.table(t(
+      paste(round(Obj_mean, digits = 2), "+/-",
+            diff(as.numeric(gsub(pattern = "\\(|\\)",replacement = "",x = unlist(strsplit(x = Obj_CI,split = ',')))))/2)
+    )),
+    plotBedShift(sol = Allocation,return_counts = T)
+    ))
+))

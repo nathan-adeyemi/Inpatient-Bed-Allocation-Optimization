@@ -1,14 +1,20 @@
 # Custom
 /Data/Sample\ MOSA\ Results/
-/Data/Full\ Sim\Results/
-/Data/paused_execution_envr.rdata
-/Data/test_bench_paused_envr.rds
-/Data/Small_hyperparameter_search_results.rds
-/Data/test_bench_paused_envr.rdata
+/Data/Full\ Sim\ Results/
+/Data/Full\ Sim\ Results\ \(4 Objectives\)/
+/Data/Full\ Sim\ Results\ \(Throughput Objective\)/
+/Data/Deprecated\ Results
+/Data/small_hyperparamteres_results_folder/
+/Data/Testbench Results\ (2 Objectives)/
+/Data/plotting_utilities
+/Data/Hyperparameter\ Search\ Results
 /renv/
 /Code/slurm_txt_templates
 /_rslurm_Small_hyperparameter_search
 /_rslurm_Medium_hyperparameter_search
+ /Code/Single_Obj_SA.R1
+*.jpeg
+
 
 # Stock
 # History files

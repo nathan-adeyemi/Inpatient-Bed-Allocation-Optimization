@@ -15,7 +15,7 @@ termination_criteria <-
       logical <- T
     } else if (!is.na(.envir$pareto_limit)) {
       logical <-
-        .envir$pareto_counter < .envir$pareto_limit
+        .envir$pareto_counter < .envir$pareto_limit & .envir$temp > .envir$t_min
     } else if (!is.na(.envir$itMax)) {
       logical <- .envir$it < .envir$itMax
     } else{

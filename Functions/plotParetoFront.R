@@ -5,6 +5,7 @@ plotParetoFront <-
            plot_ideal_point = T,
            plot_initial_point = F,
            scatter_matrix = F,
+           orig_alloc_path,
            .envir = parent.frame()) {
     # Function to plot the image of the Pareto front along the specified objective functions.
     
@@ -30,6 +31,7 @@ plotParetoFront <-
     
     inputData <-
       `if`(length(inputData) == 0, .envir$pareto_set, inputData)
+    
     if (is.list(inputData)) {
       metric_names <- names(inputData[[1]]$Obj_mean)
     }
@@ -38,20 +40,28 @@ plotParetoFront <-
     }
     if (length(.envir$optim_type) == 2) {
       if(any(grepl('Cost',names(inputData[[1]])))){
-      plotData <-
-        rbindlist(lapply(
-          inputData,
-          FUN = function(i)
-            i$Cost[,-1
-                   ][,sol := i$name]
-        ))[, lapply(.SD, mean), .SDcols = metric_names, by = sol
-           ][, `:=`(metric = 'Mean Response',sol = paste0('Pareto_Solution_', as.numeric(as.factor(sol))))]
+        if (plot_ideal_point) {
+          plotData <-
+            rbindlist(lapply(
+              inputData,
+              FUN = function(i)
+                i$Cost[, -1][,sol := i$name][, lapply(.SD, mean), .SDcols = metric_names, by = sol][, `:=`(distance = paste0('(', round(i$Divergence, digits = 2), ',', i$P_Selection, ')'))]
+            ))[, `:=`(metric = 'Mean Response',sol = paste0('Pareto \n Solution ', as.numeric(as.factor(sol))))]
+        } else{
+          plotData <-
+            rbindlist(lapply(
+              inputData,
+              FUN = function(i)
+                i$Cost[, -1][, sol := i$name]
+            ))[, lapply(.SD, mean), .SDcols = metric_names, by = sol][, `:=`(metric = 'Mean Response',
+                                                                             sol = paste0('Pareto Solution ', as.numeric(as.factor(sol))))]
+        }
       } else {
         plotData <-
           rbindlist(lapply(
             inputData,
             FUN = function(i) data.table(pivot_wider(enframe(i$Obj_mean),names_from = 'name'))[,sol := i$name]
-          ))[, `:=`(metric = 'Mean Response',sol = paste0('Pareto_Solution_', as.numeric(as.factor(sol))))]
+          ))[, `:=`(metric = 'Mean Response',sol = paste0('Pareto Solution ', as.numeric(as.factor(sol))))]
       }
       if(plot_ideal_point){
       idealPointDF <-
@@ -83,11 +93,11 @@ plotParetoFront <-
                                  distance = paste0('(',round(i$Divergence,digits = 2),',',i$P_Selection,')'))]
           ))[, metric := 'Replication Results']
         plotData <- rbind(replicationData, plotData,fill = T,use.names = T
-                          )[, sol := paste0('Pareto_Solution_', as.numeric(as.factor(sol)))]
+                          )[, sol := paste0('Pareto Solution ', as.numeric(as.factor(sol)))]
       }
       if(plot_ideal_point){
         rbind(plotData,idealPointDF, fill = T,use.names = T)
-        idealPoint <- unlist(plotData[sol == 'Ideal Point',..metric_names])
+        idealPoint <- unlist(idealPointDF[sol == 'Ideal Point',..metric_names])
       }
       plotData <- plotData[, lapply(X = .SD,
                    FUN = as.numeric),
@@ -95,13 +105,13 @@ plotParetoFront <-
           by = setdiff(colnames(plotData), metric_names)]
       if(plot_ideal_point){
         plotData <-
-          rbind(plotData,
+          rbind(rbind(plotData,
                 Reduce(merge, lapply(metric_names, function(col)
                   plotData[metric == 'Mean Response' &
                              sol != 'Ideal Point', lapply(.SD, function(i, j = col)
                                (i + idealPoint[j]) / 2), .SDcols = col, by = sol]))[, metric := 'midpoint'],
                 use.names = T,
-                fill = T)[, distance := na.omit(unique(distance)), by = sol]
+                fill = T)[, distance := na.omit(unique(distance)), by = sol],idealPointDF,fill = T)
       }
       plt <- ggplot() +
         geom_point(
@@ -111,15 +121,25 @@ plotParetoFront <-
             y = metric_names[2],
             color = 'sol',
             alpha = 'metric',
-            shape = 'metric',
-            size = 'metric'
-          )
+            shape = 'metric'
+          ),
+          size = 4
+        ) +
+        geom_text(
+          data = plotData[metric != 'midpoint'],
+          aes_string(x = metric_names[1],
+                     y = metric_names[2],
+                     label = 'sol',
+                     color = 'sol'),
+          nudge_y = 0.1,
+          size = 2.75,
+          fontface = 'bold'
         ) +
         scale_alpha_discrete(range = c(1, 0.33)) +
         scale_size_discrete(range = c(3, 1.5)) +
-        labs(x = str_to_title(gsub("_", " ", metric_names[1])), 
+        labs(x = str_to_title(gsub("_", " ", metric_names[1])),
              y = str_to_title(gsub("_", " ", metric_names[2]))) +
-        ggtitle('DD-PUSA Pareto Front')
+        ggtitle('DD-PUSA Estimated Pareto Front')
       
       if (plot_ideal_point) {
         plt <- plt + annotate(
@@ -140,8 +160,12 @@ plotParetoFront <-
               colour = 'sol'
             ),
             fontface = 'bold',
-            check_overlap = T
-          )
+            check_overlap = T,
+            size = 3.5) + 
+          xlab('Objective #1') + 
+          ylab('Objective #2') + 
+          theme(panel.background = element_rect(fill = "grey90"),legend.position = 'none')
+      
       }
       return(plt)
     } else if (length(.envir$optim_type) == 3 & !scatter_matrix) {
@@ -168,6 +192,24 @@ plotParetoFront <-
             ))[,sol := paste0('Pareto Set Solution ',as.numeric(as.factor(sol)))]
         }
         
+        if(plot_initial_point){
+          initial_point <- readRDS(.envir$orig_alloc_path)
+          if(is.list(initial_point)){
+            initial_point <- initial_point[[1]]
+          }
+          initial_point <- objective_Metrics(initial_point,.envir = .envir)
+          #browser()
+          initial_point_means <- initial_point[,lapply(.SD,mean),.SDcols = setdiff(colnames(initial_point),'replication')]
+          plotData <- rbind(plotData,data.table(sol = 'Baseline Simulation',initial_point_means),fill = T)
+          # initial_point_coords <- paretoPlot$xyz.convert(initial_point_means)
+          # paretoPlot$points3d(initial_point_means,
+          #                     pch = 16,
+          #                     type = 'h',
+          #                     color = 'black',
+          #                     cex = 1.25)
+          # text(initial_point_coords$x,initial_point_coords$y,labels = "Current Bed \n Allocation",pos = 4, offset  = 1,cex = 0.7)
+        }
+        
         if(plot_ideal_point){
           idealPointDF <-
             data.table(t(matrix(
@@ -184,7 +226,16 @@ plotParetoFront <-
         colors <-
           palette(value = hcl.colors(n = n_sols,
                                      palette = 'Dark 2'))[sample(seq(n_sols), n_sols, replace = F)]
-        plotData <- plotData[,colour := colors[as.numeric(as.factor(sol))]]
+        plotData <- plotData[,`:=`(colour = colors[as.numeric(as.factor(sol))],
+                                   pch = 16,
+                                   type = 'h',
+                                   cex = 1.25)]
+        if(plot_initial_point){
+          plotData[sol == 'Baseline Simulation',`:=`(colour = 'black',
+                                                     cex = 5,
+                                                     pch = 8,
+                                                     type = 's')]
+        }
         color_inputData <-plotData[,colour]
         names(color_inputData) <- legend_groups <- plotData[,sol]
         legend_groups <- as.factor(legend_groups)
@@ -237,7 +288,7 @@ plotParetoFront <-
               y = unlist(plotData[, sol := NULL][, ..y_col]),
               z = unlist(plotData[, sol := NULL][, ..z_col]),
               grid = F,
-              pch = 16,
+              pch = unlist(plotData[,pch]),
               color = unlist(plotData[, colour]),
               angle = plot_angle,
               main = 'Pareto Set Objective Metrics',
@@ -287,19 +338,8 @@ plotParetoFront <-
             ))
           }
         }
-        if(plot_initial_point){
-          initial_point <- readRDS(.envir$origin_alloc_path)[[1]]
-          initial_point <- objective_Metrics(initial_point,.envir = .envir)
-          initial_point_means <- initial_point[,lapply(.SD,mean),.SDcols = setdiff(colnames(initial_point),'replication')]
-          initial_point_coords <- paretoPlot$xyz.convert(initial_point_means)
-          paretoPlot$points3d(initial_point_means,
-                              pch = 16,
-                              type = 'h',
-                              color = 'black',
-                              cex = 1.25)
-          text(initial_point_coords$x,initial_point_coords$y,labels = "Current Bed \n Allocation",pos = 4, offset  = 1,cex = 0.7)
-        }
-        legend('right', col = color_inputData[order(legend_groups)] ,bg="white",pch = 16, yjust=0, legend = sort(legend_groups), cex = 0.75)
+        
+        #legend('right', col = color_inputData[order(legend_groups)] ,bg="white",pch = 16, yjust=0, legend = sort(legend_groups), cex = 0.75)
       }
     } else if (scatter_matrix) {
       # To Do: pairwise scatterplot
@@ -347,7 +387,8 @@ plotParetoFront <-
       }
       
       if(plot_initial_point){
-        initial_point <- readRDS(.envir$origin_alloc_path)[[1]]
+        initial_point <- readRDS(.envir$orig_alloc_path)
+        initial_point <- initial_point[[1]]
         initial_point <- objective_Metrics(initial_point,.envir = .envir)
         inputData <-
           rbindlist(list(

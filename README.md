@@ -18,4 +18,4 @@ This repository holds code for Distance-Driven Pareto-Updating Simulated Anneali
 
 `Functions/`: directory holding all custom functions called in scripts
 
-`Simulations`: directory holding code for the Minn. psychiatric patient transfer network DES. and accompanying input parameters
+`Simulations/`: directory holding code for the Minn. psychiatric patient transfer network DES. and accompanying input parameters

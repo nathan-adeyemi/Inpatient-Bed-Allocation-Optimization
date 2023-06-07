@@ -1,24 +1,10 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 # Custom
-<<<<<<< HEAD
-/Data/Sample\ MOSA\ Results/
-/Data/Full\ Sim\Results/
-/Data/paused_execution_envr.rdata
-/Data/test_bench_paused_envr.rds
-/Data/Small_hyperparameter_search_results.rds
-/Data/test_bench_paused_envr.rdata
-/renv/
-/Code/slurm_txt_templates
-/_rslurm_Small_hyperparameter_search
-/_rslurm_Medium_hyperparameter_search
-=======
 # Files in Root Directory
 /*.jpeg
 /*.csv
+/*.pdf
 
-# Files in .Data/
+# Files in Data/
 Data/Deprecated\ Results/
 Data/Full\ Sim\ Results/
 Data/Full\ Sim\ Results\ \(Throughput\ Objective\)/
@@ -35,9 +21,8 @@ renv/
 .DS_Store
 
 # Files in .Code 
-Code/slurm_txt_templates
+Code/slurm_txt_templates/
 Code/Single_Obj_SA.R
->>>>>>> 3174f6f (Test Commit 4)
 
 # Stock
 # History files

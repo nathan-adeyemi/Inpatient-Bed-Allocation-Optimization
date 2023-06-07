@@ -1,7 +1,5 @@
 gen_candidates <-
   function(tweak_left = NA,
-<<<<<<< HEAD
-<<<<<<< HEAD
            .envir = parent.frame()) {
     # Function to generate and evaluate candidate solutions in the DB-PSA framework
     # also creates/appends a matri of all tested solutions
@@ -21,74 +19,19 @@ gen_candidates <-
           mc.cores = availableCores(),
           .envir = .envir
         )
-=======
-           candidate_list = NULL,
-=======
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
-           .envir = parent.frame()) {
-    # Function to generate and evaluate candidate solutions in the DB-PSA framework
-    # also creates/appends a matri of all tested solutions
-    
-    # Function Inputs:
-    #   tweak_left - the maximum number of candidate solutions to be evaluated 
-    #                during a DB-PSA iteration
-    prev_tested <- `if`(any(grepl('tabu_limit',names(.envir$arg_list))),.envir$tabu_allocations,.envir$all_allocations)
-    temp_counter <- 0
-    candidate_list <- list()
-    tweak_left <- if(is.na(tweak_left)) .envir$nTweak
-    while (tweak_left > 0 & temp_counter < 60) {
-      new_solns <-
-        mclapply(
-          seq(tweak_left),
-          update_sol,
-          mc.cores = availableCores(),
-          .envir = .envir
-        )
-<<<<<<< HEAD
-      
->>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
-=======
->>>>>>> 8c8946d (Fixed some custom functions.)
       # Remove duplicate allocations within temporary obj (inital subgroup)
       new_alloc = which({
         function(mat)
           ! duplicated(mat)
       }(t(
-<<<<<<< HEAD
-<<<<<<< HEAD
         as.matrix(new_solns %c% 'Allocation')
       )))
       new_solns = new_solns[new_alloc]
       
       # Remove any solution that was previously tested
       dups <-
-<<<<<<< HEAD
-<<<<<<< HEAD
         rbind(prev_tested,
-=======
-        rbind(.envir$all_allocations,
->>>>>>> 2d8d6de (Further Updates)
-=======
-        rbind(prev_tested,
->>>>>>> a420328 (Git Repo updates)
               new_solns %c% 'Allocation' %>%
-=======
-        as.matrix(candidate_list %c% 'Allocation')
-=======
-        as.matrix(new_solns %c% 'Allocation')
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
-      )))
-      new_solns = new_solns[new_alloc]
-      
-      # Remove any solution that was previously tested
-      dups <-
-        rbind(all_allocations,
-<<<<<<< HEAD
-              candidate_list %c% 'Allocation' %>%
->>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
-=======
-              new_solns %c% 'Allocation' %>%
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
                 t() %>%
                 as.matrix()) %>%
         as.matrix() %>%
@@ -97,11 +40,6 @@ gen_candidates <-
             which(duplicated(mat))
         }()
       if (length(dups) > 0) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a420328 (Git Repo updates)
         dups <- dups - nrow(prev_tested)
       }
       if (length(dups) != length(new_solns)) {
@@ -143,97 +81,6 @@ gen_candidates <-
           rep(x = i, times = candidate_list[[i]]$Replications)
       )
       
-=======
-        dups <- dups - nrow(all_allocations)
-=======
-        dups <- dups - nrow(.envir$all_allocations)
->>>>>>> 2d8d6de (Further Updates)
-      }
-      if (length(dups) != length(new_solns)) {
-        new_solns <-
-          new_solns[setdiff(seq_along(new_solns), dups)]
-      } else {
-        new_solns = NULL
-      }
-      
-      # Add all new generated solutions to the candidate list
-      candidate_list <- append(candidate_list, new_solns)
-      if (length(new_solns) > 0 & .envir$it != 0) {
-        all_allocations <<-
-          rbind(.envir$all_allocations, as.matrix(t(new_solns %c% 'Allocation')))
-      }
-      
-      temp_counter %+% 1
-      tweak_left <- tweak_left - length(candidate_list)
-    }
-<<<<<<< HEAD
-    
-<<<<<<< HEAD
-    candidate_list <- new_solns
-    for (i in seq_along(candidate_list)) {
-      candidate_list[[i]]$name <- paste0('Tourney_', .envir$it, '_Candidate_', i)
-    }
-    # Make lists of all new solutions/allocations (1 entry per replication), a list of the replication #s,
-    # and a list of the allocation's index in the candidate list
-    allocation_list <-
-      unlist(x = lapply(
-        X = candidate_list,
-        FUN = function(i) {
-          rep(x = list(i$Allocation),
-              times = i$Replications)
-        }
-      ),
-      recursive = F)
-    
-    replication_list <-
-      rep(x = seq(candidate_list[[1]]$Replications),
-          times = length(candidate_list))
-    
-    index_list = sapply(
-      seq_along(candidate_list),
-      FUN = function(i)
-        rep(x = i, times = candidate_list[[i]]$Replications)
-    )
-    
-    if (length(new_solns) == 0 & temp_counter == 10) {
-      candidate_list = NULL
-    } else{
->>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
-=======
-=======
->>>>>>> 2d8d6de (Further Updates)
-    if (length(candidate_list) > 0) {
-      for (i in seq_along(candidate_list)) {
-        candidate_list[[i]]$name <-
-          paste0('Tourney_', .envir$it, '_Candidate_', i)
-      }
-      # Make lists of all new solutions/allocations (1 entry per replication), a list of the replication #s,
-      # and a list of the allocation's index in the candidate list
-      allocation_list <-
-        unlist(x = lapply(
-          X = candidate_list,
-          FUN = function(i) {
-            rep(x = list(i$Allocation),
-                times = i$Replications)
-          }
-        ),
-        recursive = F)
-      
-      replication_list <-
-        rep(x = seq(candidate_list[[1]]$Replications),
-            times = length(candidate_list))
-      
-      index_list = sapply(
-        seq_along(candidate_list),
-        FUN = function(i)
-          rep(x = i, times = candidate_list[[i]]$Replications)
-      )
-      
-<<<<<<< HEAD
-      
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
-=======
->>>>>>> 2d8d6de (Further Updates)
       test <- mclapply(
         X = seq_along(allocation_list),
         FUN = ocbaUpdate,
@@ -253,22 +100,10 @@ gen_candidates <-
                            new_sol = T)
         }
       )
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
       
       candidate_reps <<- sum(candidate_list %c% 'Replications')
     } else {
       candidate_list <- NULL
-<<<<<<< HEAD
     }
-=======
-    }
-    candidate_reps <<- sum(candidate_list %c% 'Replications')
->>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
-=======
-    }
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
     return(candidate_list)
   }

@@ -81,7 +81,7 @@ DD_PUSA <- function(continue_previous = F,
   optim_type <- fix_optim_type(optim_type)
   temp <- temp_init
   if(!any(grepl(pattern = 't_min',x = names(arg_list)))){
-    t_min <- .001 * temp_init
+    t_min <- .0001 * temp_init
   } else {
     t_min <- arg_list$t_min
   }
@@ -283,11 +283,6 @@ DD_PUSA <- function(continue_previous = F,
           paste('Iteration', it, 'paused_envr.rdata', sep = '_')
         )
       )
-      # saveRDS(object = A,
-      #         file = file.path(
-      #           results_directory,
-      #           paste('Iteration', it, 'history.rds', sep = '_')
-      #         ))
       
       it %+% 1
       
@@ -313,18 +308,21 @@ DD_PUSA <- function(continue_previous = F,
       'history' = A)
     
     if (generate_plots) {
-      lapply(
-        X = seq_along(A),
-        FUN = function(ind) {
-          jpeg(file = file.path(plot_dir,
-                                paste0(
-                                  'Iteration_', it, '_pareto_image.jpeg'
-                                )))
-          plotParetoFront(A[[ind]]$itBest,plot_replications = F,plot_initial_point = T,plot_ideal_point = F)
-          dev.off()
-        }
-      )
-
+      plot_env <- environment()
+      for (ind in seq_along(A)) {
+        plt <- plotParetoFront(
+          A[[ind]]$itBest,
+          plot_replications = F,
+          plot_initial_point = T,
+          plot_ideal_point = T,
+          include_point_labels = F,
+          .envir = plot_env
+        )
+        ggsave(filename = paste0('Iteration_', ind, '_pareto_image.jpeg'),
+               plot = plt,
+               path = plot_dir)
+      }
+      
       # Insert code for plotting the results from the best_df and instance_df data.frames
     }
     

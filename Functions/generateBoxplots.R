@@ -2,18 +2,24 @@ generateBoxplots <-
   function(inputData,
            plotIdealPoint = F,
            .envir = parent.frame()) {
-    initial_point <- readRDS(.envir$origin_alloc_path)[[1]]
-    initial_point <-
-      objective_Metrics(initial_point, .envir = .envir)[, replication := NULL]
+    initial_point <- .envir$actual_alloc$Cost
     if (plotIdealPoint) {
       idealPointDF <- data.table(find_g_ideal(inputData, .envir = .envir))
       # initial_point_means <- initial_point[,lapply(.SD,mean),.SDcols = setdiff(colnames(initial_point),'replication')]
+      if(ncol(initial_point) > 3){
+        initial_point[,replication := NULL]
+      }
+      if(any(grepl('V1',names(initial_point)))){
+        names(initial_point)[grepl('V1',names(initial_point))] <- 'Treated Patient Increase'
+      }
       names(idealPointDF) <- names(initial_point)
       plotData <-
         melt(rbind(idealPointDF[, name := 'Ideal Point'], initial_point[, name := 'Original Bed Allocation']))
+      plotData <- plotData[,variable := str_to_title(gsub(pattern = "_",replacement = " ",x = variable))]
       ggplot(data = plotData, aes(value,fill = name)) + 
         geom_boxplot(position = 'dodge2') + 
         facet_wrap(facets = ~variable, scales = 'free') + 
+        scale_fill_discrete(name = 'Distribution for:') + 
         coord_flip() + 
         theme(
           axis.text.x = element_blank(),
@@ -28,7 +34,8 @@ generateBoxplots <-
             inputData[[i]]$Cost[, `:=`(Solution = paste0('Solution ', i),
                                        replication = NULL)]
         )),
-        initial_point[, Solution := 'Original Bed Allocation']))
+        initial_point[, `:=`(Solution = 'Original Bed Allocation',
+                             replication = NULL)]))
       
       plotList <- lapply(
         #X = seq_along(inputData),

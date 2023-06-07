@@ -1,4 +1,4 @@
-find_g_ideal <- function(pSet, .envir = parent.frame()) {
+find_g_ideal <- function(pSet, .envir = parent.frame(),dist = T) {
   
   # Find the sample statistics of individual solutions to form the ideal reference point
   
@@ -15,6 +15,7 @@ find_g_ideal <- function(pSet, .envir = parent.frame()) {
     FUN = function(u)
       matrix(unlist(u))
   )
+  if(dist){
   g_ideal_dist <- sapply(
     X = seq(ncol(obj_means)),
     FUN = function(index)
@@ -36,4 +37,15 @@ find_g_ideal <- function(pSet, .envir = parent.frame()) {
         unlist(rep(i, multiple / length(i))))
   }
   return(g_ideal_dist)
+  } else {
+    g_ideal_means <- sapply(
+      X = seq_along(.envir$optim_type),
+      FUN = function(index) {
+        eval(parse(
+          text = paste0(.envir$optim_type[index], '(obj_means[,', index, '])')
+        ))
+      }
+    )
+    return(g_ideal_means)
+  }
 }

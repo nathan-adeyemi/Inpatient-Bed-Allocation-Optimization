@@ -43,7 +43,9 @@ build_itReps_df <- function(history, cumulative = F,plot_replication_info = F,.e
       geom_bar(stat = 'identity', aes(fill = variable),position =  position_stack(reverse = T),width = 0.5) +
       #geom_line(stat = 'identity',aes(colour = variable)) +
       ylab('# of Simulation Replications') +
-      ggtitle('A Comparison of Simulation Replications used by Different Solution Algorithms') + 
+      xlab('Iteration/Generation') +
+      ggtitle('A Comparison of Simulation Replications used by \n Different Solution Algorithms') + 
+      labs(fill = 'Algorithm') +
       theme(legend.position = 'bottom') 
   }
 }

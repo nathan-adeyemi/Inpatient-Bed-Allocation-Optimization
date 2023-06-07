@@ -13,28 +13,12 @@ noisyNonDominatedSorting <-
           # Test if xi dominates xj
           crit_1 <- soln_comparison(s1 = xj,
                                     s2 = xi,
-<<<<<<< HEAD
-<<<<<<< HEAD
                                     .envir = .envir)
-=======
-                                    stat = T)
->>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
-=======
-                                    .envir = .envir)
->>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
           
           # Test if xj dominates xi
           crit_2 <- soln_comparison(s1 = xi,
                                     s2 = xj,
-<<<<<<< HEAD
-<<<<<<< HEAD
                                     .envir = .envir)
-=======
-                                    stat = T)
->>>>>>> 315b489 (Repo structure changes: Removed the MOSA Fucntions.R file and moved all functions into a separate "Functions" folder.)
-=======
-                                    .envir = .envir)
->>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
           
           # Assign dominating and dominated solutions
           if (crit_1 && !crit_2) {

@@ -1,6 +1,4 @@
 inverted_V_logical <- T
-<<<<<<< HEAD
-<<<<<<< HEAD
 use_test_bench <- T
 stat_logical <- T
 
@@ -17,50 +15,16 @@ if(length(args) > 0){
 }
 read_init <- T
 jackson_envir <- new.env()
-=======
-continue_previous <- F
-=======
->>>>>>> f4d354d (Further Updates:)
-use_test_bench <- T
-stat_logical <- T
-
-args <- commandArgs(trailingOnly=TRUE)
-if(length(args) > 0){
-  size <- as.character(args[1])
-  obj_function_list <- unlist(strsplit(args[2],","))
-  optim_type <- unlist(strsplit(args[3],","))
-} else {
-  size <- 'Large'
-  optim_type <- c('max', 'min')
-  obj_function_list <- c('TB_obj_1', 'TB_obj_2')
-
-}
-read_init <- T
-jackson_envir <- new.env()
-<<<<<<< HEAD
-optim_type <- c("max", "min", "min")
->>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
-=======
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
 
 if (read_init) {
   starter_data <-
     readRDS(file.path(
-<<<<<<< HEAD
-<<<<<<< HEAD
       ".",
-=======
->>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
-=======
-      ".",
->>>>>>> f4d354d (Further Updates:)
       "Data",
       'Test Inverted V Networks',
       paste0(size, " Testing Initial Solution.rds")
     ))
   queues_df <- starter_data$network_df
-<<<<<<< HEAD
-<<<<<<< HEAD
   n_queues <- queues_df[, .N]
 }
 
@@ -92,59 +56,4 @@ if(grepl(pattern = 'Small',
 } else{
   sim_length <- 5000
   warmup <- 500
-<<<<<<< HEAD
 }
-=======
-  n_queues <- nVar <- queues_df[, .N]
-}
-
-sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
-obj_function_list <-
-  grep(pattern = "TB_",
-       x = lsf.str(),
-       value = T)
-init_sol <- c(1, rep(0, (nVar - 1)))
-sim_length <- 2500
-warmup <- 150
->>>>>>> 07d1520 (1. New File -  "Test_Bed_Opt_Setup.R": automates setting up the jackson network test simulation environment and relevant parameters.)
-=======
-  n_queues <- queues_df[, .N]
-}
-
-sys.source(file.path(".", "Code", "Jackson Network Test Bench.R"), envir = jackson_envir)
-n_obj <- length(obj_function_list)
-optim_type_print <- optim_type
-obj_fun_print <- obj_function_list
-obj_fun_print[n_obj] <- paste0("and ",obj_fun_print[n_obj])
-optim_type_print[n_obj] <- paste0("and ",optim_type_print[n_obj])
-
-cat("Test Network size is:", size)
-cat("\n")
-cat("Objective metrics are", paste0(obj_fun_print,collapse = `if`(n_obj == 2," ",", ")))
-cat("\n")
-cat('Optimization directions are',paste0(optim_type_print,collapse = `if`(n_obj == 2," ",", ")))
-cat("\n")
-
-init_sol <- c(1, rep(0, (n_queues - 1)))
-<<<<<<< HEAD
-sim_length <- 3000
-warmup <- 200
->>>>>>> d020c10 (Updated function descriptions for some of the DB_PSA functions.)
-=======
-if(grepl(pattern = 'Small',
-         x = size,
-         ignore.case = T)) {
-  sim_length <- 2000
-  warmup <- 150
-} else if (grepl(pattern = 'Medium',
-                 x = size,
-                 ignore.case = T)) {
-  sim_length <- 3000
-  warmup <- 200
-} else{
-  sim_length <- 4000
-  warmup <- 300
-=======
->>>>>>> a420328 (Git Repo updates)
-}
->>>>>>> 9f23a66 (Function updates:)

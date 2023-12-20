@@ -310,18 +310,17 @@ DD_PUSA <- function(continue_previous = F,
     if (generate_plots) {
       plot_env <- environment()
       for (ind in seq_along(A)) {
-        jpeg(file = file.path(plot_dir,
-                              paste0(
-                                'Iteration_', ind, '_pareto_image.jpeg'
-                              )))
-        plotParetoFront(
+        plt <- plotParetoFront(
           A[[ind]]$itBest,
           plot_replications = F,
           plot_initial_point = T,
-          plot_ideal_point = F,
+          plot_ideal_point = T,
+          include_point_labels = F,
           .envir = plot_env
         )
-        dev.off()
+        ggsave(filename = paste0('Iteration_', ind, '_pareto_image.jpeg'),
+               plot = plt,
+               path = plot_dir)
       }
       
       # Insert code for plotting the results from the best_df and instance_df data.frames

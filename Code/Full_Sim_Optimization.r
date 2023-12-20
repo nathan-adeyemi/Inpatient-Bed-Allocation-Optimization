@@ -140,15 +140,34 @@ if (continue_previous) {
     )
   )
 }
-solutions_df <- 
+solutions_df_congfig_2 <- 
   rbindlist(lapply(
-  X = pareto_set,
-  FUN = function(i)
-    with(i, cbind(
+  X = pSet_config_2,
+  FUN = function(soln)
+    with(soln, cbind(
       data.table(t(
-      paste(round(Obj_mean, digits = 2), "+/-",
-            diff(as.numeric(gsub(pattern = "\\(|\\)",replacement = "",x = unlist(strsplit(x = Obj_CI,split = ',')))))/2)
-    )),
-    plotBedShift(sol = Allocation,return_counts = T)
+        with(soln,
+             apply(
+               X = rbind(Obj_mean[, lapply(X = .SD, FUN =  round, digits = 2)], 
+                         Obj_CI[, lapply(X = .SD,FUN = extractHalfWidth)
+                                ][, lapply(X = .SD, FUN = round, digits = 2)]),
+               MARGIN = 2,
+               FUN = paste,
+               collapse = ' +/- '
+             ))), 
+    bedShiftFn(sol = Allocation,counts_by_age = T),
+    `Total Beds Moved` = bedShiftFn(sol = Allocation,total_displaced = T)
     ))
-))
+)))
+
+solutions_df_config_2 <- 
+  rbindlist(lapply(
+    X = pSet_config_2,
+    FUN = function(soln)
+      with(soln, cbind(
+        data.table(t(
+          with(soln,Obj_mean[, lapply(X = .SD, FUN =  round, digits = 2)], 
+          bedShiftFn(sol = Allocation,counts_by_age = T),
+          `Total Beds Moved` = bedShiftFn(sol = Allocation,total_displaced = T)
+        )))
+      ))))

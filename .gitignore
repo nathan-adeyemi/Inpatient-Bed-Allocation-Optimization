@@ -6,14 +6,18 @@
 /Data/Deprecated\ Results
 /Data/small_hyperparamteres_results_folder/
 /Data/Testbench Results\ (2 Objectives)/
+/Data/Test\ Networks\ True\ Pareto\ Sets/Large
 /Data/plotting_utilities
 /Data/Hyperparameter\ Search\ Results
 /renv/
 /Code/slurm_txt_templates
+/Code/Single_Obj_SA.R
+/Code/sbacth_scripts/
 /_rslurm_Small_hyperparameter_search
 /_rslurm_Medium_hyperparameter_search
  /Code/Single_Obj_SA.R1
 *.jpeg
+*.csv
 
 
 # Stock

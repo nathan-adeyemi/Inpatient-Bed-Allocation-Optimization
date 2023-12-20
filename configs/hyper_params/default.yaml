@@ -1,0 +1,12 @@
+hyper_params:
+  n_sols: 7
+    min: 3
+    max: 12
+
+  tabu_limit: 15
+    min: None
+    max: None
+  
+  pareto_limit: 15
+    min: None
+    max: None

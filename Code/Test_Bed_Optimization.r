@@ -75,35 +75,73 @@ for(instance in seq(15)){
     paste0('Instance_', instance, '_results.rds')
   ))
   par.env <- environment()
-  if(instance == 1){
-    instance_df <- with(results,
-                        data.table(perc_correct = percent_correct,
-                              extra_solns = extra_solns,
-                              exec_time = execution_time,
-                              total_replications = nReplications,
-                              nIterations = total_iterations,
-                              g_ideal1 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[1],
-                              g_ideal_2 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[2]))
-  } else{
-    instance_df <- rbind(instance_df,
-                         with(results,
-                              data.table(perc_correct = percent_correct,
-                                         extra_solns = extra_solns,
-                                         exec_time = execution_time,
-                                         total_replications = nReplications,
-                                         nIterations = total_iterations,
-                                         g_ideal1 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[1],
-                                         g_ideal_2 = apply(find_g_ideal(pSet = pSet, .envir = par.env),2,mean)[2])))
+  
+  for (instance in seq(14)) {
+    
+    results <-
+      readRDS(
+        file.path(
+          'Data',
+          'Testbench Results (2 Objectives)',
+          'Large',
+          'Instance Results',
+          paste0('Instance_', instance, '_results.rds')
+        )
+      )
+    
+    if (instance == 1) {
+      instance_df <- with(
+        results,
+        data.table(
+          perc_correct = percent_correct,
+          extra_solns = extra_solns,
+          exec_time = execution_time,
+          total_replications = nReplications,
+          nIterations = total_iterations,
+          g_ideal1 = apply(find_g_ideal(pSet = pSet, .envir = par.env), 2, mean)[1],
+          g_ideal_2 = apply(find_g_ideal(pSet = pSet, .envir = par.env), 2, mean)[2]
+        )
+      )
+    } else{
+      instance_df <- rbind(instance_df,
+                           with(
+                             results,
+                             data.table(
+                               perc_correct = percent_correct,
+                               extra_solns = extra_solns,
+                               exec_time = execution_time,
+                               total_replications = nReplications,
+                               nIterations = total_iterations,
+                               g_ideal1 = apply(find_g_ideal(pSet = pSet, .envir = par.env), 2, mean)[1],
+                               g_ideal_2 = apply(find_g_ideal(pSet = pSet, .envir = par.env), 2, mean)[2]
+                             )
+                           ))
+    }
   }
 }
+
 instance_df <-
   rbind(instance_df,
-        instance_df[, lapply(X = .SD, FUN = mean), .SDcols = colnames(instance_df)],
+        instance_df[, lapply(X = .SD, FUN = mean), .SDcols = c("exec_time","total_replications","nIterations","g_ideal1","g_ideal_2")],
         instance_df[, lapply(
           X = .SD,
           FUN = function(i)
             ci_as_text(interval = t.test(i)$conf.int)
-        ), .SDcols = colnames(instance_df)])
+        ), .SDcols =  c("exec_time","total_replications","nIterations","g_ideal1","g_ideal_2")],
+        fill = TRUE)
   # saveRDS(results, file.path(res_dir, paste0(size, '_Network_DD_PUSA_results.rds')))
   saveRDS(instance_df, file.path(res_dir, paste0(size, '_Network_DD_PUSA_dataframe.rds')))
   
+  sizes <- c('Small','Medium','Large')
+  dd_pusa_df <- data.table()
+  nsga_df <- data.table()
+  for (size in sizes){
+    res_path <- file.path('Data/Testbench Results (2 Objectives)',size)
+    temp_df <- readRDS(file.path(res_path,paste0(size,'_Network_DD_PUSA_dataframe.rds')))
+    temp_df <- temp_df[,`:=`(Scenario = size,
+                                   Algorithm = 'DD-PUSA')]
+    dd_pusa_df <- rbind(dd_pusa_df, temp_df,fill = T)
+    temp_df <- readRDS(file.path(res_path,paste0(size,'_Network_NSGA_dataframe.rds')))
+    temp_df <- temp_df[,`:=`(Scenario = size, Algorithm = 'NSGA-II')]
+    nsga_df <- rbind(nsga_df,temp_df,fill = TRUE)
+  }

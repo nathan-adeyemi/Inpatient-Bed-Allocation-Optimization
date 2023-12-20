@@ -1,0 +1,12 @@
+experiment_info:
+  termination_criteria: 'iteration'
+    value: 5000
+    type: 'max'
+    
+  num_variables: None  
+  n_sols: 20
+  optim_dirs: [None]
+
+  checkpoint: True
+    directory: None
+    interval: 10

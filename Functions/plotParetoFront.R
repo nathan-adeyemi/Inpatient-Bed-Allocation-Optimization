@@ -5,6 +5,7 @@ plotParetoFront <-
            plot_ideal_point = T,
            plot_initial_point = F,
            scatter_matrix = F,
+           include_point_labels= T,
            orig_alloc_path,
            .envir = parent.frame()) {
     # Function to plot the image of the Pareto front along the specified objective functions.
@@ -124,23 +125,26 @@ plotParetoFront <-
             shape = 'metric'
           ),
           size = 4
-        ) +
-        geom_text(
-          data = plotData[metric != 'midpoint'],
-          aes_string(x = metric_names[1],
-                     y = metric_names[2],
-                     label = 'sol',
-                     color = 'sol'),
-          nudge_y = 0.1,
-          size = 2.75,
-          fontface = 'bold'
-        ) +
+        )  +
         scale_alpha_discrete(range = c(1, 0.33)) +
         scale_size_discrete(range = c(3, 1.5)) +
         labs(x = str_to_title(gsub("_", " ", metric_names[1])),
              y = str_to_title(gsub("_", " ", metric_names[2]))) +
-        ggtitle('DD-PUSA Estimated Pareto Front')
+        ggtitle('DD-PUSA Estimated Pareto Front') 
       
+      if(include_point_labels){
+        plt <- plt +
+          geom_text(
+            data = plotData[metric != 'midpoint'],
+            aes_string(x = metric_names[1],
+                       y = metric_names[2],
+                       label = 'sol',
+                       color = 'sol'),
+            nudge_y = 0.1,
+            size = 2.75,
+            fontface = 'bold'
+          )
+      }
       if (plot_ideal_point) {
         plt <- plt + annotate(
           geom = 'segment',
@@ -164,7 +168,10 @@ plotParetoFront <-
             size = 3.5) + 
           xlab('Objective #1') + 
           ylab('Objective #2') + 
-          theme(panel.background = element_rect(fill = "grey90"),legend.position = 'none')
+          theme(panel.background = element_rect(fill = "grey90"),legend.position = 'none') + 
+          #scale_y_continuous(trans = 'log10', limits = c(0,110))
+          coord_trans(y = 'log10',ylim = c(0.02,150))
+          
       
       }
       return(plt)

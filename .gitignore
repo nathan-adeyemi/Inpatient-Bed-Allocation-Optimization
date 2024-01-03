@@ -24,6 +24,10 @@ Plots/
 renv/
 .DS_Store
 
+# Files in .Code 
+Code/slurm_txt_templates/
+Code/Single_Obj_SA.R
+
 # Stock
 # History files
 .Rhistory

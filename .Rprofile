@@ -10,8 +10,6 @@ options(
 )
 
 # Utilities ----------------------------
-# library(tidyverse, quietly = T)
-
 if(!interactive()){
   library(tidyverse, quietly = T)
 }
@@ -62,3 +60,9 @@ invisible(lapply(
   echo = FALSE
 ))
 source(file = file.path(".", 'Simulations', 'Minnesota MH Network Simulation.R'))
+setwd("/home/adeyemi.n/")
+source("renv/activate.R")
+Sys.setenv(TERM_PROGRAM="vscode")
+if (interactive() && Sys.getenv("RSTUDIO") == "") {
+  source(file.path(Sys.getenv(if (.Platform$OS.type == "windows") "USERPROFILE" else "HOME"), ".vscode-R", "init.R"))
+}

@@ -4,29 +4,19 @@
 /*.csv
 /*.pdf
 
-# Files in Data/
-Data/Deprecated\ Results/
-Data/Full\ Sim\ Results/
-Data/Full\ Sim\ Results\ \(Throughput\ Objective\)/
-Data/Full\ Sim\ Results\ \(4\ Objectives\)/
-Data/Sample\ MOSA\ Results/
-Data/Hyperparameter\ Search\ Results/
-Data/Testbench\ Results\ \(2\ Objectives\)/
-Data/Test\ Networks\ True\ Pareto\ Sets/Large/
-Data/plotting_utilities/
-
 # Old R Implementation
-/Code
-/Functions
+/deprecated
+/Data/*
+
+# Data files to include
+!Data/test_inverted_v_networks
+!Data/testbench_results/Medium/
+!Data/testbench_results/Small/
 
 test_version_folder/
 Plots/
 renv/
 .DS_Store
-
-# Files in .Code 
-Code/slurm_txt_templates/
-Code/Single_Obj_SA.R
 
 # Stock
 # History files

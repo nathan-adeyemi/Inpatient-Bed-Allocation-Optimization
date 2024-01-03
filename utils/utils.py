@@ -1,13 +1,6 @@
 import numpy as np
-import math
+import socket
 import pandas as pd
-import rpy2
-import rpy2.robjects as ro
-
-from scipy.spatial.distance import mahalanobis
-from scipy.linalg import cholesky
-from rpy2.robjects.packages import importr
-from rpy2.robjects import pandas2ri
 
 def smart_round(input_vector):
     if not isinstance(input_vector,np.ndarray):
@@ -40,41 +33,21 @@ def decode(sol: np.ndarray, capacities: dict = None):
         
     return np.array(allocation)
 
-def bhattacharyya_distance(df1, df2):
+# Function to find an available port
+def find_available_port(print_port = False):
+    # Create a socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind to a random port
+    s.bind(('localhost', 0))
+
+    # Get the actual port number
+    _, port = s.getsockname()
+
+    # Close the socket
+    s.close()
     
-    
-    """
-    Calculate Bhattacharyya distance for multivariate data between two DataFrames.
+    if(print_port):
+        print(port)
 
-    Parameters:
-    - df1: First DataFrame
-    - df2: Second DataFrame
-
-    Returns:
-    - bhattacharyya_distance: Bhattacharyya distance value
-    """
-
-    # Calculate the covariance matrix for each group
-    cov1 = np.cov(df1, rowvar=False)
-    cov2 = np.cov(df2, rowvar=False)
-
-    # Calculate the average covariance matrix using the arithmetic mean
-    avg_cov = (cov1 + cov2) / 2.0
-
-    # Invert the average covariance matrix
-    avg_cov_inv = np.linalg.inv(avg_cov)
-
-    # Calculate the Mahalanobis distances for each sample in both groups
-    mahalanobis_dist1 = [mahalanobis(x, df1.mean().values, avg_cov_inv) for x in df1.values]
-    mahalanobis_dist2 = [mahalanobis(x, df2.mean().values, avg_cov_inv) for x in df2.values]
-
-    # Calculate the Bhattacharyya distance
-    bhat_distance = np.mean(np.log(np.sqrt(np.linalg.det(avg_cov) / np.sqrt(np.linalg.det(cov1) * np.linalg.det(cov2)))) +
-                            0.5 * (np.mean(mahalanobis_dist1) + np.mean(mahalanobis_dist2)))
-
-    return bhat_distance
-
-def bhattacharyya(df1,df2):
-    dist_Fn = ro.globalenv['bhat_from_DFs']
-    with (ro.default_converter + pandas2ri.converter).context():
-      return dist_Fn(df1,df2)
+    return port

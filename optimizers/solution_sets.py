@@ -56,7 +56,7 @@ class solution_set():
         no_doms = {key: len(value) for key, value in dominators.items()}
         rank_list = []
         sol_assigned=[]
-        rank_list.append(key for key, value in dominators.items if len(values) == 0)
+        rank_list.append(key for key, value in dominators.items if len(value) == 0)
         sol_assigned.append(len(rank_list[-1]))
         
         while sum([item for sublist in sol_assigned for item in sublist]) < len(self.set):

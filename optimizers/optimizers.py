@@ -3,17 +3,16 @@ import pandas as pd
 import pickle as pkl
 import os
 import math
-import socket
-import json
 import ray
 import OmegaConf
 import math
 
 from ray.util.actor_pool import ActorPool
 from statistics import NormalDist
-from ..optimizers.solution_sets import solution_set, solution
-from ..utils.utils import smart_round, find_available_port, decode
-from ..r_utils.r_functions import bhattacharyya
+from .solution_sets import solution_set, solution
+from utils.utils import smart_round, decode
+from r_utils.r_functions.r_functions import bhattacharyya
+from r_utils.r_communication import r_sim_client
 from abc import ABC, abstractmethod
 
 
@@ -164,8 +163,8 @@ class DD_PUSA(popMultiObjOptim):
         self.replication_counter += np.sum(np.array([sol.replications for sol in self.candidate_solutions]))
         self.history.append({
             'Iteration': self.current_iteration,
-            'Temperature': self.temp
-            'Best Solution Objectives': self.pareto_set.best.data.mean()
+            'Temperature': self.temp,
+            'Best Solution Objectives': self.pareto_set.best.data.mean(),
             'Solutions in Pareto Set': len(self.candidate_solutions.set)})
     
     def results_to_console(self):
@@ -175,7 +174,9 @@ class DD_PUSA(popMultiObjOptim):
     
     def execute_iteration(self):
         self.acceptance_prob = math.exp(self.t_0 - self.temp)/math.exp(self.t_0)
-        self.candidate_solutions = candidate_set([self.generate_candidate(self.pareto_set.best.solution) for _ in range(self.n_sols)])
+        self.candidate_solutions = candidate_set(sol_set = [self.generate_candidate(self.pareto_set.best.solution) for _ in range(self.n_sols)],
+                                                 num_workers = self.num_workers,
+                                                 sim_info=)
         _ = [self.tested_allocations.append(sol.allocation) for sol in self.candidate_solutions]
         if len(self.candidate_solutions) > 0:
             if self.use_mocba:
@@ -216,9 +217,9 @@ class pareto_set(solution_set):
         self.best = self.set[distances.argmin()]
 
 class candidate_set(solution_set):
-    def __init__(self,num_workers: int):
+    def __init__(self,num_workers: int,sim_info: str = 'Small'):
         super().__init__()
-        self.workers = ActorPool([r_sim_client.remote() for _ in range(num_workers)])    
+        self.workers = ActorPool([r_sim_client.remote(sim_info) for _ in range(num_workers)])    
         
     def kill_client(self):
         ray.kill(self.r_client_handle)
@@ -318,58 +319,6 @@ class mo_ocba_solution(solution):
     
     def calc_distance(self,ideal_data: pd.DataFrame):
         return bhattacharyya(self.data,ideal_data)
-    
-@ray.remote(num_cpus = 1)    
-class r_sim_client():
-    def __init__(self,port = None):
-        
-        if(port == None):
-            port = find_available_port(print_port = True)
-        
-        # Create a socket
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        # Bind the socket to a specific address and port
-        server_address = ('localhost', port)
-        self.server.bind(server_address)
-        
-        # Listen for incoming connections
-        self.server.listen(1)
-        
-        # Accept the client connection
-        self.client, _ = self.server.accept()
-    
-        # Set up server side port connection to transmit actions to the R simulation
-    
-        self.client.sendall(self.size.encode())
-        self.n_queues = self._receive_client_data(conv_float = True)
-        self.n_queues = int(self.n_queues)
-        self.data = None
-        
-    def _receive_client_data(self, json_format = False):
-        info = self.client.recv(1024).decode('utf-8')
-
-        if json_format:
-            # Parse the received JSON data
-            try:
-                info = pd.DataFrame(json.loads(info))
-                if 'terminate' in info.columns:
-                    id = 'termination message'
-                else:
-                    id = info['id']
-                    info = info.drop(columns=['id'])
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-            return info, id
-        else:
-            return info
-    
-    def _send_client_data(self,data):
-        self.client.sendall(data.encode())
-        
-    def generate_samples(self,allocation):
-        sim_info = allocation
-        self._send_client_data(sim_info.encode())
-        return self._receive_client_data(json_format = True)
        
         

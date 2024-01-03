@@ -1,4 +1,5 @@
-source("/home/adeyemi.n/renv/activate.R")
+# source("/home/adeyemi.n/renv/activate.R")
+setwd('/home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization')
 
 options(
   scipen = 999,
@@ -14,53 +15,23 @@ if(!interactive()){
   library(tidyverse, quietly = T)
 }
 library(data.table, quietly = T)
-library(readxl, quietly = T)
-library(openxlsx, quietly = T)
-library(writexl, quietly = T)
-library(tictoc, quietly = T)
-library(gtools, quietly = T)
-library(ps, quietly = T)
-library(lubridate, quietly = T)
-library(pracma, quietly = T)
-library(dplyr,quietly = T)
-library(stringr,quietly = T)
-
-# Packages for Statistics/Bootstrapping/etc. ------------------------------
-library(fitdistrplus, quietly = T)
-library(boot, quietly = T)
-library(simpleboot, quietly = T)
-library(EnvStats, quietly = T)
+# library(EnvStats, quietly = T)
 
 # Packages for Discrete Event Simulation ----------------------------------
 library(simmer, quietly = T)
 library(simmer.plot, quietly = T)
 library(simtimer, quietly = T)
+library(parallel, quietly = T)
+library(jsonlite, quietly = T)
 
-# Packages for Parallel Processing ----------------------------------------
-library(doParallel, quietly = T)
-library(pbmcapply, quietly = T)
-library(parallelly, quietly = T)
-
-# Packages for DB-PSA -------------------------------------------------------
-library(labdsv, quietly = T)
-library(mco, quietly = T)
-library(scatterplot3d, quietly = T)
-library(nsga2R, quietly = T)
-library(cramer, quietly = T)
-library(bayesmeta, quietly = T)
-library(fpc, quietly = T)
-library(rslurm, quietly = T)
-library(ggrepel,quietly = T)
-library(optimization,quietly = T)
-library(partitions,quietly = T)
-
+source(file = file.path(".", 'Simulations','ed_mh_simulation', 'ed_mh_simulation.R'))
+source(file = file.path(".", 'Simulations','testbeds', 'run_test_bench.R'))
 invisible(lapply(
-  X = file.path('.', 'Functions', list.files(path = file.path('.', 'Functions'))),
+  X = file.path(".", 'Simulations','testbeds','helper_functions', list.files(path = file.path(".", 'Simulations','testbeds','helper_functions'))),
   FUN = source,
   echo = FALSE
 ))
-source(file = file.path(".", 'Simulations', 'Minnesota MH Network Simulation.R'))
-setwd("/home/adeyemi.n/")
+
 source("renv/activate.R")
 Sys.setenv(TERM_PROGRAM="vscode")
 if (interactive() && Sys.getenv("RSTUDIO") == "") {

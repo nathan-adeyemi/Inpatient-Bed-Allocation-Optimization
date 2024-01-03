@@ -1,5 +1,5 @@
 import sys
-sys.append('MH_Simulation/Inpatient_Bed_Allocation_Optimization')
+sys.path.append('MH_Simulation/Inpatient_Bed_Allocation_Optimization')
 
 import hydra
 import ray

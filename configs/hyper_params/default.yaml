@@ -10,3 +10,7 @@ hyper_params:
   pareto_limit: 15
     min: None
     max: None
+
+  max_tweak: 0.75
+
+  solution_comparison_alpha: 5e-2

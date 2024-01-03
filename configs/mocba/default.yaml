@@ -1,4 +1,4 @@
   mocba:
     psi_target: 5.6e-6
-    replications_soln: 20
-    replications_per_iteration: 20
+    replications_per_sol_x_iter: 20
+    set_size_lim: 20

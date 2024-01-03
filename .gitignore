@@ -14,16 +14,16 @@ Data/Hyperparameter\ Search\ Results/
 Data/Testbench\ Results\ \(2\ Objectives\)/
 Data/Test\ Networks\ True\ Pareto\ Sets/Large/
 Data/plotting_utilities/
-#Inpatient-Bed-Allocation-Optimization
+
+# Old R Implementation
+/Code
+/Functions
+
 test_version_folder/
 Plots/
 renv/
 .DS_Store
 
-# Files in .Code 
-Code/slurm_txt_templates/
-Code/Single_Obj_SA.R
-
 # Stock
 # History files
 .Rhistory
@@ -75,104 +75,3 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
-=======
-/Data/Sample\ MOSA\ Results
-=======
-=======
-# Custom
->>>>>>> d142961 (Update .gitignore)
-/Data/Sample\ MOSA\ Results/
-/Data/Full\ Sim\Results/
->>>>>>> 1487b4d (Commit Attempt 2)
-/Data/paused_execution_envr.rdata
-/Data/test_bench_paused_envr.rds
-/Data/Small_hyperparameter_search_results.rds
-/Data/test_bench_paused_envr.rdata
-/renv/
-<<<<<<< HEAD
-/.Rhistory
-.Rproj.user
-<<<<<<< HEAD
->>>>>>> 8a86754 (Center and scale the Bhattacharya distances of the Pareto set to give usable probabilities of selection.)
-=======
-test_file.R
-Rplots.pdf
-.Rdata
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> b15efcc (Removed files)
-=======
-.gitignore
->>>>>>> bc28031 (Calls optimization algorithm directly from Test_Bed/Full_Sim Optimization scripts)
-=======
-.gitignore
-/_rslurm_hyperparameter_search
-/_rslurm_Small_hyperparameter_search
-/_rslurm_Medium_hyperparameter_search
-slurm_run_template_DONT_DELETE.R
-/Code/slurm_hyperparameter_template.txt
-/Code/slurm_job_template.txt
-/Code/MOSA\ Functions\ \(latest Github\).R
-<<<<<<< HEAD
->>>>>>> 1487b4d (Commit Attempt 2)
-=======
-=======
-/Code/slurm_txt_templates
-/Code/Single_Obj_SA.R
-/Code/sbacth_scripts/
-/_rslurm_Small_hyperparameter_search
-/_rslurm_Medium_hyperparameter_search
->>>>>>> 2ce8b33 (Small .gitignore updates)
-
-# Stock
-# History files
-.Rhistory
-.Rapp.history
-
-# Session Data files
-.RData
-.Rdata
-.RDataTmp
-
-# User-specific files
-.Ruserdata
-
-# Example code in package build process
-*-Ex.R
-
-# Output files from R CMD build
-/*.tar.gz
-
-# Output files from R CMD check
-/*.Rcheck/
-
-# RStudio files
-.Rproj.user/
-
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
-# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
-
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
-
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
-
-# R Environment Variables
-.Renviron
-
-# pkgdown site
-docs/
-
-# translation temp files
-po/*~
-
-# RStudio Connect folder
-rsconnect/
->>>>>>> d142961 (Update .gitignore)

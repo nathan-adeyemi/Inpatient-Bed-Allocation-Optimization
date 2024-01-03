@@ -6,7 +6,8 @@ bedShiftFn <-
            aliases = readRDS(file.path('.','Data','plotting_utilities','Hospital Aliases.rds')),
            counts_by_age = TRUE,
            total_displaced = FALSE,
-           generate_plot = FALSE){
+           generate_plot = FALSE,
+           top_plot = T){
 
     if(generate_plot){
       counts_by_age <- total_displaced <- FALSE
@@ -44,27 +45,18 @@ bedShiftFn <-
         test <-
           left_join(x = county_borders, y = plotData_age, by = 'subregion')
         setDT(test)
-        return(
-          ggplot(test, aes(long, lat, group = group, fill = `Change in # of Licensed Beds`)) +
+        # browser()
+          p <- ggplot(test, aes(long, lat, group = group, fill = `Change in # of Licensed Beds`)) +
           geom_polygon(colour = "black") +
-            # geom_text(data = test[is.na(`Change in # of Licensed Beds`),],aes(label = 'x')) +
           coord_quickmap() +
             scale_fill_fermenter(
               type = 'div',
               limits = c(-100, 100),
-              breaks = seq(-100, 100, 20),
-              palette = 'RdBu',
-              na.value = 'grey50'
+              breaks = seq(-120, 80, 24),
+              palette = 'Reds',
+              na.value = 'grey50',
+              direction = 1
             ) +
-            # scale_fill_gradient2(
-          #   #limits = as.numeric(plotData[,lapply(.SD,range),.SDcols = 'change'][,change]),
-          #   limits = c(-100,100),
-          #   mid = 'grey',
-          #   low = "darkred",
-          #   high = "darkblue",
-          #   guide = "colorbar",
-          #   na.value = "white") +
-            # ggtitle(label = paste(age, 'Patients')) +
             theme(
               legend.position = "none",
               legend.title = element_blank(),
@@ -72,7 +64,11 @@ bedShiftFn <-
               axis.title = element_blank(),
               axis.ticks = element_blank(),
               axis.text = element_blank()
-            ))
+            )
+          if (top_plot) {
+            p <- p + ggtitle(label = paste(age, 'Patients'))
+          }
+          return(p)
         }
       },
       .envir = plotList_env)
@@ -87,7 +83,10 @@ bedShiftFn <-
       for (i in seq_along(plotList)){
         assign(x = paste0('p',i),value = plotList[[i]])
       }
-      # return(gridExtra::grid.arrange(p1 , p2 , p3 , p4,nrow = 1,ncol = 4))
-      return(lemon::grid_arrange_shared_legend(p1 , p2 , p3 , p4,nrow = 1,ncol = 4,position = 'bottom'))
+      if(top_plot){
+        return(gridExtra::grid.arrange(p1 , p2 , p3 , p4,nrow = 1,ncol = 4))
+      }else{
+        return(lemon::grid_arrange_shared_legend(p1 , p2 , p3 , p4,nrow = 1,ncol = 4,position = 'bottom'))
+      }
     }
   }

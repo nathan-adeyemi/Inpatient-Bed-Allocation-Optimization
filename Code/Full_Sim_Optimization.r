@@ -140,9 +140,9 @@ if (continue_previous) {
     )
   )
 }
-solutions_df_congfig_2 <- 
+solutions_df_config_1 <- 
   rbindlist(lapply(
-  X = pSet_config_2,
+  X = pSet_config_1,
   FUN = function(soln)
     with(soln, cbind(
       data.table(t(
@@ -160,14 +160,14 @@ solutions_df_congfig_2 <-
     ))
 )))
 
-solutions_df_config_2 <- 
+solutions_df_config_1 <- 
   rbindlist(lapply(
-    X = pSet_config_2,
+    X = pSet_config_1,
     FUN = function(soln)
       with(soln, cbind(
-        data.table(t(
+        data.table(
           with(soln,Obj_mean[, lapply(X = .SD, FUN =  round, digits = 2)], 
           bedShiftFn(sol = Allocation,counts_by_age = T),
           `Total Beds Moved` = bedShiftFn(sol = Allocation,total_displaced = T)
-        )))
+        ))
       ))))

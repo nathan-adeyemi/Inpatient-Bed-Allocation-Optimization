@@ -25,7 +25,7 @@ class solution_set():
         self.update_length()
         return sol
     
-    def reorder(self,attr:str,decreasing=False):
+    def reorder(self,attr:str, decreasing=False):
         self.set = sorted(self.set,getattr(attr))
         if decreasing:
             self.set = self.set.reverse()

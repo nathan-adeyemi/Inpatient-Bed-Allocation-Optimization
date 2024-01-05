@@ -4,15 +4,15 @@ import pickle as pkl
 import os
 import math
 import ray
-import OmegaConf
+from omegaconf import OmegaConf
 import math
 
 from ray.util.actor_pool import ActorPool
 from statistics import NormalDist
 from .solution_sets import solution_set, solution
 from utils.utils import smart_round, decode
-from r_utils.r_functions.r_functions import bhattacharyya
-from r_utils.r_communication import r_sim_client
+from utils.r_utils.r_functions.stats import bhattacharyya
+from utils.r_utils.r_communication import r_sim_client
 from abc import ABC, abstractmethod
 
 

@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import subprocess
 import os
-from omegaconf.OmegaConf import DictConfig
+from omegaconf import DictConfig
 
 from utils.utils import find_available_port, execute_command
 
@@ -27,9 +27,10 @@ class r_sim_client():
         
         # Begin the R simulation subprocess 
         subprocess_env = os.environ.copy()
-        subprocess_env['port'] = self.port
-        subprocess_env['size'] = self.size
+        subprocess_env['port'] = str(self.port)
+        subprocess_env['size'] = str(self.initial_info)
         
+
         try:
             self.process = subprocess.Popen(['bash', self.sh_path], env=subprocess_env)
             print(f'Shell script started asynchronously.')

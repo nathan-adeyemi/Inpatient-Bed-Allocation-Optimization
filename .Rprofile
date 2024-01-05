@@ -1,5 +1,4 @@
 # source("/home/adeyemi.n/renv/activate.R")
-setwd('/home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization')
 
 options(
   scipen = 999,
@@ -24,15 +23,15 @@ library(simtimer, quietly = T)
 library(parallel, quietly = T)
 library(jsonlite, quietly = T)
 
-source(file = file.path(".", 'Simulations','ed_mh_simulation', 'ed_mh_simulation.R'))
-source(file = file.path(".", 'Simulations','testbeds', 'run_test_bench.R'))
+source(file = file.path('modules', 'Simulations','ed_mh_simulation', 'ed_mh_simulation.R'))
+source(file = file.path("modules", 'Simulations','testbeds', 'run_test_bench.R'))
 invisible(lapply(
-  X = file.path(".", 'Simulations','testbeds','helper_functions', list.files(path = file.path(".", 'Simulations','testbeds','helper_functions'))),
+  X = file.path("modules", 'Simulations','testbeds','helper_functions', list.files(path = file.path("modules", 'Simulations','testbeds','helper_functions'))),
   FUN = source,
   echo = FALSE
 ))
 
-source("renv/activate.R")
+# source("renv/activate.R")
 Sys.setenv(TERM_PROGRAM="vscode")
 if (interactive() && Sys.getenv("RSTUDIO") == "") {
   source(file.path(Sys.getenv(if (.Platform$OS.type == "windows") "USERPROFILE" else "HOME"), ".vscode-R", "init.R"))

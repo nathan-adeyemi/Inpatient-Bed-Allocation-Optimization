@@ -24,6 +24,7 @@ jackson_envir <- new.env()
 
 starter_data <-
   readRDS(file.path(
+    "modules",
     "Simulations",
     "testbeds",
     "sim_data",
@@ -37,8 +38,8 @@ total_servers <- 4 * n_queues
 if(grepl(pattern = 'Small',
          x = network_size,
          ignore.case = T)) {
-  sim_length <- 200
-  warmup <- 15
+  sim_length <- 2000
+  warmup <- 150
 } else if (grepl(pattern = 'Medium',
                  x = network_size,
                  ignore.case = T)) {
@@ -52,7 +53,7 @@ if(grepl(pattern = 'Small',
 # Evenly split total servers among each server pool (test scenario)
 queues_df[,server_count := as.numeric(server_count)
           ][,server_count := as.numeric(total_servers/nrow(queues_df))]
-
+print("Execution Has begun")
 # Begin running the simulation when the test allocation is sent
 while (T){
   allocation <- read.socket(socket = client_socket)

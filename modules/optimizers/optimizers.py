@@ -81,6 +81,7 @@ class DD_PUSA(popMultiObjOptim):
         self.tweak_limit = hyper_params.max_tweaks
         self.use_mocba = experiment_info.use_mocba
         self.stoch_optim = experiment_info.stoch_optim
+        self.sim_dict = experiment_info.capacity_dictionary
         if self.stoch_optim:
             self.alpha = hyper_params.solution_comparison_alpha
         else:
@@ -100,6 +101,7 @@ class DD_PUSA(popMultiObjOptim):
         self.tested_allocations = []
         self.temp = self.t_0
         self.current_iteration = 0
+        
         
     def terminate_experiment(self):
         term_states = []
@@ -150,7 +152,9 @@ class DD_PUSA(popMultiObjOptim):
         sol_set.procedure_I(delta = self.replications_per_iter)
         while replication_limit - sol_set.total_replications() > 0 and min(sol_set.get_attribute('psi') > self.psi_target):
             sP = [sol_set[i] for i in np.argsort(np.array(sol_set.get_attribute('psi')[:k_val]))]
-            sP = candidate_set(sP)
+            sP = candidate_set(sP,
+                               num_workers = self.num_workers,
+                               sim_info = self.sim_dict['size'])
             sP.procedure_II(sol_set=sol_set,K = k_val)
             sP.reorder('delta_psi_d',decreasing=True)
             if any(i == 0 for i in sP.get_attribute('delta_psi_d')):
@@ -176,7 +180,7 @@ class DD_PUSA(popMultiObjOptim):
         self.acceptance_prob = math.exp(self.t_0 - self.temp)/math.exp(self.t_0)
         self.candidate_solutions = candidate_set(sol_set = [self.generate_candidate(self.pareto_set.best.solution) for _ in range(self.n_sols)],
                                                  num_workers = self.num_workers,
-                                                 sim_info=)
+                                                 sim_info=self.sim_info['size'])
         _ = [self.tested_allocations.append(sol.allocation) for sol in self.candidate_solutions]
         if len(self.candidate_solutions) > 0:
             if self.use_mocba:

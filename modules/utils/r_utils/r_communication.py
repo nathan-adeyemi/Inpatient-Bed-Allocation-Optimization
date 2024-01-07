@@ -3,17 +3,18 @@ import json
 import pandas as pd
 import subprocess
 import os
-from omegaconf import DictConfig
+import ray
 
+from omegaconf import DictConfig
 from utils.utils import find_available_port, execute_command
 
-# @ray.remote(num_cpus = 1)    
+@ray.remote(num_cpus = 1)    
 class r_sim_client():
     def __init__(self, sim_info: DictConfig):
         self.initial_info = sim_info.size
         self.sh_path = sim_info.sh_path
         
-        self.port = find_available_port(print_port = True)
+        self.port = find_available_port(print_port = False)
         
         # Create a socket
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,18 +34,12 @@ class r_sim_client():
 
         try:
             self.process = subprocess.Popen(['bash', self.sh_path], env=subprocess_env)
-            print(f'Shell script started asynchronously.')
         except Exception as e:
             print(f'Error starting the shell script: {e}')        
         
         # Accept the client connection
         self.client, _ = self.server.accept()
-    
-        # Set up server side port connection to transmit actions to the R simulation
 
-        # self.client.sendall(self.size.encode())
-        # self.n_queues = self._receive_client_data(conv_float = True)
-        # self.n_queues = int(self.n_queues)
         self.data = None
         
     def _receive_client_data(self, json_format: bool = False, conv_float: bool = False):

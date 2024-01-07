@@ -1,5 +1,5 @@
 rm(list = ls())
-source('.Rprofile')
+invisible(source('.Rprofile'))
 inverted_V_logical <- T
 use_test_bench <- T
 stat_logical <- T
@@ -53,7 +53,6 @@ if(grepl(pattern = 'Small',
 # Evenly split total servers among each server pool (test scenario)
 queues_df[,server_count := as.numeric(server_count)
           ][,server_count := as.numeric(total_servers/nrow(queues_df))]
-print("Execution Has begun")
 # Begin running the simulation when the test allocation is sent
 while (T){
   allocation <- read.socket(socket = client_socket)

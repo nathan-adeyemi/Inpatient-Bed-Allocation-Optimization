@@ -11,7 +11,7 @@ experiment_info:
   checkpoint: True
     directory: None
     interval: 10
-  capacity_dicitionary: {'small': {'num_pools': 3, 'total_capacity': 12}}
+  capacity_dicitionary: {'size: 'small', 'num_pools': 3, 'total_capacity': 12}
 
 defaults:
   - hyper_params: default

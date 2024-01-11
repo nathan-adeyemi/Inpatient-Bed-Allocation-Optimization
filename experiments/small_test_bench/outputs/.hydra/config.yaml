@@ -1,0 +1,66 @@
+hyper_params:
+  n_sols:
+    value: 7
+    min: 3
+    max: 12
+  tabu_limit:
+    value: 15
+    min: None
+    max: None
+  pareto_limit:
+    value: 15
+    min: None
+    max: None
+  max_tweak:
+    value: 0.75
+    min: 0.1
+    max: 1
+  solution_comparison_alpha: 0.05
+moocba:
+  psi_target:
+    value: 5.6e-06
+    min: None
+    max: None
+  initial_reps_per_sol:
+    value: 12
+    min: None
+    max: None
+  replications_per_sol_x_iter:
+    value: 20
+    min: None
+    max: None
+cooling_schedule:
+  t_0: 100
+  t_damp:
+    value: 0.5
+    min: 0
+    max: 1
+    interval: 0.05
+experiment_info:
+  tune: false
+  num_variables: 3
+  termination_criteria:
+  - criteria: iteration
+    value: 10
+    condition: '>'
+  - criteria: temp
+    value: 1
+    condition: <
+  n_sols: 5
+  optim_dirs:
+  - +
+  - '-'
+  use_moocba: true
+  stoch_optim: true
+  capacity_dictionary:
+    small_test_bench:
+      size: small
+      num_pools: 3
+      total_capacity: 12
+  job_dir: experiments/small_test_bench
+  checkpoint:
+    create_checkpoints: false
+    interval: 10
+  report_progress:
+    print_to_console: true
+    interval: 5

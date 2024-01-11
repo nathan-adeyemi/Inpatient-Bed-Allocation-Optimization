@@ -19,8 +19,6 @@ client_socket <- make.socket(host = 'localhost', port = as.numeric(port_val), se
 
 optim_type <- c('max', 'min')
 obj_function_list <- c('TB_obj_1', 'TB_obj_2')
-jackson_envir <- new.env()
-
 
 starter_data <-
   readRDS(file.path(
@@ -30,7 +28,6 @@ starter_data <-
     "sim_data",
     paste0(network_size, " Testing Initial Solution.rds")
   ))
-
 queues_df <- starter_data$network_df
 n_queues <- queues_df[, .N]
 total_servers <- 4 * n_queues
@@ -39,7 +36,7 @@ if(grepl(pattern = 'Small',
          x = network_size,
          ignore.case = T)) {
   sim_length <- 2000
-  warmup <- 150
+  warmup <- 200
 } else if (grepl(pattern = 'Medium',
                  x = network_size,
                  ignore.case = T)) {
@@ -57,7 +54,7 @@ queues_df[,server_count := as.numeric(server_count)
 while (T){
   allocation <- read.socket(socket = client_socket)
   allocation <- gsub(pattern = '\\[|\\]',replacement  = '',allocation) |> strsplit(split = ',') |> unlist() |> as.numeric()
-  test <- run_test_bench(rep_nums = 1, network_df = queues_df)
+  test <- run_test_bench(rep_nums = 1, network_df = queues_df[,server_count := allocation])
   test = objective_Metrics(x = test, obj_function_list = c('TB_obj_1','TB_obj_2'))
   test = test[,replication := NULL]
   write.socket(socket = client_socket, string = jsonlite::toJSON(x=test))

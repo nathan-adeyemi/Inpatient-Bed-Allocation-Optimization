@@ -1,5 +1,6 @@
 experiment_info:
-  termination_criteria: 'iteration'
+  termination:
+    criteria: 'iteration'
     value: 5000
     type: 'max'
     
@@ -7,6 +8,7 @@ experiment_info:
   n_sols: 20
   optim_dirs: [None]
 
-  checkpoint: True
+  checkpoint:
+    create_checkpoints: True
     directory: None
     interval: 10

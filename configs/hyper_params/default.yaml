@@ -1,16 +1,21 @@
-hyper_params:
-  n_sols: 7
-    min: 3
-    max: 12
+n_sols: 
+  value: 7
+  min: 3
+  max: 12
 
-  tabu_limit: 15
-    min: None
-    max: None
-  
-  pareto_limit: 15
-    min: None
-    max: None
+tabu_limit: 
+  value: 15
+  min: None
+  max: None
 
-  max_tweak: 0.75
+pareto_limit:
+  value: 15
+  min: None
+  max: None
 
-  solution_comparison_alpha: 5e-2
+max_tweak:
+  value: 0.75
+  min: 0.1
+  max: 1
+
+solution_comparison_alpha: 5e-2

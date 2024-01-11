@@ -8,7 +8,8 @@ experiment_info:
   optim_dirs: ['+','+']
   use_mocba: False
   stoch_optim: True
-  checkpoint: True
+  checkpoint:
+    create_checkpoints: True
     directory: None
     interval: 10
 

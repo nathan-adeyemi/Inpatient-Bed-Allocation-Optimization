@@ -1,0 +1,14 @@
+psi_target:
+  value: 5.6e-6
+  min: None
+  max: None
+
+initial_reps_per_sol:
+  value: 12
+  min: None
+  max: None
+
+replications_per_sol_x_iter: 
+  value: 20
+  min: None
+  max: None

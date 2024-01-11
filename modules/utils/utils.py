@@ -26,32 +26,14 @@ def decode(sol: np.ndarray, capacities: dict = None):
         return smart_round(x/np.sum(x) * y)
     
     p0 = 0
-    allocation = []
+    allocation = np.array([])
     for _ ,sub_dict in capacities.items():
         p1 = p0 + sub_dict['num_pools']
-        allocation.append(sub_fun(x = sol[p0:p1],y = sub_dict['total_capacity']))
+        allocation = np.append(allocation,sub_fun(x = sol[p0:p1],y = sub_dict['total_capacity']))
         p0 = p1
         
     return np.array(allocation)
 
-# Function to find an available port
-def find_available_port(print_port = False):
-    # Create a socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Bind to a random port
-    s.bind(('localhost', 0))
-
-    # Get the actual port number
-    _, port = s.getsockname()
-
-    # Close the socket
-    s.close()
-    
-    if(print_port):
-        print(port)
-
-    return port
 
 # Function to execute the shell command
 def execute_command(command):

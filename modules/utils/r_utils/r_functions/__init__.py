@@ -1,3 +1,5 @@
+import os 
+os.environ['R_HOME'] = '/usr/local/bin/R'
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 import rpy2.robjects.packages as rpackages

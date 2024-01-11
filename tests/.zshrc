@@ -1,0 +1,2 @@
+cd /Users/nadeyemi/Library/CloudStorage/OneDrive-NortheasternUniversity/Graduate/Research/Minn_MH_Sim_Projects
+conda activate bed_allocation_proj

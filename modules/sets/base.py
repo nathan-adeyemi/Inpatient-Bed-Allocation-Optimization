@@ -33,7 +33,7 @@ class solution_set():
         pairs = sorted(pairs,key = lambda x: x[1])
         self.set = [i[0] for i in pairs]
         if decreasing:
-            self.set = self.set.reverse()
+            self.set.reverse()
     
     def nondominated_sorting(self,noisy = True):
         dominators = {}

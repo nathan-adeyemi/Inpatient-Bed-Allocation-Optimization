@@ -3,7 +3,7 @@ objective_Metrics <- function(x, obj_function_list){
   # Applies the selected objective functions to the simulation data
   
   # Inputs: 
-  #   x: (Lisr) A list of Simmer output data.frames
+  #   x: (List) A list of Simmer output data.frames
   
   # Returns:
   #   data: (Data.table) A data.table of the calculated objective metrics for each simulation replication 

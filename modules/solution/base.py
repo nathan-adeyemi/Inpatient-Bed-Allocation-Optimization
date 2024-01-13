@@ -4,13 +4,13 @@ import pandas as pd
 from scipy import stats as stats 
         
 class solution():
-    def __init__(self,optim_dirs: list = ['+']):
-        self.optim_dirs = optim_dirs
-        self.n_obj = len(self.optim_dirs)
+    def __init__(self,obj_fns: list = ['+']):
+        self.obj_fns = obj_fns
+        self.n_obj = len(self.obj_fns)
         self.data = None
         
     def is_maximize(self,index):
-        return '+' in self.optim_dirs[index] or 'max' in self.optim_dirs[index]
+        return '+' in self.obj_fns[index]['direction'] or 'max' in self.obj_fns[index]['direction']
     
     def update_data(self,new_data: pd.DataFrame):
         if self.data is None:

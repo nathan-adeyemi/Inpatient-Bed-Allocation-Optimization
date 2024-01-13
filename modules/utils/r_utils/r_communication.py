@@ -9,17 +9,10 @@ from omegaconf import DictConfig
 from ray.util.actor_pool import ActorPool
 
 class worker_pool():
-    def __init__(self, sim_info: str, num_workers: int):
+    def __init__(self, sim_info: dict, num_workers: int):
         self.num_workers = num_workers
-        # Point to the correct shell script for initiating R
-        if not 'ed_to_ip' in sim_info: 
-            # Path is relative to the /modules folder
-            shell_path = 'Simulations/testbeds/simulation_trigger.sh'
-        else:
-            shell_path = 'Simulations/ed_mh_simulation/simulation_trigger.sh'
-        sim_info = DictConfig({'size': sim_info, 'sh_path': shell_path})
+        sim_info = DictConfig({'size': sim_info['size'],'obj_fns': sim_info['obj_fns'] ,'sh_path':  'Simulations/simulation_trigger.sh'}) # Path is relative to the /modules folder
         self.workers = ActorPool([r_sim_client.remote(sim_info) for _ in range(self.num_workers)])  
-          
         
     def kill_client(self):
         self.workers.map(lambda worker, kill: worker.terminate_client(kill), [None for _ in range(self.num_workers)])
@@ -28,6 +21,7 @@ class worker_pool():
 class r_sim_client():
     def __init__(self, sim_info: DictConfig):
         self.initial_info = sim_info.size
+        self.obj_fns = sim_info.obj_fns
         self.sh_path = sim_info.sh_path
         
         self.port = find_available_port()
@@ -46,6 +40,7 @@ class r_sim_client():
         subprocess_env = os.environ.copy()
         subprocess_env['port'] = str(self.port)
         subprocess_env['size'] = str(self.initial_info)
+        subprocess_env['obj_fns'] = "c({})".format(str([i['sample_statistic'] for i in self.obj_fns]).replace("[","").replace("]",""))
 
         try:
             self.process = subprocess.Popen(['bash', self.sh_path], env=subprocess_env)

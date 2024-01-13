@@ -12,7 +12,7 @@ class popMultiObjOptim():
         self.term_crit = config.termination_criteria
         self.num_variables = config.num_variables
         self.sols_per_iter = config.n_sols
-        self.optim_dirs = config.optim_dirs
+        self.obj_fns = config.obj_fns
         self.iteration = 0
         self.checkpoint =config.checkpoint.create_checkpoints
         if self.checkpoint:

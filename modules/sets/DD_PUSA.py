@@ -6,18 +6,23 @@ from utils.r_utils.r_communication import worker_pool
 from scipy.special import softmax
 from math import lcm
 from .base import solution_set
+from copy import deepcopy
 
 class pareto_set(solution_set):
     def __init__(self,stoch_optim = True):
         super().__init__()
         self.stoch_optim = stoch_optim
         self.best = None
+        self.counter = 0
         
     def update(self):
+        old_p_set = set(deepcopy(self.set))
         self.nondominated_sorting(noisy = self.stoch_optim)
-        for i in range(len(self.set)):
+        for i in reversed(range(self.length)):
             if not i in self.fronts[0]:
                 _ = self.remove_solution(i)
+        if set(self.set) == old_p_set:
+            self.counter +=1
         
     def find_g_ideal(self):
         ideal_data = pd.concat([self.set[i].data.assign(candidate = i) for i in range(len(self.set))]).groupby(['candidate']).mean()

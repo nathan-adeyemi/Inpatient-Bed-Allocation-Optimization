@@ -1,15 +1,18 @@
 import numpy as np 
+import logging
+import os
 
 from omegaconf import DictConfig
-from .base import popMultiObjOptim
 from utils.utils import decode
 from utils.r_utils.r_communication import worker_pool
 from math import exp, ceil
 from sets.DD_PUSA import pareto_set, candidate_set
 from solution.DD_PUSA import mo_ocba_solution
+from ..base import popMultiObjOptim
+from ..DD_PUSA import cooling_schedules as schedules
 
         
-class DD_PUSA(popMultiObjOptim):
+class dd_pusa(popMultiObjOptim):
     
     def __init__(self, 
                  experiment_info  : DictConfig,
@@ -17,13 +20,14 @@ class DD_PUSA(popMultiObjOptim):
                  cooling_schedule: DictConfig,
                  moocba: DictConfig = None):
         super().__init__(config=experiment_info)
+        self.cool_sched = experiment_info.cooling_schedule
         self.t_0 = cooling_schedule.t_0
         self.t_damp = cooling_schedule.t_damp.value
         self.use_moocba = experiment_info.use_moocba
         self.stoch_optim = experiment_info.stoch_optim
         self.sim_dict = experiment_info.capacity_dictionary
         self.num_workers = experiment_info.num_workers
-        self.optim_dirs = experiment_info.optim_dirs
+        self.obj_fns = experiment_info.obj_fns
         if self.stoch_optim:
             self.alpha = hyper_params.solution_comparison_alpha
         else:
@@ -39,9 +43,14 @@ class DD_PUSA(popMultiObjOptim):
         self.report_progress = experiment_info.report_progress.print_to_console
         if self.report_progress:
             self.report_interval = experiment_info.report_progress.interval
+            self.logging = not experiment_info.report_progress.log_file is None
+            if self.logging:
+                logging.basicConfig(filename=os.path.join(experiment_info.job_dir,
+                                                          experiment_info.report_progress.log_file),
+                                    level=logging.INFO,
+                                    format='%(asctime)s')
         
     def reset(self):
-        self.pareto_counter = 0
         self.pareto_set = pareto_set(self.stoch_optim)
         self.cummulative_samples = 0
         self.tested_allocations = []
@@ -51,7 +60,7 @@ class DD_PUSA(popMultiObjOptim):
             self.sim_size = self.sim_dict[list(self.sim_dict.keys())[0]]['size']
         else:
             self.sim_size = 'ed_to_ip'
-        self.worker_pool = worker_pool(num_workers=self.num_workers,sim_info=self.sim_size)
+        self.worker_pool = worker_pool(num_workers=self.num_workers,sim_info={'size': self.sim_size,'obj_fns': self.obj_fns})
         
     def terminate_experiment(self):
         term_states = []
@@ -60,7 +69,10 @@ class DD_PUSA(popMultiObjOptim):
             crit_val = criteria['value']
             test = criteria['condition']
             
-            term_states.append(eval(f"getattr(self,'{crit}') {test} {crit_val}")) 
+            if "." in crit:
+                term_states.append(eval(f"self.{crit} {test} {crit_val}")) 
+            else:
+                term_states.append(eval(f"getattr(self,'{crit}') {test} {crit_val}")) 
                 
         return any(term_states) 
 
@@ -94,7 +106,7 @@ class DD_PUSA(popMultiObjOptim):
                                         alpha=self.alpha,
                                         allocation=allocation,
                                         init_reps=self.init_reps,
-                                        optim_dirs = self.optim_dirs)
+                                        obj_fns = self.obj_fns)
             else:
                 counter += 1
                 
@@ -102,7 +114,7 @@ class DD_PUSA(popMultiObjOptim):
                 break
     
     def mo_ocba(self,sol_set):
-        replication_limit = self.replications_per_iter * sol_set.length
+        replication_limit = (self.replications_per_iter * sol_set.length) - sol_set.total_replications()
         k_val = ceil(self.sols_per_iter/3)
         if sol_set.length < k_val:
             k_val = sol_set.length
@@ -110,39 +122,62 @@ class DD_PUSA(popMultiObjOptim):
         sol_set.procedure_I(delta = self.replications_per_iter)
         sP = candidate_set(candidates = [sol_set.set[i] for i in np.argsort(np.array(sol_set.get_attribute('psi')[:k_val]))],
                            workers = self.worker_pool)
-        while min(sol_set.get_attribute('psi')) > self.psi_target:
+        reps_used = 0
+        while min(sP.get_attribute('psi')) > self.psi_target:
+            
             sP.procedure_II(sol_set=sol_set,K = k_val, delta=self.replications_per_iter)
             sP.reorder('delta_psi_d',decreasing=True)
             if any(i == 0 for i in sP.get_attribute('delta_psi_d')):
                 k_test = max([0,min([index for index, value in enumerate(sP.get_attribute('delta_psi_d')) if value == 0])])
+            else: 
+                k_test = sP.length-1
+                
             psi_ref = sP.set[k_test].delta_psi_d
-            self.mo_ocba_reps += sP.allocate_replications(delta=self.replications_per_iter,K=k_test, 
-                                                    delta_ref=(psi_ref * self.replications_per_iter)/np.sum(np.abs(np.array(sP.get_attribute('delta_psi_d')[:k_test]))),psi_ref=psi_ref)
+            reps_used += sP.allocate_replications(delta=min(self.replications_per_iter,replication_limit),
+                                                          K=k_test, 
+                                                          delta_ref=(psi_ref * self.replications_per_iter)/np.sum(np.abs(np.array(sP.get_attribute('delta_psi_d')[:k_test]))),
+                                                          psi_ref=psi_ref)
             sP.generate_samples()
-            sol_set.procedureI(delta = self.replications_per_iter)
-            if replication_limit - sol_set.total_replications() > 0:
-                break
-        return sP.set, list(set(sol_set.set).difference(set(sP.set)))
             
+            
+            self.mo_ocba_reps += reps_used
+            replication_limit -= reps_used
+            
+            if replication_limit <= 0:
+                break
+            
+            sol_set.procedure_I(delta = self.replications_per_iter)
+        return sP.set, list(set(sol_set.set).difference(set(sP.set)))
+    
+    def cool_temp(self):
+            self.temp = getattr(schedules,self.cool_sched)(t0 = self.t_0, t_damp = self.t_damp, current_iteration = self.current_iteration)
             
     def update_history(self):
         self.history.append({
             'Iteration': self.current_iteration,
             'Iteration Replications': self.sample_counter,
             'Temperature': self.temp,
-            'Best Solution Objectives': self.pareto_set.best.data.mean(),
             'Pareto Set Length': self.pareto_set.length,
             'Rejected Allocations': [i.allocation for i in self.rejects],
             'Estimated Pareto Front:': self.pareto_set.get_attribute('mean_response')})
         
+        
+    def print(self,message):
+        if self.logging:
+            logging.info(message)
+        else:
+            print(message)
+        
     
     def results_to_console(self):
-        print(f'Iteration {self.current_iteration} required {self.sample_counter} replications.')
+        messages = [f'Iteration {self.current_iteration} required {self.sample_counter} replications.',
+        f"Current pareto set is unchanged for {self.pareto_set.counter} iterations.",
+        f'There are {self.pareto_set.length} estimated solutions in the pareto set.',
+        'Current Pareto Front:\n {}'.format(self.pareto_set.get_attribute("mean_response").sort_values(by = list(self.pareto_set.set[0].data.columns)).to_string())]
         if self.use_moocba:
-            print(f'M.O.O.C.B.A allocated {self.mo_ocba_reps} more replications.')
-        print(f'Current best has existed for {self.pareto_set.best_counter} iterations.')
-        print(f'There are {self.pareto_set.length} estimated solutions in the pareto set.')
-        print('Current Pareto Front:\n {}'.format(self.pareto_set.get_attribute("mean_response").sort_values(by = self.pareto_set[0].columns).to_string()))
+            messages.append(f'M.O.O.C.B.A allocated {self.mo_ocba_reps} more replications.')
+        for m in messages:
+            self.print(m)
         
     
     def execute_iteration(self):
@@ -163,7 +198,8 @@ class DD_PUSA(popMultiObjOptim):
             if self.report_progress:
                 if self.report_interval % self.current_iteration == 0: 
                     self.results_to_console()
-        self.sample_counter = 0
+        self.sample_counter = 
+        self.cool_temp()
 
        
         

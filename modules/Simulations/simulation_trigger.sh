@@ -22,7 +22,7 @@ if [ "$(uname)" == "Darwin" ]; then
     cd /Users/nadeyemi/Library/CloudStorage/OneDrive-NortheasternUniversity/Graduate/Research/Minn_MH_Sim_Projects/Inpatient_Bed_Allocation_Optimization    
     conda activate bed_allocation_proj
 
-    Rscript "modules/Simulations/testbeds/Test_Bed_Opt_Setup.R"  "$port" "$size"
+    Rscript "modules/Simulations/testbeds/sim_setup.R"  "$port" "$size" "$obj_fns"
 else
     __conda_setup="$('/shared/centos7/anaconda3/2022.01/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
     if [ $? -eq 0 ]; then
@@ -38,5 +38,5 @@ else
 
     cd /home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization
     module load singularity/3.5.3
-    singularity exec --bind "/scratch/:/scratch/,/work/:/work/" /shared/container_repository/rstudio/rocker-geospatial-4.2.1.sif Rscript "modules/Simulations/testbeds/Test_Bed_Opt_Setup.R"  "$port" "$size"
+    singularity exec --bind "/scratch/:/scratch/,/work/:/work/" /shared/container_repository/rstudio/rocker-geospatial-4.2.1.sif Rscript "modules/Simulations/testbeds/sim_setup.R"  "$port" "$size" "$obj_fns"
 fi

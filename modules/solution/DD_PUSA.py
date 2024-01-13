@@ -7,8 +7,8 @@ from .base import solution
 
 class mo_ocba_solution(solution):
     
-    def __init__(self,alpha: float, solution: np.ndarray, allocation: np.ndarray, init_reps: int, optim_dirs: list):
-        super().__init__(optim_dirs=optim_dirs)
+    def __init__(self,alpha: float, solution: np.ndarray, allocation: np.ndarray, init_reps: int, obj_fns: list):
+        super().__init__(obj_fns=obj_fns)
         self.alpha = alpha
         self.solution = solution
         self.allocation = allocation
@@ -45,7 +45,7 @@ class mo_ocba_solution(solution):
         sigma_estimates = self.est_sigma(compare=compare_sol,delta=delta,hat=hat,self_hat=self_hat)
         z_vals = []
         for i in range(self.n_obj):
-            z = NormalDist(mu=0,sigma = sigma_estimates[i]).cdf(x_bar[i])
+            z = NormalDist(mu=0,sigma = sigma_estimates.iloc[i]).cdf(x_bar[i])
             if self.is_maximize(i):
                 z_vals.append(1-z)
             else:

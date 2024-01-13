@@ -413,10 +413,11 @@ MH.Network.sim <-
     # Read in Required Data, Inputs, etc. -------------------------------------
     list2env(readRDS(
       file = file.path(
-        ".",
-        "Simulations",
-        "Function Requirements",
-        "MH_Network_sim_input_list.rds"
+      "modules",
+      "Simulations",
+      "ed_mh_simulation",
+      "sim_data",
+      "MH_Network_sim_input_list.rds"
       )
     ), envir = environment())
     

@@ -146,7 +146,7 @@ hydra:
       provider: schema
     output_dir: /Users/nadeyemi/Library/CloudStorage/OneDrive-NortheasternUniversity/Graduate/Research/Minn_MH_Sim_Projects/Inpatient_Bed_Allocation_Optimization/experiments/small_test_bench/outputs
     choices:
-      cooling_schedule: exponential
+      cooling_schedule: quadratic
       moocba: default
       hyper_params: default
       hydra/env: default

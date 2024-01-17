@@ -1,0 +1,13 @@
+name: sim_conda_env
+channels:
+  - conda-forge
+dependencies:
+  - pandas
+  - python=3.11
+  - r-essentials
+  - r-simmer
+  - r-simtimer
+  - r-jsonlite
+  - r-fpc
+  - r-data.table
+  - r-EnvStats

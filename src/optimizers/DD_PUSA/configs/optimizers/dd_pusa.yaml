@@ -1,0 +1,22 @@
+experiment_info:
+  tune: False
+  num_variables: 3
+  cooling_schedule: 'quadratic'
+  capacity: None
+  termination_criteria: [{iteration: 500},{t_min: 1}]  
+  n_sols: 5
+  obj_fns: [{sample_statistic: 'TB_obj_1', direction: '+'},{sample_statistic: 'TB_obj_2', direction: '-'}]
+  use_mocba: False
+  stoch_optim: True
+  checkpoint:
+    create_checkpoints: True
+    directory: None
+    interval: 10
+
+defaults:
+  - hyper_params: default
+  - mocba: default
+  - cooling_schedule: exponential
+
+
+

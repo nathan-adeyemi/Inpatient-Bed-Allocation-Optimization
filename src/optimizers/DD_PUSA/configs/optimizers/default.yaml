@@ -1,0 +1,14 @@
+experiment_info:
+  termination:
+    criteria: 'iteration'
+    value: 5000
+    type: 'max'
+    
+  num_variables: None  
+  n_sols: 20
+  obj_fns: [None]
+
+  checkpoint:
+    create_checkpoints: True
+    directory: None
+    interval: 10

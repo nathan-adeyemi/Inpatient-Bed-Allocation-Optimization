@@ -8,10 +8,10 @@ experiment_info:
   use_moocba: True
   stoch_optim: True
   capacity_dictionary: {small_test_bench: {size: 'small', num_pools: 3, total_capacity: 12}}
-  job_dir: 'experiments/small_test_bench'
+  job_dir: 'experiments/test_bench'
   checkpoint:
     create_checkpoints: True
-    interval: 20
+    interval: 1
   report_progress:
     print_to_console: True
     interval: 10
@@ -21,11 +21,10 @@ experiment_info:
 defaults:
   - hyper_params: default
   - moocba: default
-  - cooling_schedule: "quadratic"
   - _self_
 
 hydra:
   searchpath:
-    - file://./configs
+    - file://./src/optimizers/DD_PUSA/configs
   run:
     dir: ${experiment_info.job_dir}/outputs

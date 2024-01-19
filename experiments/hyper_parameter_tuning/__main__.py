@@ -1,8 +1,9 @@
 import math
 import pickle as pkl
 import sys
-
+import multiprocessing
 import ray
+import os
 
 sys.path.append("src")
 
@@ -11,6 +12,8 @@ from hydra.experimental import compose, initialize
 from omegaconf import OmegaConf  # noqa: E402
 from optimizers.DD_PUSA import DD_PUSA  # noqa: E402
 from ray import train, tune
+from utils.utils import get_cpu_count
+
 
 
 class mh_sim_trainable(tune.Trainable):
@@ -147,7 +150,7 @@ def execute_tune_job(
 
 if __name__ == "__main__":
     if not ("num_processors" in globals() or "num_processors" in locals()):
-        total_workers = 7
+        total_workers = get_cpu_count()
 
     concurrent_trials = 4
     num_workers = math.floor(total_workers / concurrent_trials)

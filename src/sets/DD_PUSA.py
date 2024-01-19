@@ -17,12 +17,12 @@ class pareto_set(solution_set):
         self.counter = 0
         
     def update(self):
-        old_p_set = set(deepcopy(self.set))
+        old_p_set_ids = self.get_attribute('id')
         self.nondominated_sorting(noisy = self.stoch_optim)
         for i in reversed(range(self.length)):
             if not i in self.fronts[0]:
                 _ = self.remove_solution(i)
-        if set(self.set) == old_p_set:
+        if self.get_attribute('id') == old_p_set_ids:
             self.counter +=1
         
     def find_g_ideal(self):

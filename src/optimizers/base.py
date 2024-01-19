@@ -45,7 +45,7 @@ class popMultiObjOptim():
         
         if check_dir is None:
             self.checkpoint_num += 1
-            check_dir = f"checkpoint_{self.checkpoint_num}"
+            check_dir = os.path.join(self.checkpoints_dir,f"checkpoint_{self.checkpoint_num}")
         # self.update_checkpoint_metrics()
         with open(f"{check_dir}.pkl",'wb') as f:
             pkl.dump(self, f)

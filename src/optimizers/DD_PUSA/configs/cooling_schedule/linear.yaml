@@ -1,8 +1,7 @@
-cooling_schedule:
-  type: linear
-  t_0: 100
-  t_damp: 
-    value: 0.7
-    min: 0.0 
-    max: 1.0
-    interval: 0.05
+schedule: linear
+t_0: 100
+t_damp: 
+  value: 0.7
+  min: 0.0 
+  max: 1.0
+  interval: 0.05

@@ -2,6 +2,10 @@ import numpy as np
 import socket
 import pandas as pd
 import subprocess
+import multiprocessing
+import os
+import string
+import secrets
 
 def smart_round(input_vector):
     if not isinstance(input_vector,np.ndarray):
@@ -42,3 +46,23 @@ def execute_command(command):
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f'Error executing the command: {e}\nOutput:\n{e.stdout.decode("utf-8")}'
+    
+def get_cpu_count():
+    try:
+        # Using os.cpu_count() to get the number of logical CPUs
+        cpu_count = os.cpu_count()
+        if cpu_count is not None:
+            return cpu_count
+        else:
+            # If os.cpu_count() returns None, use multiprocessing.cpu_count()
+            return multiprocessing.cpu_count()
+    except Exception as e:
+        print(f"Error getting CPU count: {e}")
+        return None
+    
+
+def generate_random_identifier(length=8):
+    characters = string.ascii_letters + string.digits
+    identifier = ''.join(secrets.choice(characters) for _ in range(length))
+    return identifier
+

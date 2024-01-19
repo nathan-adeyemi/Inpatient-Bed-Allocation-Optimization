@@ -14,6 +14,7 @@ from pathlib import Path
 
 from optimizers.DD_PUSA import DD_PUSA
 from utils.r_utils.r_communication import worker_pool
+from utils.utils import get_cpu_count
 
 
 class mh_sim_trainable(tune.Trainable):
@@ -51,7 +52,7 @@ def flatten_list(nested_list):
             flattened.append(item)
     return flattened
 
-def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_trials: int = 2):
+def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_trials= None):
     if path is None:
             #obj_fn_combos = ['mh_wait_quantile','mh_wait_sigma','mh_distance_range','mh_total_throughput']
         obj_fn_combos = [{'sample_statistic': 'TB_obj_1', 'direction': '+'},
@@ -59,6 +60,11 @@ def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_t
                         {'sample_statistic': 'TB_obj_3', 'direction': '-'}]
         obj_fn_combos = flatten_list([list(combinations(obj_fn_combos,i)) for i in range(2,len(obj_fn_combos)+1)])
         
+        if concurrent_trials is None:
+            if num_workers > len(obj_fn_combos):
+                concurrent_trials = len(obj_fn_combos)
+            else: 
+                concurrent_trials = 2
         
         with initialize(config_path = '.',
                         job_name = 'multi_obj_combo'):
@@ -91,5 +97,5 @@ def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_t
         
 if __name__ == '__main__':
     ray.init(runtime_env={'working_dir':"src",'pip': ['pandas']})
-    execute_tune_job(trainer=mh_sim_trainable)
+    execute_tune_job(trainer=mh_sim_trainable, num_workers = get_cpu_count() - 1)
     ray.shutdown()

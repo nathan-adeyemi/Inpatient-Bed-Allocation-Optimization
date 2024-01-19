@@ -1,5 +1,5 @@
 rm(list = ls())
-invisible(source('.Rprofile'))
+invisible(source(file.path('src','Simulations','.Rprofile')))
 
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) > 0){
@@ -26,14 +26,16 @@ if(grepl(network_size,pattern = 'ed_to_ip')){
     obj_fns <- grep('TB_',ls(),value = T)
   }
 
-  starter_data <-
-    readRDS(file.path(
+  data_dir <- file.path(
       "src",
       "Simulations",
       "testbeds",
-      "sim_data",
-      paste0(network_size, " Testing Initial Solution.rds")
-    ))
+      "sim_data")
+
+  matching_files <- list.files(path = data_dir, pattern = paste0(network_size, " Testing Initial Solution.rds"),ignore.case = TRUE)
+
+  starter_data <- readRDS(file.path(data_dir,matching_files[1]))
+
   queues_df <- starter_data$network_df
   n_queues <- queues_df[, .N]
   total_servers <- 4 * n_queues

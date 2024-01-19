@@ -23,19 +23,23 @@ class dd_pusa(popMultiObjOptim):
                  moocba: DictConfig = None):
         
         super().__init__(config=experiment_info)
+        
+        # Assign the configs to the class
         self.experiment_info = experiment_info
         self.hyper_params = hyper_params
         self.moocba = moocba
         
-        self.cool_sched_name = self.experiment_info.cooling_schedule
-        self.use_moocba = self.experiment_info.use_moocba
+        # Set optimization problem information not set by the base class
         self.stoch_optim = self.experiment_info.stoch_optim
         self.sim_dict = self.experiment_info.capacity_dictionary
         self.num_variables = np.sum(np.array([self.sim_dict[i]['num_pools'] for i in list(self.sim_dict.keys())]))
         self.num_workers = self.experiment_info.num_workers
         self.obj_fns = self.experiment_info.obj_fns
+        
+        # Set DD-PUSA options and hyper_parameters
+        self.use_moocba = self.experiment_info.use_moocba
         if self.stoch_optim:
-            self.alpha = self.hyper_params.solution_comparison_alpha
+            self.alpha = self.hyper_params.solution_comparison_alpha.value
         else:
             self.alpha = None
         self.pareto_limit = self.hyper_params.pareto_limit.value
@@ -46,22 +50,23 @@ class dd_pusa(popMultiObjOptim):
             self.replications_per_iter = self.moocba.replications_per_sol_x_iter.value
             self.init_reps = self.moocba.initial_reps_per_sol.value
         self.history = []
+        
+        # Set logging settings
         self.report_progress = self.experiment_info.report_progress.print_to_console
         if self.report_progress:
             self.report_interval = self.experiment_info.report_progress.interval
-            self.logging = not self.experiment_info.report_progress.log_file is None
-            if self.logging:
-                logging.basicConfig(filename=os.path.join(self.experiment_info.job_dir,
-                                                          self.experiment_info.report_progress.log_file),
-                                    level=logging.INFO,
-                                    format='%(asctime)s')                
+        self.logging = not self.experiment_info.report_progress.log_file is None
+
+                
+        # Set cooling schedule type and parameters
+        self.cool_sched_name = self.experiment_info.cooling_schedule
         if experiment_info.tune:
             self.cooling_schedule = OmegaConf.load(os.path.join(experiment_info.config_path,'cooling_schedule',f"{self.cool_sched_name}.yaml"))
         else:
-            self.cooling_schedule = OmegaConf.load(os.path.join(Path('src/optimizers/DD_PUSA/configs/cooling_schedule').resolve(),f"{self.cool_sched_name}.yaml"))
-            
+            self.cooling_schedule = OmegaConf.load(os.path.join(Path('src/optimizers/DD_PUSA/configs/cooling_schedule').resolve(),f"{self.cool_sched_name}.yaml"))     
         self.t_damp = self.cooling_schedule.t_damp.value
         self.t_0 = self.cooling_schedule.t_0
+        
 
 
     def reset(self):
@@ -158,7 +163,7 @@ class dd_pusa(popMultiObjOptim):
         return sP.set, list(set(sol_set.set).difference(set(sP.set)))
     
     def cool_temp(self):
-            self.temp = getattr(schedules,self.cool_sched)(t_0 = self.t_0, t_damp = self.t_damp, current_iteration = self.current_iteration)
+            self.temp = getattr(schedules,self.cool_sched_name)(t_0 = self.t_0, t_damp = self.t_damp, current_iteration = self.current_iteration)
             
     def update_history(self,return_val: bool = False):
         if return_val:
@@ -177,7 +182,7 @@ class dd_pusa(popMultiObjOptim):
     def print(self,message):
         if self.logging:
             logging.info(message)
-        else:
+        if self.report_progress:
             print(message)
         
     
@@ -185,7 +190,7 @@ class dd_pusa(popMultiObjOptim):
         messages = [f'Iteration {self.current_iteration} required {self.sample_counter} replications at temperature {self.temp}.',
         f"Current pareto set is unchanged for {self.pareto_set.counter} iterations.",
         f'There are {self.pareto_set.length} estimated solutions in the pareto set.',
-        'Current Pareto Front:\n {}'.format(self.pareto_set.get_attribute("mean_response").sort_values(by = list(self.pareto_set.set[0].data.columns)).to_string())]
+        'Current Pareto Front:\n {}'.format(pd.concat([i.data.mean(axis=0) for i in self.pareto_set.set],axis=1).sort_values(by = list(pd.concat([i.data.mean(axis=0) for i in self.pareto_set.set],axis=-1)[0].columns)).to_string())]
         if self.use_moocba:
             messages.append(f'M.O.O.C.B.A allocated {self.mo_ocba_reps} more replications.')
             
@@ -214,6 +219,8 @@ class dd_pusa(popMultiObjOptim):
                 self.pareto_set.add_solution(sol)
             self.pareto_set.update()
             self.pareto_set.find_best()
+        else:
+            self.pareto_set.counter += 1
         self.update_history()
         if self.report_progress:
             if self.current_iteration == 0 % self.report_interval : 

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from scipy import stats as stats 
+from utils.utils import generate_random_identifier
         
 class solution():
     def __init__(self,obj_fns: list = ['+']):
@@ -9,6 +10,7 @@ class solution():
         self.obj_fns_names = [i['sample_statistic'] for i in self.obj_fns]
         self.n_obj = len(self.obj_fns)
         self.data = None
+        self.id = generate_random_identifier(length=10)
         
     def is_maximize(self,col = None):
         

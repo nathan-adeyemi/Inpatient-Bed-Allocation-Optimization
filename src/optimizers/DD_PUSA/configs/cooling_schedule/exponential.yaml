@@ -1,3 +1,4 @@
+schedule: 'exponential'
 t_0: 100
 t_damp:
   value: 1.5

@@ -1,0 +1,19 @@
+Failure # 1 (occurred at 2024-01-22_14-00-06)
+[36mray::ResourceTrainable.train()[39m (pid=3617, ip=10.99.101.133, actor_id=f3a0bb3c558ee8678cf267e401000000, repr=<ray.tune.trainable.util.mh_sim_trainable object at 0x2b57654e8ed0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adeyemi.n/.conda/envs/bed_allocation_proj/lib/python3.11/site-packages/ray/tune/trainable/trainable.py", line 342, in train
+    raise skipped from exception_cause(skipped)
+  File "/home/adeyemi.n/.conda/envs/bed_allocation_proj/lib/python3.11/site-packages/ray/tune/trainable/trainable.py", line 339, in train
+    result = self.step()
+             ^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization/experiments/parameter_tuning/__main__.py", line 25, in step
+    self.optim_job.execute_iteration()
+  File "/tmp/ray/session_2024-01-22_13-58-59_257607_124218/runtime_resources/working_dir_files/_ray_pkg_24b6e9d7cee669b6/optimizers/DD_PUSA/DD_PUSA.py", line 266, in execute_iteration
+    old_pset_ids = self.pareto_set.get_attribute("id")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ray/session_2024-01-22_13-58-59_257607_124218/runtime_resources/working_dir_files/_ray_pkg_24b6e9d7cee669b6/sets/base.py", line 15, in get_attribute
+    if isinstance(attr_list[0], pd.DataFrame):
+                  ~~~~~~~~~^^^
+IndexError: list index out of range

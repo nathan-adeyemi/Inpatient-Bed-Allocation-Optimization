@@ -1,0 +1,19 @@
+Failure # 1 (occurred at 2024-01-22_15-09-05)
+[36mray::ResourceTrainable.train()[39m (pid=56462, ip=10.99.101.135, actor_id=fac1ed8c85c5d4cde98102db01000000, repr=<ray.tune.trainable.util.mh_sim_trainable object at 0x2b6f4ce01210>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adeyemi.n/.conda/envs/bed_allocation_proj/lib/python3.11/site-packages/ray/tune/trainable/trainable.py", line 342, in train
+    raise skipped from exception_cause(skipped)
+  File "/home/adeyemi.n/.conda/envs/bed_allocation_proj/lib/python3.11/site-packages/ray/tune/trainable/trainable.py", line 339, in train
+    result = self.step()
+             ^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization/experiments/parameter_tuning/__main__.py", line 25, in step
+    self.optim_job.execute_iteration()
+  File "/tmp/ray/session_2024-01-22_15-05-13_216386_20892/runtime_resources/working_dir_files/_ray_pkg_fa3ccc0b46657742/optimizers/DD_PUSA/DD_PUSA.py", line 292, in execute_iteration
+    self.pareto_set, _ = self.mo_ocba(self.pareto_set, pareto_set = True)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ray/session_2024-01-22_15-05-13_216386_20892/runtime_resources/working_dir_files/_ray_pkg_fa3ccc0b46657742/optimizers/DD_PUSA/DD_PUSA.py", line 165, in mo_ocba
+    sol_set.procedure_I(delta=self.replications_per_iter)
+    ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'pareto_set' object has no attribute 'procedure_I'

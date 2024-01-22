@@ -1,0 +1,16 @@
+Failure # 1 (occurred at 2024-01-22_14-21-38)
+[36mray::ResourceTrainable.train()[39m (pid=65078, ip=10.99.101.133, actor_id=487b90396f6bc354aa0ec4e801000000, repr=<ray.tune.trainable.util.mh_sim_trainable object at 0x2ae0baafc5d0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adeyemi.n/.conda/envs/bed_allocation_proj/lib/python3.11/site-packages/ray/tune/trainable/trainable.py", line 342, in train
+    raise skipped from exception_cause(skipped)
+  File "/home/adeyemi.n/.conda/envs/bed_allocation_proj/lib/python3.11/site-packages/ray/tune/trainable/trainable.py", line 339, in train
+    result = self.step()
+             ^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization/experiments/parameter_tuning/__main__.py", line 25, in step
+    self.optim_job.execute_iteration()
+  File "/tmp/ray/session_2024-01-22_14-12-52_398640_30565/runtime_resources/working_dir_files/_ray_pkg_d932cc1b68e7afaa/optimizers/DD_PUSA/DD_PUSA.py", line 288, in execute_iteration
+    if self.mocba & self.current_iteration % 5 == 0:
+       ^^^^^^^^^^
+AttributeError: 'dd_pusa' object has no attribute 'mocba'

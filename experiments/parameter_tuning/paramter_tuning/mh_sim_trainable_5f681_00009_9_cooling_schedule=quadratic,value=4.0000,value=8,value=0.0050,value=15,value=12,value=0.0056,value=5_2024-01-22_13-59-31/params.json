@@ -1,0 +1,113 @@
+{
+  "experiment_info": {
+    "capacity_dictionary": {
+      "small_test_bench": {
+        "num_pools": 10,
+        "size": "large",
+        "total_capacity": 25
+      }
+    },
+    "checkpoint": {
+      "create_checkpoints": true,
+      "interval": 10
+    },
+    "config_path": "/home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization/src/optimizers/DD_PUSA/configs",
+    "cooling_schedule": "quadratic",
+    "job_dir": "experiments/test_bench",
+    "n_sols": 10,
+    "num_workers": 10,
+    "obj_fns": [
+      {
+        "direction": "+",
+        "sample_statistic": "TB_obj_1"
+      },
+      {
+        "direction": "-",
+        "sample_statistic": "TB_obj_2"
+      }
+    ],
+    "report_progress": {
+      "interval": 10,
+      "log_file": null,
+      "print_to_console": false
+    },
+    "stoch_optim": true,
+    "termination_criteria": [
+      {
+        "condition": ">",
+        "criteria": "iteration",
+        "value": 200
+      },
+      {
+        "condition": "<",
+        "criteria": "temp",
+        "value": 0.0009
+      },
+      {
+        "condition": ">",
+        "criteria": "pareto_set.counter",
+        "value": 20
+      }
+    ],
+    "tune": true,
+    "use_moocba": true
+  },
+  "hyper_params": {
+    "max_tweak": {
+      "interval": 0.5,
+      "max": 10,
+      "min": 1,
+      "value": 4.0
+    },
+    "n_sols": {
+      "interval": 1,
+      "max": 12,
+      "min": 3,
+      "value": 8
+    },
+    "pareto_limit": {
+      "interval": 5,
+      "max": 25,
+      "min": 5,
+      "value": 15
+    },
+    "solution_comparison_alpha": {
+      "grid": [
+        0.5,
+        0.05,
+        0.005,
+        0.0005
+      ],
+      "value": 0.005
+    },
+    "tabu_limit": {
+      "interval": 5,
+      "max": 50,
+      "min": 5,
+      "value": 15
+    }
+  },
+  "moocba": {
+    "initial_reps_per_sol": {
+      "interval": 6,
+      "max": 24,
+      "min": 6,
+      "value": 12
+    },
+    "psi_target": {
+      "grid": [
+        0.0056,
+        0.00056,
+        5.6e-05,
+        5.6e-06
+      ],
+      "value": 0.0056
+    },
+    "replications_per_sol_x_iter": {
+      "interval": 5,
+      "max": 50,
+      "min": 5,
+      "value": 50
+    }
+  }
+}

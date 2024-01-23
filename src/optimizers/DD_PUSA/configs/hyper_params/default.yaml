@@ -23,5 +23,5 @@ max_tweak:
   interval: 0.5
 
 solution_comparison_alpha: 
-  value: 5.0e-2
+  value: 5.0e-3
   grid: [5.0e-1, 5.0e-2, 5.0e-3, 5.0e-4]

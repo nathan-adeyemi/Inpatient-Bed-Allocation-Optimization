@@ -16,6 +16,7 @@ class popMultiObjOptim():
         self.obj_fns = config.obj_fns
         self.iteration = 0
         self.checkpoint =config.checkpoint.create_checkpoints
+        self.checkpoint_num = 0
         if self.checkpoint:
             self.checkpoint_num = 0
             self.checkpoints_dir = os.path.join(config.job_dir,'outputs','checkpoints')

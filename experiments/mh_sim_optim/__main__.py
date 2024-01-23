@@ -15,6 +15,7 @@ from pathlib import Path
 from optimizers.DD_PUSA import DD_PUSA
 from utils.r_utils.r_communication import worker_pool
 from utils.utils import get_cpu_count
+from utils.stats import column_ranges
 
 
 class mh_sim_trainable(tune.Trainable):
@@ -28,7 +29,13 @@ class mh_sim_trainable(tune.Trainable):
         if not self.optim_job.check_termination_condition():
             self.optim_job.execute_iteration()
         
-        return {'sample_stats_per_sol':self.optim_job.update_history(return_val=True)}
+        optim_dict = self.optim_job.update_history(return_val=True)
+            
+        res_dict = {'total_simulation_replications': optim_dict['Total Replications'],
+                'pareto_set_size': optim_dict['Pareto Set Length']}
+        res_dict.update(column_ranges(optim_dict['Estimated Pareto Front']))
+        
+        return res_dict
     
     def save_checkpoint(self, directory):
         self.optim_job.create_checkpoint(check_dir = directory)

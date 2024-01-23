@@ -22,6 +22,8 @@ library(simmer.plot, quietly = T)
 library(simtimer, quietly = T)
 library(parallel, quietly = T)
 library(jsonlite, quietly = T)
+library(gtools, quietly=T)
+library(EnvStats, quietly=T)
 
 source(file = file.path('src', 'Simulations','ed_mh_simulation', 'ed_mh_simulation.R'))
 source(file = file.path("src", 'Simulations','testbeds', 'run_test_bench.R'))

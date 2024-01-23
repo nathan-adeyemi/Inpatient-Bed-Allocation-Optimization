@@ -25,3 +25,15 @@ def bhattacharyya_dist(df1: pd.DataFrame, df2: pd.DataFrame):
     dist2 = 0.5 * det_ovr - 0.25 * det_1 -0.25 * det_2
 
     return dist1 + dist2
+
+def column_ranges(dataframe):
+    
+    # For obtaining the ranges of objective fn values in the pareto set
+    
+    column_ranges_dict = {}
+
+    for column in dataframe.columns:
+        col_range = dataframe[column].min(), dataframe[column].max()
+        column_ranges_dict[f"{column}_range"] = col_range
+
+    return column_ranges_dict

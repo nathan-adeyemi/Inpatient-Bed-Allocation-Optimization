@@ -12,9 +12,6 @@ from utils.utils import get_cpu_count
 from pathlib import Path
 
 
-# @hydra.main(config_path = os.path.join(os.path.dirname(os.path.abspath(__file__))), 
-#             config_name='config')
-
 def run_optim(check_dir=None,num_workers: int = 8):
     
     if check_dir is None:
@@ -43,12 +40,11 @@ def run_optim(check_dir=None,num_workers: int = 8):
     optim_job.optimize(reset = (check_dir is None))
         
 if __name__ == '__main__':
-    # num_workers = get_cpu_count()
-    num_workers = 16
+    num_workers = get_cpu_count()
     
     ray.shutdown()
     ray.init(runtime_env={'working_dir':"src",'pip': ['pandas']},
              ignore_reinit_error=True,
-             num_cpus=num_workers)
+             num_cpus=8)
     result = run_optim()
     ray.shutdown()

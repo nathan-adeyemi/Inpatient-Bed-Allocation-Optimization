@@ -13,7 +13,7 @@ def smart_round(input_vector):
     if not isinstance(input_vector, np.ndarray):
         input_vector = np.array(input_vector)
     rounded_vector = np.round(input_vector)
-    rounding_error = int(np.sum(rounded_vector) - np.sum(input_vector))
+    rounding_error = int(np.ceil(np.sum(rounded_vector) - np.sum(input_vector)))
 
     # Adjust rounding error by adding or subtracting 1 from the smallest absolute rounding error
     if rounding_error > 0:
@@ -26,13 +26,19 @@ def smart_round(input_vector):
             np.abs(input_vector - rounded_vector), rounding_error
         )[: abs(rounding_error)]
         rounded_vector[indices_to_adjust] += 1
+        
+    assert int(np.sum(rounded_vector)) == int(np.sum(input_vector))
 
     return rounded_vector.astype(int)
 
 
 def decode(sol: np.ndarray, capacities: dict = None):
+    
     def sub_fun(x, y):
-        return smart_round(x / np.sum(x) * y)
+        
+        ret_val = smart_round(x / np.sum(x) * y)
+
+        return ret_val
 
     p0 = 0
     allocation = np.array([])

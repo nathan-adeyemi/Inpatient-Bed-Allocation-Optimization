@@ -1,6 +1,6 @@
 n_sols: 
   value: 7
-  min: 3
+  min: 5
   max: 12
   interval: 1
 
@@ -8,12 +8,6 @@ tabu_limit:
   value: 10
   min: 5
   max: 50
-  interval: 5
-
-pareto_limit:
-  value: 15
-  min: 5
-  max: 25
   interval: 5
 
 max_tweak:
@@ -24,4 +18,4 @@ max_tweak:
 
 solution_comparison_alpha: 
   value: 5.0e-3
-  grid: [5.0e-1, 5.0e-2, 5.0e-3, 5.0e-4]
+  grid: [5.0e-2, 5.0e-3, 5.0e-4]

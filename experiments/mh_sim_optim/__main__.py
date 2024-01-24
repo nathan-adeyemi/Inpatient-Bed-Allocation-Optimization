@@ -32,7 +32,12 @@ class mh_sim_trainable(tune.Trainable):
         optim_dict = self.optim_job.update_history(return_val=True)
             
         res_dict = {'total_simulation_replications': optim_dict['Total Replications'],
-                'pareto_set_size': optim_dict['Pareto Set Length']}
+                'pareto_set_size': optim_dict['Pareto Set Length'],
+                'pareto_counter': optim_dict['Pareto Set Counter'],
+                'temp' : optim_dict['Temperature']
+                }
+                
+                # Call the metrics for stopping conditions
         res_dict.update(column_ranges(optim_dict['Estimated Pareto Front']))
         
         return res_dict
@@ -58,8 +63,20 @@ def flatten_list(nested_list):
         else:
             flattened.append(item)
     return flattened
+    
 
 def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_trials= None):
+    
+    def stop_fn(trial_id: str, results: dict):
+        
+        ret_val = [
+            results['training_iteration'] > cfg.experiment_info.termination_criteria[0]['value'],
+            results['temp'] < cfg.experiment_info.termination_criteria[1]['value'],
+            results['pareto_counter'] > cfg.experiment_info.termination_criteria[2]['value']
+        ]
+        
+        return any(ret_val)
+    
     if path is None:
             #obj_fn_combos = ['mh_wait_quantile','mh_wait_sigma','mh_distance_range','mh_total_throughput']
         obj_fn_combos = [{'sample_statistic': 'TB_obj_1', 'direction': '+'},
@@ -67,11 +84,6 @@ def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_t
                         {'sample_statistic': 'TB_obj_3', 'direction': '-'}]
         obj_fn_combos = flatten_list([list(combinations(obj_fn_combos,i)) for i in range(2,len(obj_fn_combos)+1)])
         
-        if concurrent_trials is None:
-            if num_workers > len(obj_fn_combos):
-                concurrent_trials = len(obj_fn_combos)
-            else: 
-                concurrent_trials = 2
         
         with initialize(config_path = '.',
                         job_name = 'multi_obj_combo'):
@@ -81,9 +93,7 @@ def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_t
             OmegaConf.update(cfg,'experiment_info.obj_fns',tune.grid_search(obj_fn_combos),merge = False)
             cfg = OmegaConf.to_object(cfg)
             
-        bundle_list = [{'CPU':1}] # Reserves 1 CPU for the Tune job
-        for _ in range(concurrent_trials):
-            bundle_list.append({'CPU': num_workers})
+        bundle_list = [{'CPU': math.floor(num_workers/len(obj_fn_combos))}] # Reserves 1 CPU for the Tune job
             
         trainable_w_resources = tune.with_resources(trainable=trainer, 
                                                 resources=tune.PlacementGroupFactory(bundles=bundle_list,
@@ -92,7 +102,7 @@ def execute_tune_job(trainer, path: str = None, num_workers = None, concurrent_t
         tuner = tune.Tuner(trainable_w_resources,
                         tune_config=tune.TuneConfig(num_samples=1),
                         param_space=cfg,
-                        run_config=train.RunConfig(stop={'training_iteration': 5},
+                        run_config=train.RunConfig(stop=stop_fn,
                                                     storage_path=Path('experiments/mh_sim_optim').resolve(),
                                                     name = 'test_obj_combos',
                                                     checkpoint_config=train.CheckpointConfig(checkpoint_frequency=check_int)))

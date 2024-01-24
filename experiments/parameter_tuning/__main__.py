@@ -58,9 +58,31 @@ def flatten_list(nested_list):
     return flattened
 
 
-def execute_tune_job(
-    trainer, path: str = None, num_workers=1, concurrent_trials: int = 2
-):
+def update_and_delete_fields(current_dict: dict = None, tune_fn=None, keys_path=None):
+    # Navigate to the specified nested key path
+    for key in keys_path:
+        current_dict = current_dict[key]
+
+    # Update the value
+    if "min" in list(current_dict.keys()):
+        current_dict["value"] = tune_fn(
+            lower=current_dict["min"],
+            upper=current_dict["max"],
+            q=current_dict["interval"],
+        )
+        keys_to_delete = ["min", "max", "interval"]
+
+    elif "grid" in list(current_dict.keys()):
+        keys_to_delete = "grid"
+        current_dict["value"] = tune_fn(current_dict["grid"])
+
+    # Delete specified keys
+    for key in keys_to_delete:
+        if key in current_dict:
+            del current_dict[key]
+
+
+def execute_tune_job(trainer, path: str = None, num_workers=1):
     if path is None:
         with initialize(config_path=".", job_name="parameter_tuning"):
             cfg = compose(config_name="config")
@@ -70,52 +92,19 @@ def execute_tune_job(
             )
             cfg = OmegaConf.to_object(cfg)
 
-            # Update the config with search spaces for the tuneable paramters
-            cfg["hyper_params"]["n_sols"]["value"] = tune.qrandint(
-                lower=cfg["hyper_params"]["n_sols"]["min"],
-                upper=cfg["hyper_params"]["n_sols"]["max"],
-                q=cfg["hyper_params"]["n_sols"]["interval"],
-            )
+            param_list = [
+                (("hyper_params", "n_sols"), tune.qrandint),
+                (("hyper_params", "tabu_limit"), tune.qrandint),
+                (("hyper_params", "max_tweak"), tune.quniform),
+                (("moocba", "initial_reps_per_sol"), tune.qrandint),
+                (("moocba", "replications_per_sol_x_iter"), tune.qrandint),
+                (("moocba", "psi_target"), tune.grid_search),
+            ]
 
-            cfg["hyper_params"]["tabu_limit"]["value"] = tune.qrandint(
-                lower=cfg["hyper_params"]["tabu_limit"]["min"],
-                upper=cfg["hyper_params"]["tabu_limit"]["max"],
-                q=cfg["hyper_params"]["tabu_limit"]["interval"],
-            )
-
-            # cfg["hyper_params"]["pareto_limit"]["value"] = tune.qrandint(
-            #     lower=cfg["hyper_params"]["pareto_limit"]["min"],
-            #     upper=cfg["hyper_params"]["pareto_limit"]["max"],
-            #     q=cfg["hyper_params"]["pareto_limit"]["interval"],
-            # )
-
-            cfg["hyper_params"]["max_tweak"]["value"] = tune.quniform(
-                lower=cfg["hyper_params"]["max_tweak"]["min"],
-                upper=cfg["hyper_params"]["max_tweak"]["max"],
-                q=cfg["hyper_params"]["max_tweak"]["interval"],
-            )
-
-            cfg["moocba"]["initial_reps_per_sol"]["value"] = tune.qrandint(
-                lower=cfg["moocba"]["initial_reps_per_sol"]["min"],
-                upper=cfg["moocba"]["initial_reps_per_sol"]["max"],
-                q=cfg["moocba"]["initial_reps_per_sol"]["interval"],
-            )
-
-            cfg["moocba"]["replications_per_sol_x_iter"]["value"] = tune.qrandint(
-                lower=cfg["moocba"]["replications_per_sol_x_iter"]["min"],
-                upper=cfg["moocba"]["replications_per_sol_x_iter"]["max"],
-                q=cfg["moocba"]["replications_per_sol_x_iter"]["interval"],
-            )
-
-            cfg["hyper_params"]["solution_comparison_alpha"][
-                "value"
-            ] = tune.grid_search(
-                cfg["hyper_params"]["solution_comparison_alpha"]["grid"]
-            )
-
-            cfg["moocba"]["psi_target"]["value"] = tune.grid_search(
-                cfg["moocba"]["psi_target"]["grid"]
-            )
+            for key_set, tune_func in param_list:
+                update_and_delete_fields(
+                    current_dict=cfg, tune_fn=tune_func, keys_path=key_set
+                )
 
             cfg["experiment_info"]["cooling_schedule"] = tune.grid_search(
                 ["exponential", "quadratic", "linear", "logarithmic"]
@@ -125,9 +114,10 @@ def execute_tune_job(
                 "src/optimizers/DD_PUSA/configs"
             ).resolve()
 
-        bundle_list = [{"CPU": 1}]  # Reserve a single CPU for the Tue job execution
-        for _ in range(concurrent_trials):
-            bundle_list.append({"CPU": num_workers})
+        bundle_list = [
+            {"CPU": 1},
+            {"CPU": num_workers},
+        ]  # Reserve a single CPU for the Tune job execution
 
         trainable_w_resources = tune.with_resources(
             trainable=trainer,
@@ -136,14 +126,18 @@ def execute_tune_job(
 
         tuner = tune.Tuner(
             trainable_w_resources,
-            tune_config=tune.TuneConfig(num_samples=10),
+            tune_config=tune.TuneConfig(
+                metric="total_simulation_replications", mode="min", num_samples=5
+            ),
             param_space=cfg,
             run_config=train.RunConfig(
-                stop={"training_iteration": 150},
+                stop={"training_iteration": 5},
                 storage_path=Path("experiments/parameter_tuning").resolve(),
-                name="paramter_tuning",
+                name="results",
                 checkpoint_config=train.CheckpointConfig(
-                    checkpoint_frequency=check_int
+                    num_to_keep=1,
+                    checkpoint_frequency=check_int,
+                    checkpoint_at_end=True,
                 ),
             ),
         )
@@ -151,23 +145,24 @@ def execute_tune_job(
     else:
         results = tune.Tuner.restore(path=path, trainable=trainer)
 
-    with open(os.path.join(Path("experiments/parameter_tuning/").resolve(),'final_tune_results.pkl','wb')) as f:
-        pkl.dump(results,f)
+    with open(
+        os.path.join(
+            Path("experiments/parameter_tuning/").resolve(), 
+            "final_tune_results.pkl"
+        ),
+        "wb",
+    ) as f:
+        pkl.dump(results, f)
 
 
 if __name__ == "__main__":
     if not ("num_processors" in globals() or "num_processors" in locals()):
         total_workers = get_cpu_count()
 
-    concurrent_trials = 12
-    num_workers = math.floor(total_workers / concurrent_trials)
+    num_workers_per_trial = 10
 
     ray.init(runtime_env={"working_dir": "src", "pip": ["pandas"]})
     results = execute_tune_job(
-        trainer=mh_sim_trainable,
-        num_workers=num_workers,
-        concurrent_trials=concurrent_trials,
+        trainer=mh_sim_trainable, num_workers=num_workers_per_trial
     )
     ray.shutdown()
-    
-    

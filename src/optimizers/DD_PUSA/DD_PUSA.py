@@ -45,7 +45,6 @@ class dd_pusa(popMultiObjOptim):
             self.alpha = self.hyper_params.solution_comparison_alpha.value
         else:
             self.alpha = None
-        self.pareto_limit = self.hyper_params.pareto_limit.value
         self.tabu_limit = self.hyper_params.tabu_limit.value
         self.tweak_limit = self.hyper_params.max_tweak.value
         if self.use_moocba:
@@ -106,8 +105,8 @@ class dd_pusa(popMultiObjOptim):
 
     def generate_candidate(self):
         def fix_cell(cell, lim: float = 1):
-            if cell < (-1 * lim):
-                cell = -lim + abs(cell + lim)
+            if cell < 0:
+                cell = abs(cell + lim)
             elif cell > lim:
                 cell = (lim - cell) + lim
             return cell
@@ -235,6 +234,7 @@ class dd_pusa(popMultiObjOptim):
                     "Temperature": self.temp,
                     "Pareto Set Length": self.pareto_set.length,
                     "Estimated Pareto Front": self.sols_full_data_df,
+                    "Pareto Set Counter": self.pareto_set.counter
                 }
             )
 
@@ -285,16 +285,19 @@ class dd_pusa(popMultiObjOptim):
         self.sample_counter = np.sum(
             np.array([sol.replications for sol in candidate_solutions.set])
         )
-        if len(candidate_solutions.set) > 0:
+        if candidate_solutions.length > 0:
             if self.use_moocba:
                 candidate_solutions, _ = self.mo_ocba(candidate_solutions)
                 self.sample_counter += self.mo_ocba_reps
             for sol in candidate_solutions:
                 self.pareto_set.add_solution(sol)
-            if self.use_moocba & self.current_iteration % 10 == 0:
-                updated_pSet, _ = self.mo_ocba(self.pareto_set)
-                for sol in updated_pSet:
-                    self.pareto_set.add_solution(sol)
+            if self.use_moocba & self.current_iteration % 2 == 0:
+                
+                _ , rejects = self.mo_ocba(self.pareto_set)
+                
+                for sol in rejects:
+                    self.pareto_set.remove_solution(index = self.pareto_set.get_attribute('id').index(sol.id))
+                
                 self.sample_counter += self.mo_ocba_reps
             self.pareto_set.update(prev_set=old_pset_ids)
             self.pareto_set.find_best()

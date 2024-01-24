@@ -1,6 +1,0 @@
-t_0: 100
-t_damp: 
-    value: 4
-    min: 2
-    max: 6
-    interval: 0.5

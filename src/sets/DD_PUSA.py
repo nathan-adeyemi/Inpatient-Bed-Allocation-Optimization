@@ -79,6 +79,8 @@ class pareto_set(candidate_set):
                 _ = self.remove_solution(i)
         if self.get_attribute("id") == prev_set:
             self.counter += 1
+        else:
+            self.counter = 0
 
     def find_g_ideal(self):
         ideal_data = (

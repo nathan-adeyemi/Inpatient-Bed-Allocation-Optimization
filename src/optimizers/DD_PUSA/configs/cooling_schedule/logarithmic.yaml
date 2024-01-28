@@ -1,7 +1,7 @@
 schedule: logarithmic
-t_0: 5
+t_0: 10
 t_damp: 
   value: 4
   min: 2
-  max: 6
-  interval: 0.5
+  max: 12
+  interval: 1

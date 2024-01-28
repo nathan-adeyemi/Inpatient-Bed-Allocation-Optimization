@@ -1,5 +1,5 @@
 psi_target:
-  value: 5.6e-4
+  value: 5.6e-6
   grid: [5.6e-3, 5.6e-4, 5.6e-5, 5.6e-6]
 
 initial_reps_per_sol:
@@ -12,5 +12,6 @@ replications_per_sol_x_iter:
   value: 20
   min: 5
   max: 50
-  interval: 5
+  interval: 10
 
+p_set_interval: 10

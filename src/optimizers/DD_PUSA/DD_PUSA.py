@@ -47,7 +47,13 @@ class dd_pusa(popMultiObjOptim):
             self.alpha = None
         self.tabu_limit = self.hyper_params.tabu_limit.value
         self.tweak_limit = self.hyper_params.max_tweak.value
+        
         if self.use_moocba:
+            if self.moocba.p_set_interval is not None:
+                self.p_set_moocba = True
+                self.p_set_moocba_interval = self.moocba.p_set_interval
+            else:
+                self.p_set_moocba = False
             self.psi_target = self.moocba.psi_target.value
             self.replications_per_iter = self.moocba.replications_per_sol_x_iter.value
             self.init_reps = self.moocba.initial_reps_per_sol.value
@@ -132,7 +138,7 @@ class dd_pusa(popMultiObjOptim):
                 )
                 new_sol = np.array(
                     [
-                        fix_cell(i, lim=self.tweak_limit * 3)
+                        fix_cell(i, lim=self.tweak_limit)
                         for i in (self.pareto_set.best.solution + changes)
                     ]
                 )
@@ -155,24 +161,32 @@ class dd_pusa(popMultiObjOptim):
             if counter > 40:
                 break
 
-    def mo_ocba(self, sol_set):
+    def mo_ocba(self, sol_set, pareto_adj = False):
         self.mo_ocba_reps = 0
 
         replication_limit = self.replications_per_iter * self.sols_per_iter
+        
+        if not pareto_adj:
+            k_val = ceil(self.sols_per_iter / 2)
+            if sol_set.length < k_val:
+                k_val = sol_set.length
 
-        k_val = ceil(self.sols_per_iter / 3)
-        if sol_set.length < k_val:
-            k_val = sol_set.length
-
-        sol_set.procedure_I(delta=self.replications_per_iter)
-        sP = candidate_set(
-            candidates=[
-                sol_set.set[i]
-                for i in np.argsort(np.array(sol_set.get_attribute("psi")[:k_val]))
-            ],
-            workers=self.worker_pool,
-            obj_fns=self.obj_fns,
-        )
+            sol_set.procedure_I(delta=self.replications_per_iter)
+            sP = candidate_set(
+                candidates=[
+                    sol_set.set[i]
+                    for i in np.argsort(np.array(sol_set.get_attribute("psi")[:k_val]))
+                ],
+                workers=self.worker_pool,
+                obj_fns=self.obj_fns
+            )
+        else:
+            sol_set.procedure_I(delta=self.replications_per_iter)
+            sP = candidate_set(
+                candidates=sol_set.set,
+                workers=self.worker_pool,
+                obj_fns=self.obj_fns,
+            )
         reps_used = 0
         while min(sP.get_attribute("psi")) > self.psi_target and sP.length > 1:
             sP.procedure_II(sol_set=sol_set, K=k_val, delta=self.replications_per_iter)
@@ -223,6 +237,7 @@ class dd_pusa(popMultiObjOptim):
         self.sols_full_data_df = pd.concat(
             [i.data.mean(axis=0) for i in self.pareto_set.set], axis=1
         ).T
+        self.sols_full_data_df = self.sols_full_data_df.assign(id=[i.id for i in self.pareto_set.set])
         if return_val:
             return self.history[-1]
         else:
@@ -257,7 +272,7 @@ class dd_pusa(popMultiObjOptim):
         ]
         if self.use_moocba:
             messages.append(
-                f"M.O.O.C.B.A allocated {self.mo_ocba_reps} more replications."
+                f"M.O.O.C.B.A allocated {self.mo_ocba_reps} more replications. \n"
             )
 
         if termination_message:
@@ -291,14 +306,15 @@ class dd_pusa(popMultiObjOptim):
                 self.sample_counter += self.mo_ocba_reps
             for sol in candidate_solutions:
                 self.pareto_set.add_solution(sol)
-            if self.use_moocba & self.current_iteration % 2 == 0:
+            if self.p_set_moocba: 
+                if self.current_iteration % self.p_set_moocba_interval == 0:
                 
-                _ , rejects = self.mo_ocba(self.pareto_set)
+                    _ , rejects = self.mo_ocba(self.pareto_set)
                 
-                for sol in rejects:
-                    self.pareto_set.remove_solution(index = self.pareto_set.get_attribute('id').index(sol.id))
+                    for sol in rejects:
+                        self.pareto_set.remove_solution(index = self.pareto_set.get_attribute('id').index(sol.id))
                 
-                self.sample_counter += self.mo_ocba_reps
+                    self.sample_counter += self.mo_ocba_reps
             self.pareto_set.update(prev_set=old_pset_ids)
             self.pareto_set.find_best()
         else:

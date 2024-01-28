@@ -1,5 +1,5 @@
 schedule: 'exponential'
-t_0: 100
+t_0: 10
 t_damp:
   value: 1.5
   min: 1

@@ -91,7 +91,7 @@ def p_accept(t_0, t_damp, it, schedule):
 
 def plot_probs(sched, t_0, t_damp, plot=True):
     probs = [
-        p_accept(t_0=t_0, t_damp=t_damp, schedule=sched, it=i + 1) for i in range(10)
+        p_accept(t_0=t_0, t_damp=t_damp, schedule=sched, it=i + 1) for i in range(100)
     ]
     if plot:
         plt.plot(probs)
@@ -99,3 +99,14 @@ def plot_probs(sched, t_0, t_damp, plot=True):
         plt.close()
     else:
         return probs
+    
+def plot_temps(sched, t_0, t_damp, plot=True):
+    temps = [
+        get_temp(t_0=t_0, t_damp=t_damp, sched=sched, it=i + 1) for i in range(100)
+    ]
+    if plot:
+        plt.plot(temps)
+        plt.show()
+        plt.close()
+    else:
+        return temps

@@ -40,7 +40,7 @@ class solution():
                                             alternative = alt)
                 crit_1 = crit_1 > self.alpha
                 crit_2 = crit_2 < self.alpha
-                res_list.append(crit_1 == False and crit_2 == True)   
+                res_list.append(crit_1 is False and crit_2 is True)   
             else:
                 if self.is_maximize(i):
                     res_list.append(self.data[i] < compare_sol.data[i]) 

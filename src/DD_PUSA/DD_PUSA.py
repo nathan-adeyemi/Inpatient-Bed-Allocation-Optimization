@@ -2,15 +2,15 @@ import numpy as np
 import pandas as pd
 import logging
 import os
+import cooling_schedules as schedules
 
 from omegaconf import OmegaConf, DictConfig
 from utils.utils import decode, p_accept
 from utils.r_communication import worker_pool
 from math import exp, ceil
-from sets.DD_PUSA import pareto_set, candidate_set
-from solution.DD_PUSA import mo_ocba_solution
-from ..base import popMultiObjOptim
-from ..DD_PUSA import cooling_schedules as schedules
+from sets import pareto_set, candidate_set
+from mo_ocba_soln import mo_ocba_solution
+from ..base.optimizers import popMultiObjOptim
 from pathlib import Path
 
 

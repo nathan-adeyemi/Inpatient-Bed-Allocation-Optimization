@@ -5,12 +5,13 @@ from scipy import stats as stats
 from utils.utils import generate_random_identifier
         
 class solution():
-    def __init__(self,obj_fns: list = ['+']):
+    def __init__(self,sol_vector,obj_fns: list = ['+']):
         self.obj_fns = obj_fns
         self.obj_fns_names = [i['sample_statistic'] for i in self.obj_fns]
         self.n_obj = len(self.obj_fns)
         self.data = None
         self.id = generate_random_identifier(length=10)
+        self.solution = sol_vector
         
     def is_maximize(self,col = None):
         

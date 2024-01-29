@@ -11,7 +11,9 @@ class solution_set:
 
     def get_attribute(self, attr: str):
         attr_list = [getattr(i, attr) for i in self.set]
-        if isinstance(attr_list[0], pd.DataFrame):
+        if attr in self.obj_fns_names:
+            attr_list = np.array([i.mean_response.loc[attr] for i in self.set])
+        elif isinstance(attr_list[0], pd.DataFrame):
             attr_list = pd.concat(attr_list)
         elif isinstance(attr_list, np.ndarray) or isinstance(attr_list[0], pd.Series):
             attr_list = pd.concat(attr_list, axis=1).T
@@ -29,7 +31,7 @@ class solution_set:
         self.update_length()
         return sol
 
-    def reorder(self, attr: str, decreasing=False):
+    def reorder(self, attr: str, decreasing=False,):
         attrs = [float(i) for i in self.get_attribute(attr)]
         pairs = zip(self.set, attrs)
         pairs = sorted(pairs, key=lambda x: x[1])
@@ -84,3 +86,9 @@ class solution_set:
             rank_list.append(sorted(q))
             sol_assigned.append(len(q))
         self.fronts = rank_list
+        
+        front_num = 0
+        for front in self.fronts:
+            front_num += 1
+            for sol_ind in front:
+                self.set[sol_ind].ranking = front_num

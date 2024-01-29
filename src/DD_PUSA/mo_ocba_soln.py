@@ -3,7 +3,7 @@ import pandas as pd
 
 from statistics import NormalDist
 from utils.stats import bhattacharyya_dist
-from .base import solution
+from ..base.solution import solution
 
 class mo_ocba_solution(solution):
     

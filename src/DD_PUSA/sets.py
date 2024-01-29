@@ -5,7 +5,7 @@ from utils.utils import smart_round
 from utils.r_communication import worker_pool
 from scipy.special import softmax
 from math import lcm
-from .base import solution_set
+from ..base.sets import solution_set
 
 
 class candidate_set(solution_set):

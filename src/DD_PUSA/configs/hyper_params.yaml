@@ -1,0 +1,32 @@
+debug:
+  n_sols: 2
+  tabu_limit: 3
+  max_tweak: 5
+  solution_comparison_alpha: 5.0e-2
+
+default:
+  n_sols: 7
+  tabu_limit: 40
+  max_tweak: 1
+  solution_comparison_alpha: 5.0e-2
+
+tune:
+  n_sols: 
+    min: 4
+    max: 12
+    interval: 3 
+    grid: [5,10,20,30]
+
+  tabu_limit: 
+    min: 5
+    max: 50
+    interval: 5
+    grid: [5,15,20,35,50]
+
+  max_tweak:
+    min: 0.5
+    max: 10.5
+    interval: 2
+    
+  solution_comparison_alpha: 
+    grid: [5.0e-2, 5.0e-3, 5.0e-4,5.0e-5]

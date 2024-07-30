@@ -1,17 +1,19 @@
 import numpy as np
 import pandas as pd
+import json
 
-from utils.utils import smart_round
-from utils.r_communication import worker_pool
 from scipy.special import softmax
 from math import lcm
-from ..base.sets import solution_set
 
+from .utils import smart_round
+from .mo_ocba_soln import mo_ocba_solution
+
+from base.sets import solution_set
+from base.solution import solution
 
 class candidate_set(solution_set):
-    def __init__(self, workers: worker_pool, candidates: list = [], obj_fns: list = []):
+    def __init__(self, obj_fns: dict, candidates: list = [] ):
         super().__init__(sol_set=candidates, obj_fns=obj_fns)
-        self.worker_pool = workers
 
     def total_replications(self):
         return np.sum(np.array(self.get_attribute("replications")))
@@ -40,40 +42,25 @@ class candidate_set(solution_set):
                 i.pending_samples = alloc_list[self.set.index(i)]
 
         return np.sum(alloc_list)
-
-    def generate_samples(self):
-        job_list = []
-        for sol in self.set:
-            for _ in range(sol.pending_samples):
-                job_list.append(
-                    {"index": self.set.index(sol), "allocation": sol.allocation}
-                )
-            sol.replications += sol.pending_samples
-            sol.pending_samples = 0
-        results = self.worker_pool.workers.map(
-            lambda worker, allocation: worker.generate_samples.remote(allocation),
-            [job["allocation"].tolist() for job in job_list],
-        )
-        results = list(results)
-        for idx in range(len(results)):
-            self.set[job_list[idx]["index"]].update_data(new_data=results[idx])
+    
+    @classmethod
+    def _from_dict(cls,data, sol_class = mo_ocba_solution):
+        instance = super()._from_dict(data=data, sol_class = sol_class)
+        return instance
 
 
 class pareto_set(candidate_set):
     def __init__(
         self,
-        stoch_optim=True,
-        workers: worker_pool = None,
-        set: list = None,
+        set: list = [],
         obj_fns: list = None,
     ):
-        super().__init__(candidates=set, obj_fns=obj_fns, workers=workers)
-        self.stoch_optim = stoch_optim
+        super().__init__(candidates=set, obj_fns=obj_fns)
         self.best = None
         self.counter = 0
 
-    def update(self, prev_set: list = None):
-        self.nondominated_sorting(noisy=self.stoch_optim)
+    def update(self,stochastic: bool = True, prev_set: list = None, alpha: float = None):
+        self.nondominated_sorting(noisy=stochastic, alpha = alpha)
         for i in reversed(range(self.length)):
             if i not in self.fronts[0]:
                 _ = self.remove_solution(i)
@@ -108,7 +95,7 @@ class pareto_set(candidate_set):
                         self.set[idxs[self.obj_fns_names.index(col)]].data.loc[:, col]
                         for _ in range(int(reps[self.obj_fns_names.index(col)]))
                     ]
-                )
+                ).reset_index(drop = True)
                 for col in self.obj_fns_names
             ],
             axis=1,
@@ -133,3 +120,21 @@ class pareto_set(candidate_set):
         else:
             self.best = self.set[0]
             self.best_counter = 0
+            
+    def _to_dict(self):
+        self_dict = super()._to_dict()
+        self_dict.update({
+            'best': self.best.id,
+            'length': self.length,
+            'best_counter': self.best_counter,
+            'counter': self.counter,
+            'g_ideal': self.g_ideal.reset_index(drop = True).to_dict(),
+            
+        })
+        return self_dict    
+    
+    @classmethod
+    def _from_dict(cls,data, sol_class = mo_ocba_solution):
+        instance = super()._from_dict(data=data, sol_class = sol_class)
+        instance.best = instance.set[[i.id for i in instance.set].index(instance.best)]
+        return instance

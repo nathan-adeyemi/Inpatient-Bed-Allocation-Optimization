@@ -1,0 +1,133 @@
+debug:
+  checkpoint-interval: 5
+  cooling_schedule: quadratic
+  hyper_params: debug
+  job_dir: experiments/debug
+  mo_ocba: debug
+  n_sols: 3
+  obj_fns:
+    TB_obj_1:
+      direction: +
+    TB_obj_2:
+      direction: '-'
+  report_progress_interval: 1
+  seed: 42
+  stoch_optim: true
+  termination_criteria:
+    criteria_1:
+      condition: '>'
+      name: current_iteration
+      value: 15
+  tune: false
+
+ed_ip_sim:
+  checkpoint-interval: 1
+  cooling_schedule: quadratic
+  hyper_params: default
+  job_dir: experiments/ed_ip_sim
+  mo_ocba: default
+  n_sols: 10
+  report_progress_interval: 5
+  seed: 42
+  stoch_optim: true
+  termination_criteria:
+    criteria_1:
+      condition: '>'
+      name: current_iteration
+      value: 200
+    criteria_2:
+      condition: <
+      name: temp
+      value: 0.001
+    criteria_3:
+      condition: '>'
+      name: pareto_set.counter
+      value: 10
+  tune: false
+
+testbed-large:
+  checkpoint-interval: 5
+  job_dir: experiments/test_bench/large
+  cooling_schedule: quadratic
+  hyper_params: default
+  mo_ocba: default
+  n_sols: 5
+  obj_fns:
+    TB_obj_1:
+      direction: +
+    TB_obj_2:
+      direction: '-'
+  report_progress_interval: 5
+  seed: 42
+  stoch_optim: true
+  termination_criteria:
+    criteria_1:
+      condition: '>'
+      name: current_iteration
+      value: 200
+    criteria_2:
+      condition: <
+      name: temp
+      value: 0.001
+    criteria_3:
+      condition: '>'
+      name: pareto_set.counter
+      value: 50
+  tune: false
+
+testbed-medium:
+  job_dir: experiments/test_bench/medium
+  checkpoint-interval: 5
+  cooling_schedule: quadratic
+  hyper_params: default
+  mo_ocba: default
+  n_sols: 5
+  obj_fns:
+    TB_obj_1:
+      direction: +
+    TB_obj_2:
+      direction: '-'
+  report_progress_interval: 5
+  seed: 42
+  stoch_optim: true
+  termination_criteria:
+    criteria_1:
+      condition: '>'
+      name: current_iteration
+      value: 200
+    criteria_2:
+      condition: <
+      name: temp
+      value: 0.001
+    criteria_3:
+      condition: '>'
+      name: pareto_set.counter
+      value: 50
+  tune: false
+
+testbed-small:
+  checkpoint-interval: 1
+  cooling_schedule: quadratic
+  hyper_params: default
+  mo_ocba: default
+  tune: false
+  job_dir: experiments/test_bench/small
+  n_sols: 5
+  report_progress_interval: 1
+  seed: 42
+  stoch_optim: true
+  termination_criteria:
+    criteria_1:
+      condition: '>'
+      name: current_iteration
+      value: 50
+    criteria_2:
+      condition: '>'
+      name: pareto_set.counter
+      value: 50
+  obj_fns:
+    TB_obj_1:
+      direction: +
+    TB_obj_2:
+      direction: '-'
+  

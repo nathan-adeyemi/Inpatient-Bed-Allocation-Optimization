@@ -1,0 +1,18 @@
+
+# Command to run the full ed to ip optimzation problem
+python slurm-launch.py \
+    --num-workers 1 \
+    --partition long \
+    --time 2-00:00:00 \
+    --exp-name ed_ip_sim\
+    --backend dask \
+    --obj-combos \
+    --cluster-config full
+
+# Command for executing the testbed optimization job
+python slurm-launch.py \
+    --num-cpus=36 \
+    --partition short \
+    --time 2:00:00 \
+    # --exp-name testbed-small\
+    --cluster-config test

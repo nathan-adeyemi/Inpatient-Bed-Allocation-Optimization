@@ -1,27 +1,33 @@
 import numpy as np 
-import pandas as pd 
+import pandas as pd
+import json 
 
 from statistics import NormalDist
-from utils.stats import bhattacharyya_dist
-from ..base.solution import solution
+from stats import bhattacharyya_dist
+from base.solution import solution
+from .utils import decode
+from copy import deepcopy
 
 class mo_ocba_solution(solution):
     
-    def __init__(self,alpha: float, solution: np.ndarray, allocation: np.ndarray, init_reps: int, obj_fns: list):
-        super().__init__(obj_fns=obj_fns)
-        self.alpha = alpha
-        self.solution = solution
-        self.allocation = allocation
+    def __init__(self,
+                 solution: np.ndarray = None, 
+                 init_reps: int = None,
+                 obj_fns: list = None,
+                 decode_sols: bool = True):
+        super().__init__(obj_fns=obj_fns, solution = solution)
+        
         self.pending_samples = init_reps
         self.replications = 0
-        self.obj_fns = obj_fns
-        self.obj_fns_names = [i['sample_statistic'] for i in self.obj_fns]
-
+        self.sol_rep = solution
+        if decode_sols and solution is not None:
+            self.sol_rep = deepcopy(self.solution)
+            self.solution = decode(self.sol_rep, decode_sols)
         
     def procedure_I(self,sol_set,delta):
         self.psi = 0
         for sol in sol_set:
-            if not self is sol:
+            if self is not sol:
                 self.psi += self.get_p_val(sol,delta)
                 
     def procedure_II(self,sol_set,delta,K,include_all=True):
@@ -29,7 +35,7 @@ class mo_ocba_solution(solution):
         
         if include_all:
             for sol in sol_set:
-                if not self is sol:
+                if self is not sol:
                     psi_id.append(self.get_p_val(compare_sol=sol,delta=delta) - self.get_p_val(compare_sol=sol,delta=delta,hat=True))
                 else:
                     sv1 = 0
@@ -68,3 +74,16 @@ class mo_ocba_solution(solution):
     def calc_distance(self,compare_data: pd.DataFrame):
         return bhattacharyya_dist(self.data.loc[:,self.obj_fns_names],
                                   compare_data.loc[:,self.obj_fns_names])
+    
+    def _to_dict(self):
+        self_dict = super()._to_dict()
+        self_dict.update({
+            'pending_samples': self.pending_samples,
+            'replications': self.replications,
+            'psi': self.psi
+        })
+        if self.sol_rep is not None:
+            self_dict.update(
+                {'sol_rep': self.sol_rep }
+            )
+        return self_dict

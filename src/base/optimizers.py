@@ -1,80 +1,133 @@
 import os
-import pickle as pkl
+import json
+import re
 
-from omegaconf import DictConfig
 from abc import abstractmethod
+from pathlib import Path
+from .base_class import BaseClass
+from utils import  generate_random_identifier, convert_to_serializable
 
-class popMultiObjOptim():
+def wrapper(args):
+    instance, inp = args
+    return instance._evaluate(inp)
+
+class popMultiObjOptim(BaseClass):
     
     # Base class for population based multi-objective simulation optimizers
     
-    def __init__(self, config: DictConfig):
-        self.term_crit = config.termination_criteria
-        if 'num_variables' in config.keys():
-            self.num_variables = config.num_variables
-        self.sols_per_iter = config.n_sols
-        self.obj_fns = config.obj_fns
-        self.iteration = 0
-        self.checkpoint =config.checkpoint.create_checkpoints
-        self.checkpoint_num = 0
-        if self.checkpoint:
-            self.checkpoint_num = 0
-            self.checkpoints_dir = os.path.join(config.job_dir,'outputs','checkpoints')
-            self.checkpoint_interval = config.checkpoint.interval
-            if not os.path.exists(self.checkpoints_dir):
-                os.makedirs(self.checkpoints_dir)
+    def __init__(self, config: dict = None, create_checkpoint = False):
+        if config is not None:
+            self.config = config
+            self.term_crit = self.config.get("termination_criteria")
+            self.sols_per_iter = self.config.get("n_sols")
+            self.obj_fns = self.config.get("obj_fns")
+            self.current_iteration = 0
+            self.job_id = generate_random_identifier(10)
+            self.config['job_dir'] = Path(os.path.join(self.config.get("job_dir"), self.job_id))
+            if self.config.get("checkpoint-interval") and create_checkpoint:
+                self.checkpoints_dir = os.path.join(self.config.get("job_dir"),'checkpoints',self.job_id)
+                self.checkpoint_interval = self.config.get("checkpoint-interval")
+                if not os.path.exists(self.checkpoints_dir):
+                    os.makedirs(self.checkpoints_dir)
+                    
+            with open(os.path.join(self.config.get('job_dir'),"optim-config.json"),'w') as f:
+                json.dump(obj = self.config,
+                        fp = f,
+                        default=convert_to_serializable,
+                        indent = 4)
     
+    def check_termination_condition(self):
+        if self.current_iteration == 0:
+            return False
+        else:
+            term_states = []
+            for key in list(self.term_crit.keys()):
+                criteria = self.term_crit.get(key)
+                if "." in criteria.get('name'):
+                    term_states.append(eval(f"self.{criteria.get('name')} {criteria.get('condition')} {criteria.get('value')}")) 
+                else:
+                    term_states.append(eval(f"getattr(self,'{criteria.get('name')}')  {criteria.get('condition')}  {criteria.get('value')}")) 
+                    
+            return any(term_states) 
+        
+    def optimize(self,reset = True):
+        if reset:
+            self.reset()
+            print(f"~~~~~~~~~~Beginning Optimization Job {self.job_id} ~~~~~~~~~~~~~~~")
+            
+        while not self.check_termination_condition():
+            self.execute_iteration()
+            if self.config.get('checkpoint-interval'):
+                self.create_checkpoint()
+        self.terminate_experiment()
+
+    def _to_dict(self):
+        self_dict = {
+            "job_id": self.job_id,
+            "current_iteration": self.current_iteration,
+            "obj_fns": self.obj_fns,
+            "term_crit":self.term_crit,
+            "sols_per_iter": self.sols_per_iter,
+        }
+        
+        config_dict = {
+            "config": self.config,   
+        }
+        
+        if self.config.get('checkpoint-interval'):
+            config_dict.update({
+                'checkpoints_dir': self.checkpoints_dir,
+                'checkpoint_interval': self.checkpoint_interval
+            })
+        return self_dict, config_dict
+    
+    def create_checkpoint(self):
+        self.update_checkpoint_name()
+        with open(f"{os.path.join(self.checkpoints_dir,self.checkpoint_name)}.json",'w') as f:
+            json.dump(obj = self._to_dict(),
+                      fp = f,
+                      default=convert_to_serializable,
+                      indent = 4)
+            
+        if hasattr(self,'history'):
+            with open(f"{os.path.join(self.checkpoints_dir,'history')}.json", "w") as f:
+                json.dump(obj=self.history,
+                          fp = f,
+                          default=convert_to_serializable,
+                          indent=4)
+    
+    def find_last_checkpoint(self, exp_dir: str|os.PathLike = None):
+        if exp_dir is None:
+            exp_dir = self.checkpoints_dir
+        checkpoint_files = [fname for fname in os.listdir(exp_dir) if fname.startswith('checkpoint-')]
+        if not checkpoint_files:
+            return "checkpoint-0"
+        max_checkpoint = max([int(re.sub(".json","",fname.split('-')[-1])) for fname in checkpoint_files])
+        return f"checkpoint-{max_checkpoint}"
+    
+    def update_checkpoint_name(self, exp_dir: str|os.PathLike = None):
+        last_checkpoint = self.find_last_checkpoint(exp_dir)
+        last_checkpoint_number = int(last_checkpoint.split('-')[-1])
+        next_checkpoint_number = last_checkpoint_number + 1
+        self.checkpoint_name = f"checkpoint-{next_checkpoint_number}"
+        
+    @classmethod
+    def _from_checkpoint(cls,
+                         exp_dir: str):
+        instance = object.__new__(cls)
+        with open(os.path.join(exp_dir,f"{instance.find_last_checkpoint(exp_dir=exp_dir)}.json"),"r") as f:
+            data = json.load(f)
+        instance.__dict__.update(data)
+        return instance, data
+                    
     @abstractmethod 
     def reset(self):
         pass
     
-    def check_termination_condition(self):
-        term_states = []
-        for criteria in self.term_crit:
-            crit = criteria['criteria']
-            crit_val = criteria['value']
-            test = criteria['condition']
-            
-            if "." in crit:
-                term_states.append(eval(f"self.{crit} {test} {crit_val}")) 
-            else:
-                term_states.append(eval(f"getattr(self,'{crit}') {test} {crit_val}")) 
-                
-        return any(term_states) 
-
-    def create_checkpoint(self, check_dir: str = None):
-        
-        if check_dir is None:
-            self.checkpoint_num += 1
-            check_dir = os.path.join(self.checkpoints_dir,f"checkpoint_{self.checkpoint_num}")
-        # self.update_checkpoint_metrics()
-        with open(f"{check_dir}.pkl",'wb') as f:
-            pkl.dump(self, f)
-    
-    @abstractmethod
-    def update_checkpoint_metrics(self):
-        pass
-    
-    
-    @abstractmethod
-    def execute_iteration(self):
-        pass
-    
-    
-    def optimize(self,reset = True):
-        if reset:
-            self.reset()
-            
-        while not self.check_termination_condition():
-            self.execute_iteration()
-            if self.checkpoint:
-                if self.iteration % self.checkpoint_interval == 0:
-                    self.create_checkpoint()
-        self.terminate_experiment()
-    
     @abstractmethod
     def terminate_experiment(self):
        pass
-
-    
-        
+         
+    @abstractmethod
+    def execute_iteration(self):
+        pass

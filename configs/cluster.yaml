@@ -1,0 +1,58 @@
+dask:
+  debug: 
+    cores: 5
+    processes: 1
+    memory: 8GB 
+    queue: short
+    local_directory: /home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization
+    log_directory: logs/dask-worker-logs/
+    job_script_prologue: ["conda init bash \n", 
+                          "module load singularity/3.5.3 \n", 
+                          "module load anaconda3/2022.05 \n", 
+                          "conda activate SMAC \n"]
+    worker_extra_args: ['--nthreads 4']
+    silence_logs: debug
+
+  test: 
+    cores: 20
+    processes: 1
+    memory: 64GB
+    queue: short
+    local_directory: /home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization
+    log_directory: /scratch/adeyemi.n/logs/dask-worker-logs/
+    job_script_prologue: ["conda init bash \n", 
+                          "module load singularity/3.5.3 \n", 
+                          "module load anaconda3/2022.05 \n", 
+                          "conda activate SMAC \n"]
+    worker_extra_args: ['--nthreads 40']
+    silence_logs: debug
+  
+  full:
+    cores: 40
+    processes: 1
+    memory: 100GB
+    queue: long
+    local_directory: /home/adeyemi.n/MH_Simulation/Inpatient_Bed_Allocation_Optimization
+    log_directory: /scratch/adeyemi.n/logs/dask-worker-logs/
+    job_script_prologue: ["conda init bash \n", 
+                          "module load singularity/3.5.3 \n", 
+                          "module load anaconda3/2022.05 \n", 
+                          "conda activate SMAC \n"]
+    worker_extra_args: ['--nthreads 100']
+    silence_logs: info
+                    
+ray:
+  debug:
+    runtime_env: {"working_dir": "src", "pip": ["pandas"]}
+    ignore_reinit_error: True
+    num_cpus: 10
+  full:
+    runtime_env: {"working_dir": "src", "pip": ["pandas"]}
+    ignore_reinit_error: True
+    num_cpus: 20
+
+multiprocessing:
+  debug:
+    processes: 20
+  full:
+    processes: 100

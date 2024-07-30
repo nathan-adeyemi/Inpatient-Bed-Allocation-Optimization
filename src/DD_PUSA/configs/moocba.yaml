@@ -1,0 +1,30 @@
+tune:
+  psi_target:
+    grid: [5.6e-3, 5.6e-4, 5.6e-5, 5.6e-6]
+
+  initial_reps_per_sol:
+    min: 6
+    max: 24
+    interval: 6
+    grid: [8,12,18,25,30]
+
+  replications_per_sol_x_iter: 
+    min: 5
+    max: 50
+    interval: 10
+    grid: [5,12,20,35,50]
+
+  p_set_interval: 
+    grid: [5,10,15,20]
+
+debug:
+  psi_target: 5.6e-6
+  initial_reps_per_sol: 4
+  replications_per_sol_x_iter: 2
+  p_set_interval: 3
+    
+default:
+  psi_target: 5.6e-6
+  initial_reps_per_sol: 6
+  replications_per_sol_x_iter: 20
+  p_set_interval: 10

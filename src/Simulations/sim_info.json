@@ -1,0 +1,544 @@
+{
+    "debug": {
+        "warmup": 100,
+        "sim_length": 200,
+        "units_dict": {
+            "small": {
+                "nVar": 3,
+                "constraint_b": 9
+            }
+        },
+        "queues_df": [
+            {
+                "queue_id": 1,
+                "lambda_cap": 0.3426,
+                "p_ijs": 0.4364,
+                "lambda_sub": 0.4205,
+                "service_rates": 0.5292
+            },
+            {
+                "queue_id": 2,
+                "lambda_cap": 0.3026,
+                "p_ijs": 0.1868,
+                "lambda_sub": 0.18,
+                "service_rates": 0.3909
+            },
+            {
+                "queue_id": 3,
+                "lambda_cap": 0.1255,
+                "p_ijs": 0.3769,
+                "lambda_sub": 0.3631,
+                "service_rates": 0.39
+            }
+        ]
+    },
+    "testbed-small": {
+        "warmup": 2000,
+        "sim_length": 2000,
+        "units_dict": {"small": {
+                "nVar": 3,
+                "constraint_b": 9
+            }
+        },
+        "queues_df": [
+            {
+                "queue_id": 1,
+                "lambda_cap": 0.3426,
+                "p_ijs": 0.4364,
+                "lambda_sub": 0.4205,
+                "service_rates": 0.5292
+            },
+            {
+                "queue_id": 2,
+                "lambda_cap": 0.3026,
+                "p_ijs": 0.1868,
+                "lambda_sub": 0.18,
+                "service_rates": 0.3909
+            },
+            {
+                "queue_id": 3,
+                "lambda_cap": 0.1255,
+                "p_ijs": 0.3769,
+                "lambda_sub": 0.3631,
+                "service_rates": 0.39
+            }
+        ]
+    },
+    "testbed-medium": {
+        "warmup": 2000,
+        "sim_length": 2000,
+        "units_dict": {
+            "medium": {
+                "nVar": 4,
+                "constraint_b": 12
+            }
+        },
+        "queues_df": [
+            {
+                "queue_id": 1,
+                "lambda_cap": 0.1394,
+                "p_ijs": 0.1505,
+                "lambda_sub": 0.3793,
+                "service_rates": 0.6029
+            },
+            {
+                "queue_id": 2,
+                "lambda_cap": 0.8322,
+                "p_ijs": 0.112,
+                "lambda_sub": 0.2822,
+                "service_rates": 0.2357
+            },
+            {
+                "queue_id": 3,
+                "lambda_cap": 0.7287,
+                "p_ijs": 0.4863,
+                "lambda_sub": 1.2257,
+                "service_rates": 0.3846
+            },
+            {
+                "queue_id": 4,
+                "lambda_cap": 0.2037,
+                "p_ijs": 0.2512,
+                "lambda_sub": 0.633,
+                "service_rates": 0.9788
+            }
+        ]
+    },
+    "testbed-large": {
+        "warmup": 2000,
+        "sim_length": 2000,
+        "units_dict": {
+            "large": {
+                "nVar": 10,
+                "constraint_b": 30
+            }
+        },
+        "queues_df": [
+            {
+                "queue_id": 1,
+                "lambda_cap": 0.1527,
+                "p_ijs": 0.0001,
+                "lambda_sub": 0.0003,
+                "service_rates": 0.6316
+            },
+            {
+                "queue_id": 2,
+                "lambda_cap": 0.4698,
+                "p_ijs": 0.2288,
+                "lambda_sub": 0.6693,
+                "service_rates": 0.9421
+            },
+            {
+                "queue_id": 3,
+                "lambda_cap": 0.3043,
+                "p_ijs": 0.0396,
+                "lambda_sub": 0.1158,
+                "service_rates": 0.8412
+            },
+            {
+                "queue_id": 4,
+                "lambda_cap": 0.3162,
+                "p_ijs": 0.0832,
+                "lambda_sub": 0.2433,
+                "service_rates": 0.637
+            },
+            {
+                "queue_id": 5,
+                "lambda_cap": 0.4934,
+                "p_ijs": 0.0382,
+                "lambda_sub": 0.1117,
+                "service_rates": 0.7936
+            },
+            {
+                "queue_id": 6,
+                "lambda_cap": 0.2397,
+                "p_ijs": 0.2144,
+                "lambda_sub": 0.6271,
+                "service_rates": 0.1982
+            },
+            {
+                "queue_id": 7,
+                "lambda_cap": 0.2902,
+                "p_ijs": 0.0551,
+                "lambda_sub": 0.1613,
+                "service_rates": 0.4068
+            },
+            {
+                "queue_id": 8,
+                "lambda_cap": 0.1299,
+                "p_ijs": 0.1791,
+                "lambda_sub": 0.524,
+                "service_rates": 0.5622
+            },
+            {
+                "queue_id": 9,
+                "lambda_cap": 0.2982,
+                "p_ijs": 0.1011,
+                "lambda_sub": 0.2958,
+                "service_rates": 0.3602
+            },
+            {
+                "queue_id": 10,
+                "lambda_cap": 0.1691,
+                "p_ijs": 0.0603,
+                "lambda_sub": 0.1763,
+                "service_rates": 0.2367
+            }
+        ]
+    },
+    "ed_ip_sim":{
+        "warmup": 50,
+        "sim_length": 200,
+        "ed_scale_param": 1.22,
+        "acceptance_probs": {
+            "Abbott Northwestern Hospital": 0.39488337212168934,
+            "Avera Marshall Regional Medical Center": 0.32282031656769994,
+            "Cambridge Medical Center": 0.9153208184499764,
+            "Carris Health - Rice Memorial Hospital": 0.5634801359819447,
+            "CentraCare Health - Monticello": 0.23882910763190723,
+            "Children's Minnesota": 0.3136585806673285,
+            "Essentia Health - Duluth": 0.8710069829571717,
+            "Fairview Range": 0.9311992183475036,
+            "Hennepin Healthcare": 0.5699955513088492,
+            "Hutchinson Health": 0.9866366144380121,
+            "Lake Region Healthcare": 0.4560306405065575,
+            "Lakewood Health System": 0.9772372324624944,
+            "M Health Fairview Southdale Hospital": 0.2889925858324969,
+            "M Health Fairview University of Minnesota Medical Center": 0.31605575152844295,
+            "Mayo Clinic Health System - Albert Lea and Austin": 0.8355490533617396,
+            "Mayo Clinic Health System in Mankato": 0.34492527973802023,
+            "Mayo Clinic Hospital - Rochester": 0.3059359624006085,
+            "Meeker Memorial Hospital": 0.66858228406637,
+            "Mercy Hospital, Unity Campus": 0.42941965314397745,
+            "Mille Lacs Health System": 0.8583286678228871,
+            "New Ulm Medical Center": 0.4528477299317294,
+            "North Memorial Health Hospital": 0.8388652764923363,
+            "Owatonna Hospital": 0.41045619793443144,
+            "PrairieCare": 0.9634274887961759,
+            "Regina Hospital": 0.7045660095165073,
+            "Regions Hospital": 0.6722674126371271,
+            "Ridgeview Medical Center": 0.4788021149653908,
+            "Saint Joseph's Hospital": 0.9424569688213041,
+            "Sanford Behavioral Health Center": 0.7787868103849603,
+            "St. Cloud Hospital": 0.22951026159652702,
+            "St. Joseph's Medical Center": 0.5933386706111974,
+            "St. Luke's Hospital": 0.9799592200527831,
+            "United Hospital": 0.13463007188007614,
+            "Winona Health Services": 0.2106616426927138
+        },
+        "units_dict": {
+            "Abbott Northwestern Hospital": {
+                "nVar": 3,
+                "constraint_b": 110
+            },
+            "Avera Marshall Regional Medical Center": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "Cambridge Medical Center": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Carris Health - Rice Memorial Hospital": {
+                "nVar": 1,
+                "constraint_b": 12
+            },
+            "CentraCare Health - Monticello": {
+                "nVar": 1,
+                "constraint_b": 10
+            },"Children\\'s Minnesota": {
+                "nVar": 2,
+                "constraint_b": 33
+            },
+            "Essentia Health - Duluth": {
+                "nVar": 4,
+                "constraint_b": 112
+            },
+            "Fairview Range": {
+                "nVar": 1,
+                "constraint_b": 35
+            },
+            "Hennepin Healthcare": {
+                "nVar": 1,
+                "constraint_b": 108
+            },
+            "Hutchinson Health": {
+                "nVar": 3,
+                "constraint_b": 36
+            },
+            "Lake Region Healthcare": {
+                "nVar": 3,
+                "constraint_b": 42
+            },
+            "Lakewood Health System": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "M Health Fairview Southdale Hospital": {
+                "nVar": 1,
+                "constraint_b": 18
+            },
+            "M Health Fairview University of Minnesota Medical Center": {
+                "nVar": 4,
+                "constraint_b": 322
+            },
+            "Mayo Clinic Health System - Albert Lea and Austin": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Mayo Clinic Health System in Mankato": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Mayo Clinic Hospital - Rochester": {
+                "nVar": 4,
+                "constraint_b": 91
+            },
+            "Meeker Memorial Hospital": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "Mercy Hospital, Unity Campus": {
+                "nVar": 2,
+                "constraint_b": 55
+            },
+            "Mille Lacs Health System": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "New Ulm Medical Center": {
+                "nVar": 2,
+                "constraint_b": 20
+            },
+            "North Memorial Health Hospital": {
+                "nVar": 1,
+                "constraint_b": 26
+            },
+            "Owatonna Hospital": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "PrairieCare": {
+                "nVar": 2,
+                "constraint_b": 142
+            },
+            "Regina Hospital": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Regions Hospital": {
+                "nVar": 1,
+                "constraint_b": 100
+            },
+            "Ridgeview Medical Center": {
+                "nVar": 1,
+                "constraint_b": 12
+            },"Saint Joseph\\'s Hospital": {
+                "nVar": 2,
+                "constraint_b": 74
+            },
+            "Sanford Behavioral Health Center": {
+                "nVar": 3,
+                "constraint_b": 48
+            },
+            "St. Cloud Hospital": {
+                "nVar": 2,
+                "constraint_b": 56
+            },"St. Joseph\\'s Medical Center": {
+                "nVar": 1,
+                "constraint_b": 22
+            },"St. Luke\\'s Hospital": {
+                "nVar": 1,
+                "constraint_b": 22
+            },
+            "United Hospital": {
+                "nVar": 3,
+                "constraint_b": 100
+            },
+            "Winona Health Services": {
+                "nVar": 1,
+                "constraint_b": 10
+            }
+        }
+    },
+
+    "debug-ed_ip_sim": {
+        "warmup": 0,
+        "sim_length": 50,
+        "ed_scale_param": 1.22,
+        "acceptance_probs": {
+            "Abbott Northwestern Hospital": 0.39488337212168934,
+            "Avera Marshall Regional Medical Center": 0.32282031656769994,
+            "Cambridge Medical Center": 0.9153208184499764,
+            "Carris Health - Rice Memorial Hospital": 0.5634801359819447,
+            "CentraCare Health - Monticello": 0.23882910763190723,
+            "Children's Minnesota": 0.3136585806673285,
+            "Essentia Health - Duluth": 0.8710069829571717,
+            "Fairview Range": 0.9311992183475036,
+            "Hennepin Healthcare": 0.5699955513088492,
+            "Hutchinson Health": 0.9866366144380121,
+            "Lake Region Healthcare": 0.4560306405065575,
+            "Lakewood Health System": 0.9772372324624944,
+            "M Health Fairview Southdale Hospital": 0.2889925858324969,
+            "M Health Fairview University of Minnesota Medical Center": 0.31605575152844295,
+            "Mayo Clinic Health System - Albert Lea and Austin": 0.8355490533617396,
+            "Mayo Clinic Health System in Mankato": 0.34492527973802023,
+            "Mayo Clinic Hospital - Rochester": 0.3059359624006085,
+            "Meeker Memorial Hospital": 0.66858228406637,
+            "Mercy Hospital, Unity Campus": 0.42941965314397745,
+            "Mille Lacs Health System": 0.8583286678228871,
+            "New Ulm Medical Center": 0.4528477299317294,
+            "North Memorial Health Hospital": 0.8388652764923363,
+            "Owatonna Hospital": 0.41045619793443144,
+            "PrairieCare": 0.9634274887961759,
+            "Regina Hospital": 0.7045660095165073,
+            "Regions Hospital": 0.6722674126371271,
+            "Ridgeview Medical Center": 0.4788021149653908,
+            "Saint Joseph's Hospital": 0.9424569688213041,
+            "Sanford Behavioral Health Center": 0.7787868103849603,
+            "St. Cloud Hospital": 0.22951026159652702,
+            "St. Joseph's Medical Center": 0.5933386706111974,
+            "St. Luke's Hospital": 0.9799592200527831,
+            "United Hospital": 0.13463007188007614,
+            "Winona Health Services": 0.2106616426927138
+        },
+        "units_dict": {
+            "Abbott Northwestern Hospital": {
+                "nVar": 3,
+                "constraint_b": 110
+            },
+            "Avera Marshall Regional Medical Center": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "Cambridge Medical Center": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Carris Health - Rice Memorial Hospital": {
+                "nVar": 1,
+                "constraint_b": 12
+            },
+            "CentraCare Health - Monticello": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "Children\\'s Minnesota": {
+                "nVar": 2,
+                "constraint_b": 33
+            },
+            "Essentia Health - Duluth": {
+                "nVar": 4,
+                "constraint_b": 112
+            },
+            "Fairview Range": {
+                "nVar": 1,
+                "constraint_b": 35
+            },
+            "Hennepin Healthcare": {
+                "nVar": 1,
+                "constraint_b": 108
+            },
+            "Hutchinson Health": {
+                "nVar": 3,
+                "constraint_b": 36
+            },
+            "Lake Region Healthcare": {
+                "nVar": 3,
+                "constraint_b": 42
+            },
+            "Lakewood Health System": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "M Health Fairview Southdale Hospital": {
+                "nVar": 1,
+                "constraint_b": 18
+            },
+            "M Health Fairview University of Minnesota Medical Center": {
+                "nVar": 4,
+                "constraint_b": 322
+            },
+            "Mayo Clinic Health System - Albert Lea and Austin": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Mayo Clinic Health System in Mankato": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Mayo Clinic Hospital - Rochester": {
+                "nVar": 4,
+                "constraint_b": 91
+            },
+            "Meeker Memorial Hospital": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "Mercy Hospital, Unity Campus": {
+                "nVar": 2,
+                "constraint_b": 55
+            },
+            "Mille Lacs Health System": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "New Ulm Medical Center": {
+                "nVar": 2,
+                "constraint_b": 20
+            },
+            "North Memorial Health Hospital": {
+                "nVar": 1,
+                "constraint_b": 26
+            },
+            "Owatonna Hospital": {
+                "nVar": 1,
+                "constraint_b": 10
+            },
+            "PrairieCare": {
+                "nVar": 2,
+                "constraint_b": 142
+            },
+            "Regina Hospital": {
+                "nVar": 1,
+                "constraint_b": 14
+            },
+            "Regions Hospital": {
+                "nVar": 1,
+                "constraint_b": 100
+            },
+            "Ridgeview Medical Center": {
+                "nVar": 1,
+                "constraint_b": 12
+            },
+            "Saint Joseph\\'s Hospital": {
+                "nVar": 2,
+                "constraint_b": 74
+            },
+            "Sanford Behavioral Health Center": {
+                "nVar": 3,
+                "constraint_b": 48
+            },
+            "St. Cloud Hospital": {
+                "nVar": 2,
+                "constraint_b": 56
+            },
+            "St. Joseph\\'s Medical Center": {
+                "nVar": 1,
+                "constraint_b": 22
+            },
+            "St. Luke\\'s Hospital": {
+                "nVar": 1,
+                "constraint_b": 22
+            },
+            "United Hospital": {
+                "nVar": 3,
+                "constraint_b": 100
+            },
+            "Winona Health Services": {
+                "nVar": 1,
+                "constraint_b": 10
+            }
+        }
+    }
+}

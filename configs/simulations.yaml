@@ -1,0 +1,12 @@
+small:
+    warmup: 2000
+    sim_length: 2000
+medium:
+    warmup: 2000
+    sim_length: 2000
+large:
+    warmup: 2000
+    sim_length: 2000
+ed_ip_sim:
+    warmup: 5
+    sim_length: 20

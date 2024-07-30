@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from utils.r_communication import worker_pool
-from base.sets import solution_set
+
+from ..base.sets import solution_set
 from parent_soln import parent_solution
 
 class children_set(solution_set):

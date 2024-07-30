@@ -1,0 +1,38 @@
+exponential:
+  t_0: 10
+  t_damp: 1.5
+logarithmic:
+  t_0: 10
+  t_damp: 4
+quadratic:
+  t_0: 100
+  t_damp: 0.15
+linear:
+  t_0: 100
+  t_damp: 0.7
+
+tune:
+  exponential:
+    t_0: 10
+    t_damp:
+      min: 1
+      max: 2
+      interval: 0.1
+  logarithmic:
+    t_0: 10
+    t_damp: 
+      min: 2
+      max: 12
+      interval: 1
+  quadratic:
+    t_0: 100
+    t_damp:
+      min: 0.0 
+      max: 0.5
+      interval: 0.05
+  linear:
+    t_0: 100
+    t_damp: 
+      min: 2
+      max: 14
+      interval: 2

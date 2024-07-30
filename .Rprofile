@@ -10,26 +10,39 @@ options(
 )
 
 # Utilities ----------------------------
-if(!interactive()){
-  library(tidyverse, quietly = T)
-}
-library(data.table, quietly = T)
-# library(EnvStats, quietly = T)
 
-# Packages for Discrete Event Simulation ----------------------------------
-library(simmer, quietly = T)
-library(simmer.plot, quietly = T)
-library(simtimer, quietly = T)
-library(parallel, quietly = T)
-library(jsonlite, quietly = T)
+suppressPackageStartupMessages({
+  if(!interactive()){
+    library(tidyverse)
+  }
+  library(jsonlite)
+  library(data.table)
+  library(openxlsx)
+  library(writexl)
+  library(tictoc)
+  library(gtools)
+  library(lubridate)
+  library(stringdist)
 
-source(file = file.path('modules', 'Simulations','ed_mh_simulation', 'ed_mh_simulation.R'))
-source(file = file.path("modules", 'Simulations','testbeds', 'run_test_bench.R'))
-invisible(lapply(
-  X = file.path("modules", 'Simulations','testbeds','helper_functions', list.files(path = file.path("modules", 'Simulations','testbeds','helper_functions'))),
-  FUN = source,
-  echo = FALSE
-))
+  # Packages for Statistics/Bootstrapping/etc. ------------------------------
+  library(fitdistrplus)
+  library(boot)
+  library(simpleboot)
+  library(EnvStats)
+
+  # Packages for Discrete Event Simulation ----------------------------------
+  library(simmer)
+  library(simtimer)
+
+  # Packages for Parallel Processing ----------------------------------------
+  library(doParallel)
+  library(parallelly)
+  library(jsonlite)
+})
+
+source(file = "src/Simulations/testbed_functions.R")
+source(file = "src/r_utils.R")
+source(file = "src/Simulations/ed_mh_simulation.R")
 
 # source("renv/activate.R")
 Sys.setenv(TERM_PROGRAM="vscode")

@@ -3,15 +3,24 @@
 /*.jpeg
 /*.csv
 /*.pdf
+/*.pyc
 
 # Old R Implementation
 /deprecated
 /Data/*
+/experiments
+logs/
 
 # Data files to include
 !Data/test_inverted_v_networks
 !Data/testbench_results/Medium/
 !Data/testbench_results/Small/
+
+# Include experiment main, configs and shell scripts
+!experiments/*/*.py
+!experiments/*/*.yaml
+!experiments/*/*.sh
+
 
 test_version_folder/
 Plots/
@@ -19,18 +28,7 @@ renv/
 .DS_Store
 
 # Output files, checkpoints, and error logs
-experiments/*/outputs
-experiments/*/error_logs
-experiments/*/checkpoints
-experiments/*/parameter_tuning
-experiments/*/test_obj_combos
-experiments/*/multi_obj_combo
-experiments/*/checkpoints
-*.pkl
-*.pyc
-*.json
-*.csv
-*.txt
+
 
 # Stock
 # History files

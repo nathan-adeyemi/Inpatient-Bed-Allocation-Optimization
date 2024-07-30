@@ -1,7 +1,0 @@
-schedule: linear
-t_0: 100
-t_damp: 
-  value: 0.7
-  min: 2
-  max: 14
-  interval: 2
